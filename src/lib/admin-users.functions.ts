@@ -68,7 +68,12 @@ export const adminResetPassword = createServerFn({ method: "POST" })
       password: data.password,
       email_confirm: true,
     });
-    if (error) throw new Error(error.message);
+    if (error) {
+      if (/weak|pwned|compromis/i.test(error.message)) {
+        throw new Error("รหัสนี้ถูกระบบตรวจพบว่าไม่ปลอดภัย (อยู่ในฐานข้อมูลรหัสที่รั่วไหล) กรุณาเปลี่ยนรหัสอื่น");
+      }
+      throw new Error(error.message);
+    }
     await supabaseAdmin
       .from("student_passwords")
       .upsert(
