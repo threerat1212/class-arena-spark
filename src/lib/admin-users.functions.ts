@@ -68,7 +68,12 @@ export const adminResetPassword = createServerFn({ method: "POST" })
       password: data.password,
       email_confirm: true,
     });
-    if (error) throw new Error(error.message);
+    if (error) {
+      if (/weak|pwned|compromis/i.test(error.message)) {
+        throw new Error("รหัสนี้ถูกระบบตรวจพบว่าไม่ปลอดภัย (อยู่ในฐานข้อมูลรหัสที่รั่วไหล) กรุณาเปลี่ยนรหัสอื่น");
+      }
+      throw new Error(error.message);
+    }
     await supabaseAdmin
       .from("student_passwords")
       .upsert(
@@ -86,12 +91,17 @@ export const adminResetPasswordDefault = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const defaultPw = "123456";
+    const defaultPw = "Student@2026";
     const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, {
       password: defaultPw,
       email_confirm: true,
     });
-    if (error) throw new Error(error.message);
+    if (error) {
+      if (/weak|pwned|compromis/i.test(error.message)) {
+        throw new Error("รหัสเริ่มต้นถูกระบบความปลอดภัยปฏิเสธ กรุณาตั้งรหัสใหม่ด้วยตนเอง");
+      }
+      throw new Error(error.message);
+    }
     await supabaseAdmin
       .from("student_passwords")
       .upsert(
