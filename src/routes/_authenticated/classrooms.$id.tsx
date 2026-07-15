@@ -2017,7 +2017,7 @@ function AssignmentsTab({
                             </p>
                           )}
                           {mine.feedback && (
-                            <p className="text-muted-foreground">ความคิดเห็น: {mine.feedback}</p>
+                            <p className="text-muted-foreground whitespace-pre-wrap break-words">ความคิดเห็น: {mine.feedback}</p>
                           )}
                           {mine.user_id === user?.id &&
                             mine.score == null &&
