@@ -2380,6 +2380,9 @@ function GradeRow({
   const [fb, setFb] = useState(sub.feedback ?? "");
   const [openStudent, setOpenStudent] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(sub.score == null);
+  const [editing, setEditing] = useState(sub.score == null);
+  const isGraded = sub.score != null;
+  const locked = isGraded && !editing;
   const groupIds = Array.isArray(sub.group_member_ids) ? (sub.group_member_ids as string[]) : [];
   return (
     <Card className="bg-muted/30">
@@ -2445,30 +2448,79 @@ function GradeRow({
                 thumbClassName="h-24 w-auto max-w-[160px]"
               />
             )}
-            <div className="flex items-start gap-2 flex-wrap">
-              <div className="flex items-center gap-2">
-                <Input
-                  type="number"
-                  step="0.5"
-                  min={0}
-                  max={maxScore}
-                  value={score}
-                  onChange={(e) => setScore(parseFloat(e.target.value) || 0)}
-                  className="w-24"
-                />
-                <span className="text-xs whitespace-nowrap">/ {maxScore}</span>
+            {locked ? (
+              <div className="rounded-md border bg-background/60 p-3 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Badge className="text-xs bg-emerald-500/15 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/15">
+                      {tr("ตรวจแล้ว")}
+                    </Badge>
+                    <span className="text-sm font-medium">
+                      {sub.score}/{maxScore}
+                    </span>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setEditing(true)}
+                  >
+                    <Pencil className="size-3.5 mr-1" />
+                    {tr("แก้ไข")}
+                  </Button>
+                </div>
+                {sub.feedback && (
+                  <p className="text-sm whitespace-pre-wrap leading-relaxed text-muted-foreground">
+                    {sub.feedback}
+                  </p>
+                )}
               </div>
-              <Textarea
-                value={fb}
-                onChange={(e) => setFb(e.target.value)}
-                placeholder={tr("ความคิดเห็น")}
-                rows={3}
-                className="flex-1 min-w-[220px] text-sm whitespace-pre-wrap"
-              />
-              <Button size="sm" onClick={() => onGrade(score, fb)}>
-                {tr("บันทึก")}
-              </Button>
-            </div>
+            ) : (
+              <div className="flex items-start gap-2 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    step="0.5"
+                    min={0}
+                    max={maxScore}
+                    value={score}
+                    onChange={(e) => setScore(parseFloat(e.target.value) || 0)}
+                    className="w-24"
+                  />
+                  <span className="text-xs whitespace-nowrap">/ {maxScore}</span>
+                </div>
+                <Textarea
+                  value={fb}
+                  onChange={(e) => setFb(e.target.value)}
+                  placeholder={tr("ความคิดเห็น")}
+                  rows={3}
+                  className="flex-1 min-w-[220px] text-sm whitespace-pre-wrap"
+                />
+                <div className="flex flex-col gap-1">
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      onGrade(score, fb);
+                      setEditing(false);
+                    }}
+                  >
+                    {tr("บันทึก")}
+                  </Button>
+                  {isGraded && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        setScore(sub.score ?? 0);
+                        setFb(sub.feedback ?? "");
+                        setEditing(false);
+                      }}
+                    >
+                      {tr("ยกเลิก")}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </CardContent>
