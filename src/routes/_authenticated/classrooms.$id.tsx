@@ -1883,6 +1883,7 @@ function AssignmentsTab({
                       classroomId={classroomId}
                       maxScore={a.max_score}
                       xpReward={a.xp_reward}
+                      latePenaltyPercent={a.late_penalty_percent ?? 0}
                     />
                   ) : (
                     <div>
