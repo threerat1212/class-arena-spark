@@ -2654,7 +2654,7 @@ function StudentSubmissionsDialog({
                       </p>
                     )}
                     {submission.feedback && (
-                      <p className="text-muted-foreground">
+                      <p className="text-muted-foreground whitespace-pre-wrap break-words">
                         {tr("ความคิดเห็น:")} {submission.feedback}
                       </p>
                     )}
