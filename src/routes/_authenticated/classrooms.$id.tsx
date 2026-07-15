@@ -2373,11 +2373,13 @@ function GradeRow({
   sub,
   classroomId,
   maxScore,
+  latePenaltyPercent,
   onGrade,
 }: {
   sub: SubmissionRow;
   classroomId: string;
   maxScore: number;
+  latePenaltyPercent: number;
   onGrade: (score: number, fb: string) => void;
 }) {
   const [score, setScore] = useState(sub.score ?? 0);
@@ -2387,6 +2389,10 @@ function GradeRow({
   const [editing, setEditing] = useState(sub.score == null);
   const isGraded = sub.score != null;
   const locked = isGraded && !editing;
+  const showLatePenalty = !!sub.is_late && latePenaltyPercent > 0;
+  const previewAfterPenalty = showLatePenalty
+    ? Math.max(0, Math.round(score * (1 - latePenaltyPercent / 100) * 100) / 100)
+    : score;
   const groupIds = Array.isArray(sub.group_member_ids) ? (sub.group_member_ids as string[]) : [];
   return (
     <Card className="bg-muted/30">
