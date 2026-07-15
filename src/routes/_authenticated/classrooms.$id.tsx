@@ -2017,7 +2017,7 @@ function AssignmentsTab({
                             </p>
                           )}
                           {mine.feedback && (
-                            <p className="text-muted-foreground">ความคิดเห็น: {mine.feedback}</p>
+                            <p className="text-muted-foreground whitespace-pre-wrap break-words">ความคิดเห็น: {mine.feedback}</p>
                           )}
                           {mine.user_id === user?.id &&
                             mine.score == null &&
@@ -2445,20 +2445,25 @@ function GradeRow({
                 thumbClassName="h-24 w-auto max-w-[160px]"
               />
             )}
-            <div className="flex items-center gap-2 flex-wrap">
-              <Input
-                type="number"
-                max={maxScore}
-                value={score}
-                onChange={(e) => setScore(+e.target.value)}
-                className="w-24"
-              />
-              <span className="text-xs">/ {maxScore}</span>
-              <Input
+            <div className="flex items-start gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  step="0.5"
+                  min={0}
+                  max={maxScore}
+                  value={score}
+                  onChange={(e) => setScore(parseFloat(e.target.value) || 0)}
+                  className="w-24"
+                />
+                <span className="text-xs whitespace-nowrap">/ {maxScore}</span>
+              </div>
+              <Textarea
                 value={fb}
                 onChange={(e) => setFb(e.target.value)}
                 placeholder={tr("ความคิดเห็น")}
-                className="flex-1 min-w-[160px]"
+                rows={3}
+                className="flex-1 min-w-[220px] text-sm whitespace-pre-wrap"
               />
               <Button size="sm" onClick={() => onGrade(score, fb)}>
                 {tr("บันทึก")}
@@ -2649,7 +2654,7 @@ function StudentSubmissionsDialog({
                       </p>
                     )}
                     {submission.feedback && (
-                      <p className="text-muted-foreground">
+                      <p className="text-muted-foreground whitespace-pre-wrap break-words">
                         {tr("ความคิดเห็น:")} {submission.feedback}
                       </p>
                     )}
