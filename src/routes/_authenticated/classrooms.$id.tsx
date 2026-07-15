@@ -2485,49 +2485,59 @@ function GradeRow({
                 )}
               </div>
             ) : (
-              <div className="flex items-start gap-2 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    step="0.5"
-                    min={0}
-                    max={maxScore}
-                    value={score}
-                    onChange={(e) => setScore(parseFloat(e.target.value) || 0)}
-                    className="w-24"
+              <div className="space-y-2">
+                {showLatePenalty && (
+                  <p className="text-xs text-amber-700 dark:text-amber-400">
+                    {tr("ส่งช้า")} — {tr("หัก")} {latePenaltyPercent}%
+                    {" "}
+                    ({tr("คะแนนหลังหัก")}: <span className="font-semibold">{previewAfterPenalty}</span>/{maxScore})
+                  </p>
+                )}
+                <div className="flex items-start gap-2 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      step="0.5"
+                      min={0}
+                      max={maxScore}
+                      value={score}
+                      onChange={(e) => setScore(parseFloat(e.target.value) || 0)}
+                      className="w-24"
+                    />
+                    <span className="text-xs whitespace-nowrap">/ {maxScore}</span>
+                  </div>
+                  <Textarea
+                    value={fb}
+                    onChange={(e) => setFb(e.target.value)}
+                    placeholder={tr("ความคิดเห็น")}
+                    rows={3}
+                    className="flex-1 min-w-[220px] text-sm whitespace-pre-wrap"
                   />
-                  <span className="text-xs whitespace-nowrap">/ {maxScore}</span>
-                </div>
-                <Textarea
-                  value={fb}
-                  onChange={(e) => setFb(e.target.value)}
-                  placeholder={tr("ความคิดเห็น")}
-                  rows={3}
-                  className="flex-1 min-w-[220px] text-sm whitespace-pre-wrap"
-                />
-                <div className="flex flex-col gap-1">
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      onGrade(score, fb);
-                      setEditing(false);
-                    }}
-                  >
-                    {tr("บันทึก")}
-                  </Button>
-                  {isGraded && (
+                  <div className="flex flex-col gap-1">
                     <Button
                       size="sm"
-                      variant="ghost"
                       onClick={() => {
-                        setScore(sub.score ?? 0);
-                        setFb(sub.feedback ?? "");
+                        onGrade(previewAfterPenalty, fb);
+                        setScore(previewAfterPenalty);
                         setEditing(false);
                       }}
                     >
-                      {tr("ยกเลิก")}
+                      {tr("บันทึก")}
                     </Button>
-                  )}
+                    {isGraded && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setScore(sub.score ?? 0);
+                          setFb(sub.feedback ?? "");
+                          setEditing(false);
+                        }}
+                      >
+                        {tr("ยกเลิก")}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
