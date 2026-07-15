@@ -2357,6 +2357,7 @@ function SubmissionsList({
               sub={s}
               classroomId={classroomId}
               maxScore={maxScore}
+              latePenaltyPercent={latePenaltyPercent}
               onGrade={(score, feedback) =>
                 grade.mutate({ id: s.id, score, feedback, userId: s.user_id })
               }
