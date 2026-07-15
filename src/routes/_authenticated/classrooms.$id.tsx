@@ -2282,11 +2282,13 @@ function SubmissionsList({
   classroomId,
   maxScore,
   xpReward,
+  latePenaltyPercent,
 }: {
   assignmentId: string;
   classroomId: string;
   maxScore: number;
   xpReward: number;
+  latePenaltyPercent: number;
 }) {
   const qc = useQueryClient();
   const { data: subs } = useQuery({
