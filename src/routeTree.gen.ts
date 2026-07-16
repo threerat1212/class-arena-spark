@@ -41,6 +41,7 @@ import { Route as AuthenticatedAdminTeachersRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminStudentsRouteImport } from './routes/_authenticated/admin/students'
 import { Route as AuthenticatedAdminRoomsRouteImport } from './routes/_authenticated/admin/rooms'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
@@ -213,6 +214,11 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -234,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/quests': typeof AuthenticatedQuestsRoute
   '/rewards': typeof AuthenticatedRewardsRoute
   '/weekly-missions': typeof AuthenticatedWeeklyMissionsRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/admin/students': typeof AuthenticatedAdminStudentsRoute
@@ -266,6 +273,7 @@ export interface FileRoutesByTo {
   '/quests': typeof AuthenticatedQuestsRoute
   '/rewards': typeof AuthenticatedRewardsRoute
   '/weekly-missions': typeof AuthenticatedWeeklyMissionsRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/admin/students': typeof AuthenticatedAdminStudentsRoute
@@ -301,6 +309,7 @@ export interface FileRoutesById {
   '/_authenticated/quests': typeof AuthenticatedQuestsRoute
   '/_authenticated/rewards': typeof AuthenticatedRewardsRoute
   '/_authenticated/weekly-missions': typeof AuthenticatedWeeklyMissionsRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/_authenticated/admin/students': typeof AuthenticatedAdminStudentsRoute
@@ -336,6 +345,7 @@ export interface FileRouteTypes {
     | '/quests'
     | '/rewards'
     | '/weekly-missions'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/admin/rooms'
     | '/admin/students'
@@ -368,6 +378,7 @@ export interface FileRouteTypes {
     | '/quests'
     | '/rewards'
     | '/weekly-missions'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/admin/rooms'
     | '/admin/students'
@@ -402,6 +413,7 @@ export interface FileRouteTypes {
     | '/_authenticated/quests'
     | '/_authenticated/rewards'
     | '/_authenticated/weekly-missions'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/admin/rooms'
     | '/_authenticated/admin/students'
@@ -425,6 +437,7 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
@@ -654,6 +667,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -735,6 +755,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport
