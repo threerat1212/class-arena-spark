@@ -164,8 +164,8 @@ export async function rpcSubmitExamAnswer(args: {
 }): Promise<{ is_correct: boolean | null; score_awarded: number | null }> {
   const { data, error } = await supabase.rpc("submit_exam_answer", {
     _question_id: args.question_id,
-    _answer_idx: args.answer_idx ?? null,
-    _answer_text: args.answer_text ?? null,
+    _answer_idx: (args.answer_idx ?? null) as number,
+    _answer_text: (args.answer_text ?? null) as string,
   });
   if (error) throw error;
   const row = Array.isArray(data) ? data[0] : data;
