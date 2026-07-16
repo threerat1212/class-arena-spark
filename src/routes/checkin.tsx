@@ -46,7 +46,7 @@ function CheckInPage() {
         p_code: code.trim().toUpperCase(),
       });
       if (error) throw error;
-      const row = (Array.isArray(data) ? data[0] : data) as CheckInResult | undefined;
+      const row = (Array.isArray(data) ? data[0] : data) as (CheckInResult & { xp_gained?: number }) | undefined;
       const status = row?.status;
       const xp = row?.xp_gained ?? 0;
       // gold ยังไม่ได้ให้จริงในระบบ (legacy phantom) — แสดงเฉพาะตอนได้ XP ใหม่ > 0
