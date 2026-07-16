@@ -65,9 +65,9 @@ export function useExamProctoring({
     if (!enabled) return;
 
     const onVisibility = () => {
-      if (document.hidden) recordViolation("tab_blur");
+      if (document.hidden) recordViolation("visibility_change");
     };
-    const onBlur = () => recordViolation("window_blur");
+    const onBlur = () => recordViolation("blur");
     const onFsChange = () => {
       const active = !!document.fullscreenElement;
       setIsFullscreenActive(active);
@@ -75,11 +75,11 @@ export function useExamProctoring({
     };
     const onCopy = (e: ClipboardEvent) => {
       e.preventDefault();
-      recordViolation("copy_attempt");
+      recordViolation("copy_paste");
     };
     const onPaste = (e: ClipboardEvent) => {
       e.preventDefault();
-      recordViolation("paste_attempt");
+      recordViolation("copy_paste");
     };
     const onContext = (e: MouseEvent) => e.preventDefault();
 
