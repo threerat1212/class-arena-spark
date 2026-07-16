@@ -2107,6 +2107,69 @@ export type Database = {
           },
         ]
       }
+      xp_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          classroom_id: string | null
+          created_at: string
+          id: string
+          idempotency_key: string | null
+          metadata: Json
+          ref_id: string | null
+          ref_table: string | null
+          source: Database["public"]["Enums"]["app_xp_source"]
+          source_label: string
+          subject: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          classroom_id?: string | null
+          created_at?: string
+          id?: string
+          idempotency_key?: string | null
+          metadata?: Json
+          ref_id?: string | null
+          ref_table?: string | null
+          source: Database["public"]["Enums"]["app_xp_source"]
+          source_label: string
+          subject?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          classroom_id?: string | null
+          created_at?: string
+          id?: string
+          idempotency_key?: string | null
+          metadata?: Json
+          ref_id?: string | null
+          ref_table?: string | null
+          source?: Database["public"]["Enums"]["app_xp_source"]
+          source_label?: string
+          subject?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "xp_transactions_classroom_id_fkey"
+            columns: ["classroom_id"]
+            isOneToOne: false
+            referencedRelation: "classrooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "xp_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       attendance_sessions_safe: {
@@ -2261,6 +2324,26 @@ export type Database = {
         }
         Returns: Json
       }
+      award_xp: {
+        Args: {
+          _user_id: string
+          _amount: number
+          _source: Database["public"]["Enums"]["app_xp_source"]
+          _source_label: string
+          _subject?: string | null
+          _ref_table?: string | null
+          _ref_id?: string | null
+          _classroom_id?: string | null
+          _metadata?: Json
+          _idempotency_key?: string | null
+        }
+        Returns: {
+          transaction_id: string
+          new_xp: number
+          new_level: number
+          leveled_up: boolean
+        }[]
+      }
       check_and_award_achievements: {
         Args: { _user_id: string }
         Returns: undefined
@@ -2268,6 +2351,13 @@ export type Database = {
       check_birthday_visit: { Args: never; Returns: Json }
       claim_achievement: { Args: { _achievement_id: string }; Returns: Json }
       claim_daily_bonus: { Args: never; Returns: Json }
+      close_weekly_mission: {
+        Args: { _mission_id: string }
+        Returns: {
+          user_id: string
+          xp_awarded: number
+        }[]
+      }
       complete_quest: { Args: { _quest_id: string }; Returns: Json }
       finalize_my_quest_progress: { Args: { _quest_id: string }; Returns: Json }
       finalize_quest_from_progress: {
@@ -2347,6 +2437,7 @@ export type Database = {
         Returns: {
           out_session_id: string
           status: string
+          xp_gained: number
         }[]
       }
       set_active_title: { Args: { _title_id: string }; Returns: undefined }
@@ -2359,6 +2450,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "teacher" | "student" | "guest" | "room_admin"
+      app_xp_source:
+        | "daily_quest"
+        | "attendance"
+        | "weekly_mission"
+        | "daily_bonus"
+        | "achievement"
+        | "shop_purchase"
+        | "admin_adjustment"
       attendance_status: "present" | "late" | "absent" | "excused"
       booking_status: "pending" | "approved" | "rejected" | "cancelled"
     }
@@ -2489,6 +2588,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "teacher", "student", "guest", "room_admin"],
+      app_xp_source: [
+        "daily_quest",
+        "attendance",
+        "weekly_mission",
+        "daily_bonus",
+        "achievement",
+        "shop_purchase",
+        "admin_adjustment",
+      ],
       attendance_status: ["present", "late", "absent", "excused"],
       booking_status: ["pending", "approved", "rejected", "cancelled"],
     },

@@ -167,6 +167,8 @@ function AchievementsTab({ profile, userId }: { profile?: ProfileRow | null; use
         `🏆 ${r?.name ?? tr("Achievement")} +${r?.xp_bonus ?? 0} XP, +${r?.gold_bonus ?? 0} ทอง${r?.title_granted ? ` · ได้ฉายา!` : ""}`,
       );
       qc.invalidateQueries({ queryKey: ["my-achievements"] });
+      qc.invalidateQueries({ queryKey: ["xp-transactions"] });
+      qc.invalidateQueries({ queryKey: ["xp-summary"] });
       qc.invalidateQueries({ queryKey: ["profile"] });
       qc.invalidateQueries({ queryKey: ["my-titles"] });
     } catch (e: unknown) {

@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ function getErrorMessage(error: unknown) {
 
 function CheckInPage() {
   const nav = useNavigate();
+  const qc = useQueryClient();
   const { code: initial } = Route.useSearch();
   const [code, setCode] = useState(initial);
   const [loading, setLoading] = useState(false);
@@ -46,12 +48,19 @@ function CheckInPage() {
       if (error) throw error;
       const row = (Array.isArray(data) ? data[0] : data) as CheckInResult | undefined;
       const status = row?.status;
-      const xp = status === "late" ? 5 : 15;
-      const gold = status === "late" ? 2 : 5;
+      const xp = row?.xp_gained ?? 0;
+      // gold ยังไม่ได้ให้จริงในระบบ (legacy phantom) — แสดงเฉพาะตอนได้ XP ใหม่ > 0
+      const gold = xp > 0 ? (status === "late" ? 2 : 5) : 0;
+      const xpSign = xp > 0 ? "+" : "";
+      const xpText = xp === 0 ? "" : ` ${xpSign}${xp} XP,`;
+      const goldText = gold > 0 ? ` +${gold} ${tr("ทอง")}` : "";
       toast.success(
         (status === "late" ? tr("เช็กชื่อสำเร็จ (สาย)") : tr("เช็กชื่อสำเร็จ ✅")) +
-          ` +${xp} XP, +${gold} ${tr("ทอง")}`,
+          `${xpText}${goldText}`,
       );
+      qc.invalidateQueries({ queryKey: ["xp-transactions"] });
+      qc.invalidateQueries({ queryKey: ["xp-summary"] });
+      qc.invalidateQueries({ queryKey: ["profile"] });
       setTimeout(() => nav({ to: "/dashboard" }), 1500);
     } catch (e: unknown) {
       toast.error(getErrorMessage(e));

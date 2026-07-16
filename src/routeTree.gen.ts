@@ -25,6 +25,7 @@ import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedBonusCenterRouteImport } from './routes/_authenticated/bonus-center'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedAiChatRouteImport } from './routes/_authenticated/ai-chat'
+import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticated/activity'
 import { Route as AuthenticatedFlashcardsIndexRouteImport } from './routes/_authenticated/flashcards.index'
 import { Route as AuthenticatedClassroomsIndexRouteImport } from './routes/_authenticated/classrooms.index'
 import { Route as AuthenticatedQuizNewRouteImport } from './routes/_authenticated/quiz.new'
@@ -118,6 +119,11 @@ const AuthenticatedAiChatRoute = AuthenticatedAiChatRouteImport.update({
   path: '/ai-chat',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedActivityRoute = AuthenticatedActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedFlashcardsIndexRoute =
   AuthenticatedFlashcardsIndexRouteImport.update({
     id: '/flashcards/',
@@ -186,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/book': typeof BookRoute
   '/checkin': typeof CheckinRoute
   '/login': typeof LoginRoute
+  '/activity': typeof AuthenticatedActivityRoute
   '/ai-chat': typeof AuthenticatedAiChatRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/bonus-center': typeof AuthenticatedBonusCenterRoute
@@ -214,6 +221,7 @@ export interface FileRoutesByTo {
   '/book': typeof BookRoute
   '/checkin': typeof CheckinRoute
   '/login': typeof LoginRoute
+  '/activity': typeof AuthenticatedActivityRoute
   '/ai-chat': typeof AuthenticatedAiChatRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/bonus-center': typeof AuthenticatedBonusCenterRoute
@@ -243,6 +251,7 @@ export interface FileRoutesById {
   '/book': typeof BookRoute
   '/checkin': typeof CheckinRoute
   '/login': typeof LoginRoute
+  '/_authenticated/activity': typeof AuthenticatedActivityRoute
   '/_authenticated/ai-chat': typeof AuthenticatedAiChatRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/bonus-center': typeof AuthenticatedBonusCenterRoute
@@ -273,6 +282,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/checkin'
     | '/login'
+    | '/activity'
     | '/ai-chat'
     | '/analytics'
     | '/bonus-center'
@@ -301,6 +311,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/checkin'
     | '/login'
+    | '/activity'
     | '/ai-chat'
     | '/analytics'
     | '/bonus-center'
@@ -329,6 +340,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/checkin'
     | '/login'
+    | '/_authenticated/activity'
     | '/_authenticated/ai-chat'
     | '/_authenticated/analytics'
     | '/_authenticated/bonus-center'
@@ -475,6 +487,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAiChatRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/activity': {
+      id: '/_authenticated/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof AuthenticatedActivityRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/flashcards/': {
       id: '/_authenticated/flashcards/'
       path: '/flashcards'
@@ -572,6 +591,7 @@ const AuthenticatedClassroomsRouteWithChildren =
   )
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedActivityRoute: typeof AuthenticatedActivityRoute
   AuthenticatedAiChatRoute: typeof AuthenticatedAiChatRoute
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedBonusCenterRoute: typeof AuthenticatedBonusCenterRoute
@@ -595,6 +615,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedActivityRoute: AuthenticatedActivityRoute,
   AuthenticatedAiChatRoute: AuthenticatedAiChatRoute,
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedBonusCenterRoute: AuthenticatedBonusCenterRoute,
@@ -631,3 +652,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

@@ -715,23 +715,53 @@ function WeeklyMissionsPage() {
   const updateStatusMutation = useMutation({
     mutationFn: async (status: MissionStatus) => {
       if (!activeMission) throw new Error(tr("ยังไม่มี draft mission"));
+      if (status === "closed") {
+        // Use the close_weekly_mission RPC so XP is batch-awarded to every
+        // student with progress. The RPC also sets status='closed' and
+        // closed_at=now() atomically, so a separate table update is not needed.
+        const { data, error } = await supabase.rpc("close_weekly_mission", {
+          _mission_id: activeMission.id,
+        });
+        if (error) throw error;
+        return {
+          status,
+          results: (data ?? []) as { user_id: string; xp_awarded: number }[],
+        };
+      }
+      // status is narrowed to "draft" | "published" here; closed_at is unchanged
+      // because closing is handled above via the close_weekly_mission RPC.
       const { error } = await supabase
         .from("weekly_missions")
         .update({
           status,
           published_at:
             status === "published" ? new Date().toISOString() : activeMission.published_at,
-          closed_at: status === "closed" ? new Date().toISOString() : activeMission.closed_at,
+          closed_at: activeMission.closed_at,
         })
         .eq("id", activeMission.id);
       if (error) throw error;
-      return status;
+      return { status, results: null };
     },
-    onSuccess: async (status) => {
-      toast.success(
-        status === "published" ? tr("เผยแพร่ภารกิจสัปดาห์แล้ว") : tr("ปิดรอบภารกิจสัปดาห์แล้ว"),
-      );
+    onSuccess: async ({ status, results }) => {
+      if (status === "closed" && results) {
+        const totalUsers = results.length;
+        const totalXp = results.reduce((sum, r) => sum + (r.xp_awarded ?? 0), 0);
+        toast.success(
+          `${tr("ปิดรอบภารกิจสัปดาห์แล้ว")} — ${tr("มอบ")} ${totalXp} XP ${tr("ให้")} ${totalUsers} ${tr("คน")}`,
+        );
+      } else {
+        toast.success(
+          status === "published" ? tr("เผยแพร่ภารกิจสัปดาห์แล้ว") : tr("ปิดรอบภารกิจสัปดาห์แล้ว"),
+        );
+      }
       await queryClient.invalidateQueries({ queryKey: ["weekly-campaign"] });
+      await queryClient.invalidateQueries({ queryKey: ["weekly-mission-progress"] });
+      if (status === "closed") {
+        // XP balances changed — refresh everywhere XP is shown.
+        await queryClient.invalidateQueries({ queryKey: ["xp-transactions"] });
+        await queryClient.invalidateQueries({ queryKey: ["xp-summary"] });
+        await queryClient.invalidateQueries({ queryKey: ["profile"] });
+      }
     },
     onError: (error) => {
       toast.error(getSchemaAwareError(error));

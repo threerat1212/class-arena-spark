@@ -364,6 +364,8 @@ export function StudentQuestQuestions({
           .eq("quest_id", questId);
         qc.invalidateQueries({ queryKey: ["my-attempts"] });
         qc.invalidateQueries({ queryKey: ["my-dq-attempts"] });
+        qc.invalidateQueries({ queryKey: ["xp-transactions"] });
+        qc.invalidateQueries({ queryKey: ["xp-summary"] });
         qc.invalidateQueries({ queryKey: ["profile"] });
         onDone?.();
       }
@@ -407,6 +409,8 @@ export function StudentQuestQuestions({
       );
       qc.invalidateQueries({ queryKey: ["my-attempts"] });
       qc.invalidateQueries({ queryKey: ["my-dq-attempts"] });
+      qc.invalidateQueries({ queryKey: ["xp-transactions"] });
+      qc.invalidateQueries({ queryKey: ["xp-summary"] });
       qc.invalidateQueries({ queryKey: ["profile"] });
       qc.invalidateQueries({ queryKey: ["dq-progress", questId, user?.id] });
       onDone?.();
@@ -754,6 +758,8 @@ export function QuestCard({
       );
       qc.invalidateQueries({ queryKey: ["my-attempts"] });
       qc.invalidateQueries({ queryKey: ["my-dq-attempts"] });
+      qc.invalidateQueries({ queryKey: ["xp-transactions"] });
+      qc.invalidateQueries({ queryKey: ["xp-summary"] });
       qc.invalidateQueries({ queryKey: ["profile"] });
       onDone?.();
     } catch (e: unknown) {

@@ -2912,6 +2912,8 @@ function AttendanceSession({
       toast.success(`${tr("เช็กชื่อสำเร็จ")} ✓ +${xp} XP, +${gold} ${tr("ทอง")}`);
       setCode("");
       qc.invalidateQueries({ queryKey: ["att-records", sessionId] });
+      qc.invalidateQueries({ queryKey: ["xp-transactions"] });
+      qc.invalidateQueries({ queryKey: ["xp-summary"] });
       qc.invalidateQueries({ queryKey: ["profile", userId] });
       qc.invalidateQueries({ queryKey: ["my-attendance-history", userId] });
     },

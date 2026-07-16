@@ -29,6 +29,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { DailyBonusCard } from "@/components/daily-bonus-card";
 import { GamificationStatusPanel } from "@/components/gamification-status-panel";
+import { RecentActivityCard } from "@/components/recent-activity-card";
 import { ClassroomHallOfFame, GradeLeaderboard } from "@/components/showcase-sections";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -191,6 +192,8 @@ function StudentDashboard({ userId, profile }: { userId: string; profile?: Profi
         badgeCount={badgeCount ?? 0}
         achievementCount={achievementCount ?? 0}
       />
+
+      <RecentActivityCard />
 
       <AttendanceHistoryCard userId={userId} />
 

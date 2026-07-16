@@ -16,6 +16,7 @@ import {
   Layers,
   UserCheck,
   UserPlus,
+  ScrollText,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -46,6 +47,7 @@ const groups: Group[] = [
       { label: "คะแนนพิเศษ", url: "/bonus-center", icon: Trophy, roles: ["student", "teacher", "admin", "guest"] },
       { label: "ห้องเรียน", url: "/classrooms", icon: BookOpen, roles: ["student", "teacher", "admin", "guest"] },
       { label: "บัตรคำศัพท์", url: "/flashcards", icon: Layers, roles: ["student", "teacher", "admin", "guest"] },
+      { label: "บันทึกกิจกรรม", url: "/activity", icon: ScrollText, roles: ["student", "teacher", "admin"] },
       { label: "โปรไฟล์", url: "/profile", icon: UserCircle, roles: ["student", "teacher", "admin", "guest", "room_admin"] },
     ],
   },
