@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -59,13 +59,27 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [busy, setBusy] = useState(false);
-  const navigate = useNavigate();
+  
   const redirectDestination = getRedirectDestination(redirect);
 
   function finishAuth() {
-    type NavigateTo = NonNullable<Parameters<typeof navigate>[0]["to"]>;
-    navigate({ to: redirectDestination as NavigateTo, replace: true });
+    // Use window.location so paths outside the router's typed route tree
+    // (e.g. the OAuth consent URL `/.lovable/oauth/consent?...`) navigate correctly.
+    window.location.href = redirectDestination;
   }
+
+  // If we came back from Google OAuth full-page redirect with a session
+  // already set, forward to the intended destination automatically.
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!cancelled && data.session) finishAuth();
+    });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -97,7 +111,7 @@ function LoginPage() {
             email,
             password,
             options: {
-              emailRedirectTo: window.location.origin,
+              emailRedirectTo: `${window.location.origin}/login?redirect=${encodeURIComponent(redirectDestination)}`,
               data: { display_name: nameFallback, role: "teacher" },
             },
           });
@@ -126,7 +140,7 @@ function LoginPage() {
   async function handleGoogle() {
     setBusy(true);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: `${window.location.origin}/login?redirect=${encodeURIComponent(redirectDestination)}`,
     });
     if (result.error) {
       toast.error(result.error.message ?? tr("Google sign-in ไม่สำเร็จ"));
