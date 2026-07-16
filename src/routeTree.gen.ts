@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CheckinRouteImport } from './routes/checkin'
 import { Route as BookRouteImport } from './routes/book'
@@ -26,6 +27,8 @@ import { Route as AuthenticatedBonusCenterRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedAiChatRouteImport } from './routes/_authenticated/ai-chat'
 import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticated/activity'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AuthenticatedFlashcardsIndexRouteImport } from './routes/_authenticated/flashcards.index'
 import { Route as AuthenticatedClassroomsIndexRouteImport } from './routes/_authenticated/classrooms.index'
 import { Route as AuthenticatedQuizNewRouteImport } from './routes/_authenticated/quiz.new'
@@ -37,7 +40,13 @@ import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminTeachersRouteImport } from './routes/_authenticated/admin/teachers'
 import { Route as AuthenticatedAdminStudentsRouteImport } from './routes/_authenticated/admin/students'
 import { Route as AuthenticatedAdminRoomsRouteImport } from './routes/_authenticated/admin/rooms'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -124,6 +133,18 @@ const AuthenticatedActivityRoute = AuthenticatedActivityRouteImport.update({
   path: '/activity',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedFlashcardsIndexRoute =
   AuthenticatedFlashcardsIndexRouteImport.update({
     id: '/flashcards/',
@@ -186,12 +207,21 @@ const AuthenticatedAdminRoomsRoute = AuthenticatedAdminRoomsRouteImport.update({
   path: '/admin/rooms',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/book': typeof BookRoute
   '/checkin': typeof CheckinRoute
   '/login': typeof LoginRoute
+  '/mcp': typeof McpRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/activity': typeof AuthenticatedActivityRoute
   '/ai-chat': typeof AuthenticatedAiChatRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
@@ -204,6 +234,7 @@ export interface FileRoutesByFullPath {
   '/quests': typeof AuthenticatedQuestsRoute
   '/rewards': typeof AuthenticatedRewardsRoute
   '/weekly-missions': typeof AuthenticatedWeeklyMissionsRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/admin/teachers': typeof AuthenticatedAdminTeachersRoute
@@ -221,6 +252,9 @@ export interface FileRoutesByTo {
   '/book': typeof BookRoute
   '/checkin': typeof CheckinRoute
   '/login': typeof LoginRoute
+  '/mcp': typeof McpRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/activity': typeof AuthenticatedActivityRoute
   '/ai-chat': typeof AuthenticatedAiChatRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
@@ -232,6 +266,7 @@ export interface FileRoutesByTo {
   '/quests': typeof AuthenticatedQuestsRoute
   '/rewards': typeof AuthenticatedRewardsRoute
   '/weekly-missions': typeof AuthenticatedWeeklyMissionsRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/admin/teachers': typeof AuthenticatedAdminTeachersRoute
@@ -251,6 +286,9 @@ export interface FileRoutesById {
   '/book': typeof BookRoute
   '/checkin': typeof CheckinRoute
   '/login': typeof LoginRoute
+  '/mcp': typeof McpRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/activity': typeof AuthenticatedActivityRoute
   '/_authenticated/ai-chat': typeof AuthenticatedAiChatRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
@@ -263,6 +301,7 @@ export interface FileRoutesById {
   '/_authenticated/quests': typeof AuthenticatedQuestsRoute
   '/_authenticated/rewards': typeof AuthenticatedRewardsRoute
   '/_authenticated/weekly-missions': typeof AuthenticatedWeeklyMissionsRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/_authenticated/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/_authenticated/admin/teachers': typeof AuthenticatedAdminTeachersRoute
@@ -282,6 +321,9 @@ export interface FileRouteTypes {
     | '/book'
     | '/checkin'
     | '/login'
+    | '/mcp'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/activity'
     | '/ai-chat'
     | '/analytics'
@@ -294,6 +336,7 @@ export interface FileRouteTypes {
     | '/quests'
     | '/rewards'
     | '/weekly-missions'
+    | '/.mcp/invoke-tool/$tool'
     | '/admin/rooms'
     | '/admin/students'
     | '/admin/teachers'
@@ -311,6 +354,9 @@ export interface FileRouteTypes {
     | '/book'
     | '/checkin'
     | '/login'
+    | '/mcp'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/activity'
     | '/ai-chat'
     | '/analytics'
@@ -322,6 +368,7 @@ export interface FileRouteTypes {
     | '/quests'
     | '/rewards'
     | '/weekly-missions'
+    | '/.mcp/invoke-tool/$tool'
     | '/admin/rooms'
     | '/admin/students'
     | '/admin/teachers'
@@ -340,6 +387,9 @@ export interface FileRouteTypes {
     | '/book'
     | '/checkin'
     | '/login'
+    | '/mcp'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/_authenticated/activity'
     | '/_authenticated/ai-chat'
     | '/_authenticated/analytics'
@@ -352,6 +402,7 @@ export interface FileRouteTypes {
     | '/_authenticated/quests'
     | '/_authenticated/rewards'
     | '/_authenticated/weekly-missions'
+    | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/admin/rooms'
     | '/_authenticated/admin/students'
     | '/_authenticated/admin/teachers'
@@ -371,10 +422,21 @@ export interface RootRouteChildren {
   BookRoute: typeof BookRoute
   CheckinRoute: typeof CheckinRoute
   LoginRoute: typeof LoginRoute
+  McpRoute: typeof McpRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -494,6 +556,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedActivityRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/flashcards/': {
       id: '/_authenticated/flashcards/'
       path: '/flashcards'
@@ -570,6 +646,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/rooms'
       preLoaderRoute: typeof AuthenticatedAdminRoomsRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -648,6 +731,11 @@ const rootRouteChildren: RootRouteChildren = {
   BookRoute: BookRoute,
   CheckinRoute: CheckinRoute,
   LoginRoute: LoginRoute,
+  McpRoute: McpRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
