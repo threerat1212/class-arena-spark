@@ -25,9 +25,9 @@ export default defineTool({
     const supabase = supabaseForUser(ctx);
     const { data, error } = await supabase
       .from("assignments")
-      .select("id, title, description, due_at, points")
+      .select("id, title, description, due_date, max_score, xp_reward, status")
       .eq("classroom_id", classroom_id)
-      .order("due_at", { ascending: true, nullsFirst: false });
+      .order("due_date", { ascending: true, nullsFirst: false });
     if (error) {
       return { content: [{ type: "text", text: error.message }], isError: true };
     }

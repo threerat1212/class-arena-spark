@@ -1,6 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
 import { defineTool, type ToolContext } from "@lovable.dev/mcp-js";
-import { z } from "zod";
 
 function supabaseForUser(ctx: ToolContext) {
   return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
@@ -23,7 +22,7 @@ export default defineTool({
     const supabase = supabaseForUser(ctx);
     const { data, error } = await supabase
       .from("classrooms")
-      .select("id, name, subject, grade")
+      .select("id, name, subject, grade_level, join_code")
       .order("name");
     if (error) {
       return { content: [{ type: "text", text: error.message }], isError: true };
