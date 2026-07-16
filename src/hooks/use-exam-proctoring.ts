@@ -1,0 +1,122 @@
+import { useEffect, useRef, useState, useCallback } from "react";
+import { rpcRecordViolation } from "@/lib/exam.functions";
+import type { ViolationEventType } from "@/lib/exam.functions";
+import { toast } from "sonner";
+import { tr } from "@/i18n";
+
+interface UseExamProctoringArgs {
+  examId: string;
+  enabled: boolean;
+  threshold: number;
+  onAutoSubmit: (reason: string) => void;
+}
+
+interface UseExamProctoringReturn {
+  violationCount: number;
+  isFullscreenActive: boolean;
+  requestFullscreen: () => Promise<void>;
+  exitFullscreen: () => Promise<void>;
+}
+
+export function useExamProctoring({
+  examId,
+  enabled,
+  threshold,
+  onAutoSubmit,
+}: UseExamProctoringArgs): UseExamProctoringReturn {
+  const [violationCount, setViolationCount] = useState(0);
+  const [isFullscreenActive, setIsFullscreenActive] = useState(false);
+  const lastEventRef = useRef<Record<string, number>>({});
+  const onAutoSubmitRef = useRef(onAutoSubmit);
+  onAutoSubmitRef.current = onAutoSubmit;
+
+  const recordViolation = useCallback(
+    async (eventType: ViolationEventType) => {
+      // debounce: skip if same event type fired within 500ms
+      const now = Date.now();
+      const last = lastEventRef.current[eventType] ?? 0;
+      if (now - last < 500) return;
+      lastEventRef.current[eventType] = now;
+
+      try {
+        const result = await rpcRecordViolation({ exam_id: examId, event_type: eventType });
+        setViolationCount(result.violation_count);
+        if (result.violation_count < threshold) {
+          toast.warning(
+            tr("⚠ ออกจากหน้าสอบ ") +
+              `${result.violation_count}/${threshold}` +
+              tr(" ครั้ง — ครบ ") +
+              `${threshold}` +
+              tr(" ครั้งจะส่งอัตโนมัติ"),
+          );
+        }
+        if (result.auto_submitted) {
+          onAutoSubmitRef.current("violation_threshold");
+        }
+      } catch (err) {
+        // network/permission error — don't block exam, just log
+        console.error("Failed to record violation:", err);
+      }
+    },
+    [examId, threshold],
+  );
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    const onVisibility = () => {
+      if (document.hidden) recordViolation("tab_blur");
+    };
+    const onBlur = () => recordViolation("window_blur");
+    const onFsChange = () => {
+      const active = !!document.fullscreenElement;
+      setIsFullscreenActive(active);
+      if (!active) recordViolation("fullscreen_exit");
+    };
+    const onCopy = (e: ClipboardEvent) => {
+      e.preventDefault();
+      recordViolation("copy_attempt");
+    };
+    const onPaste = (e: ClipboardEvent) => {
+      e.preventDefault();
+      recordViolation("paste_attempt");
+    };
+    const onContext = (e: MouseEvent) => e.preventDefault();
+
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("blur", onBlur);
+    document.addEventListener("fullscreenchange", onFsChange);
+    document.addEventListener("copy", onCopy);
+    document.addEventListener("paste", onPaste);
+    document.addEventListener("contextmenu", onContext);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("blur", onBlur);
+      document.removeEventListener("fullscreenchange", onFsChange);
+      document.removeEventListener("copy", onCopy);
+      document.removeEventListener("paste", onPaste);
+      document.removeEventListener("contextmenu", onContext);
+    };
+  }, [enabled, recordViolation]);
+
+  const requestFullscreen = useCallback(async () => {
+    try {
+      await document.documentElement.requestFullscreen();
+      setIsFullscreenActive(true);
+    } catch {
+      toast.error(tr("ไม่สามารถเข้าโหมดเต็มจอได้ — กรุณาอนุญาตในเบราว์เซอร์"));
+    }
+  }, []);
+
+  const exitFullscreen = useCallback(async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      setIsFullscreenActive(false);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  return { violationCount, isFullscreenActive, requestFullscreen, exitFullscreen };
+}

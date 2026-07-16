@@ -30,11 +30,15 @@ import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticat
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AuthenticatedFlashcardsIndexRouteImport } from './routes/_authenticated/flashcards.index'
+import { Route as AuthenticatedExamIndexRouteImport } from './routes/_authenticated/exam.index'
 import { Route as AuthenticatedClassroomsIndexRouteImport } from './routes/_authenticated/classrooms.index'
 import { Route as AuthenticatedQuizNewRouteImport } from './routes/_authenticated/quiz.new'
 import { Route as AuthenticatedQuizJoinRouteImport } from './routes/_authenticated/quiz.join'
 import { Route as AuthenticatedQuizSessionIdRouteImport } from './routes/_authenticated/quiz.$sessionId'
 import { Route as AuthenticatedFlashcardsDeckIdRouteImport } from './routes/_authenticated/flashcards.$deckId'
+import { Route as AuthenticatedExamNewRouteImport } from './routes/_authenticated/exam.new'
+import { Route as AuthenticatedExamJoinRouteImport } from './routes/_authenticated/exam.join'
+import { Route as AuthenticatedExamExamIdRouteImport } from './routes/_authenticated/exam.$examId'
 import { Route as AuthenticatedClassroomsIdRouteImport } from './routes/_authenticated/classrooms.$id'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminTeachersRouteImport } from './routes/_authenticated/admin/teachers'
@@ -42,6 +46,7 @@ import { Route as AuthenticatedAdminStudentsRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminRoomsRouteImport } from './routes/_authenticated/admin/rooms'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as AuthenticatedExamExamIdReportRouteImport } from './routes/_authenticated/exam.$examId.report'
 
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
@@ -152,6 +157,11 @@ const AuthenticatedFlashcardsIndexRoute =
     path: '/flashcards/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedExamIndexRoute = AuthenticatedExamIndexRouteImport.update({
+  id: '/exam/',
+  path: '/exam/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedClassroomsIndexRoute =
   AuthenticatedClassroomsIndexRouteImport.update({
     id: '/',
@@ -180,6 +190,21 @@ const AuthenticatedFlashcardsDeckIdRoute =
     path: '/flashcards/$deckId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedExamNewRoute = AuthenticatedExamNewRouteImport.update({
+  id: '/exam/new',
+  path: '/exam/new',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedExamJoinRoute = AuthenticatedExamJoinRouteImport.update({
+  id: '/exam/join',
+  path: '/exam/join',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedExamExamIdRoute = AuthenticatedExamExamIdRouteImport.update({
+  id: '/exam/$examId',
+  path: '/exam/$examId',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedClassroomsIdRoute =
   AuthenticatedClassroomsIdRouteImport.update({
     id: '/$id',
@@ -219,6 +244,12 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedExamExamIdReportRoute =
+  AuthenticatedExamExamIdReportRouteImport.update({
+    id: '/report',
+    path: '/report',
+    getParentRoute: () => AuthenticatedExamExamIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -247,12 +278,17 @@ export interface FileRoutesByFullPath {
   '/admin/teachers': typeof AuthenticatedAdminTeachersRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/classrooms/$id': typeof AuthenticatedClassroomsIdRoute
+  '/exam/$examId': typeof AuthenticatedExamExamIdRouteWithChildren
+  '/exam/join': typeof AuthenticatedExamJoinRoute
+  '/exam/new': typeof AuthenticatedExamNewRoute
   '/flashcards/$deckId': typeof AuthenticatedFlashcardsDeckIdRoute
   '/quiz/$sessionId': typeof AuthenticatedQuizSessionIdRoute
   '/quiz/join': typeof AuthenticatedQuizJoinRoute
   '/quiz/new': typeof AuthenticatedQuizNewRoute
   '/classrooms/': typeof AuthenticatedClassroomsIndexRoute
+  '/exam/': typeof AuthenticatedExamIndexRoute
   '/flashcards/': typeof AuthenticatedFlashcardsIndexRoute
+  '/exam/$examId/report': typeof AuthenticatedExamExamIdReportRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -280,12 +316,17 @@ export interface FileRoutesByTo {
   '/admin/teachers': typeof AuthenticatedAdminTeachersRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/classrooms/$id': typeof AuthenticatedClassroomsIdRoute
+  '/exam/$examId': typeof AuthenticatedExamExamIdRouteWithChildren
+  '/exam/join': typeof AuthenticatedExamJoinRoute
+  '/exam/new': typeof AuthenticatedExamNewRoute
   '/flashcards/$deckId': typeof AuthenticatedFlashcardsDeckIdRoute
   '/quiz/$sessionId': typeof AuthenticatedQuizSessionIdRoute
   '/quiz/join': typeof AuthenticatedQuizJoinRoute
   '/quiz/new': typeof AuthenticatedQuizNewRoute
   '/classrooms': typeof AuthenticatedClassroomsIndexRoute
+  '/exam': typeof AuthenticatedExamIndexRoute
   '/flashcards': typeof AuthenticatedFlashcardsIndexRoute
+  '/exam/$examId/report': typeof AuthenticatedExamExamIdReportRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -316,12 +357,17 @@ export interface FileRoutesById {
   '/_authenticated/admin/teachers': typeof AuthenticatedAdminTeachersRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/classrooms/$id': typeof AuthenticatedClassroomsIdRoute
+  '/_authenticated/exam/$examId': typeof AuthenticatedExamExamIdRouteWithChildren
+  '/_authenticated/exam/join': typeof AuthenticatedExamJoinRoute
+  '/_authenticated/exam/new': typeof AuthenticatedExamNewRoute
   '/_authenticated/flashcards/$deckId': typeof AuthenticatedFlashcardsDeckIdRoute
   '/_authenticated/quiz/$sessionId': typeof AuthenticatedQuizSessionIdRoute
   '/_authenticated/quiz/join': typeof AuthenticatedQuizJoinRoute
   '/_authenticated/quiz/new': typeof AuthenticatedQuizNewRoute
   '/_authenticated/classrooms/': typeof AuthenticatedClassroomsIndexRoute
+  '/_authenticated/exam/': typeof AuthenticatedExamIndexRoute
   '/_authenticated/flashcards/': typeof AuthenticatedFlashcardsIndexRoute
+  '/_authenticated/exam/$examId/report': typeof AuthenticatedExamExamIdReportRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -352,12 +398,17 @@ export interface FileRouteTypes {
     | '/admin/teachers'
     | '/admin/users'
     | '/classrooms/$id'
+    | '/exam/$examId'
+    | '/exam/join'
+    | '/exam/new'
     | '/flashcards/$deckId'
     | '/quiz/$sessionId'
     | '/quiz/join'
     | '/quiz/new'
     | '/classrooms/'
+    | '/exam/'
     | '/flashcards/'
+    | '/exam/$examId/report'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -385,12 +436,17 @@ export interface FileRouteTypes {
     | '/admin/teachers'
     | '/admin/users'
     | '/classrooms/$id'
+    | '/exam/$examId'
+    | '/exam/join'
+    | '/exam/new'
     | '/flashcards/$deckId'
     | '/quiz/$sessionId'
     | '/quiz/join'
     | '/quiz/new'
     | '/classrooms'
+    | '/exam'
     | '/flashcards'
+    | '/exam/$examId/report'
   id:
     | '__root__'
     | '/'
@@ -420,12 +476,17 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/teachers'
     | '/_authenticated/admin/users'
     | '/_authenticated/classrooms/$id'
+    | '/_authenticated/exam/$examId'
+    | '/_authenticated/exam/join'
+    | '/_authenticated/exam/new'
     | '/_authenticated/flashcards/$deckId'
     | '/_authenticated/quiz/$sessionId'
     | '/_authenticated/quiz/join'
     | '/_authenticated/quiz/new'
     | '/_authenticated/classrooms/'
+    | '/_authenticated/exam/'
     | '/_authenticated/flashcards/'
+    | '/_authenticated/exam/$examId/report'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -590,6 +651,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFlashcardsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/exam/': {
+      id: '/_authenticated/exam/'
+      path: '/exam'
+      fullPath: '/exam/'
+      preLoaderRoute: typeof AuthenticatedExamIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/classrooms/': {
       id: '/_authenticated/classrooms/'
       path: '/'
@@ -623,6 +691,27 @@ declare module '@tanstack/react-router' {
       path: '/flashcards/$deckId'
       fullPath: '/flashcards/$deckId'
       preLoaderRoute: typeof AuthenticatedFlashcardsDeckIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/exam/new': {
+      id: '/_authenticated/exam/new'
+      path: '/exam/new'
+      fullPath: '/exam/new'
+      preLoaderRoute: typeof AuthenticatedExamNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/exam/join': {
+      id: '/_authenticated/exam/join'
+      path: '/exam/join'
+      fullPath: '/exam/join'
+      preLoaderRoute: typeof AuthenticatedExamJoinRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/exam/$examId': {
+      id: '/_authenticated/exam/$examId'
+      path: '/exam/$examId'
+      fullPath: '/exam/$examId'
+      preLoaderRoute: typeof AuthenticatedExamExamIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/classrooms/$id': {
@@ -674,6 +763,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/exam/$examId/report': {
+      id: '/_authenticated/exam/$examId/report'
+      path: '/report'
+      fullPath: '/exam/$examId/report'
+      preLoaderRoute: typeof AuthenticatedExamExamIdReportRouteImport
+      parentRoute: typeof AuthenticatedExamExamIdRoute
+    }
   }
 }
 
@@ -693,6 +789,20 @@ const AuthenticatedClassroomsRouteWithChildren =
     AuthenticatedClassroomsRouteChildren,
   )
 
+interface AuthenticatedExamExamIdRouteChildren {
+  AuthenticatedExamExamIdReportRoute: typeof AuthenticatedExamExamIdReportRoute
+}
+
+const AuthenticatedExamExamIdRouteChildren: AuthenticatedExamExamIdRouteChildren =
+  {
+    AuthenticatedExamExamIdReportRoute: AuthenticatedExamExamIdReportRoute,
+  }
+
+const AuthenticatedExamExamIdRouteWithChildren =
+  AuthenticatedExamExamIdRoute._addFileChildren(
+    AuthenticatedExamExamIdRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedActivityRoute: typeof AuthenticatedActivityRoute
   AuthenticatedAiChatRoute: typeof AuthenticatedAiChatRoute
@@ -710,10 +820,14 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminStudentsRoute: typeof AuthenticatedAdminStudentsRoute
   AuthenticatedAdminTeachersRoute: typeof AuthenticatedAdminTeachersRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedExamExamIdRoute: typeof AuthenticatedExamExamIdRouteWithChildren
+  AuthenticatedExamJoinRoute: typeof AuthenticatedExamJoinRoute
+  AuthenticatedExamNewRoute: typeof AuthenticatedExamNewRoute
   AuthenticatedFlashcardsDeckIdRoute: typeof AuthenticatedFlashcardsDeckIdRoute
   AuthenticatedQuizSessionIdRoute: typeof AuthenticatedQuizSessionIdRoute
   AuthenticatedQuizJoinRoute: typeof AuthenticatedQuizJoinRoute
   AuthenticatedQuizNewRoute: typeof AuthenticatedQuizNewRoute
+  AuthenticatedExamIndexRoute: typeof AuthenticatedExamIndexRoute
   AuthenticatedFlashcardsIndexRoute: typeof AuthenticatedFlashcardsIndexRoute
 }
 
@@ -734,10 +848,14 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminStudentsRoute: AuthenticatedAdminStudentsRoute,
   AuthenticatedAdminTeachersRoute: AuthenticatedAdminTeachersRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+  AuthenticatedExamExamIdRoute: AuthenticatedExamExamIdRouteWithChildren,
+  AuthenticatedExamJoinRoute: AuthenticatedExamJoinRoute,
+  AuthenticatedExamNewRoute: AuthenticatedExamNewRoute,
   AuthenticatedFlashcardsDeckIdRoute: AuthenticatedFlashcardsDeckIdRoute,
   AuthenticatedQuizSessionIdRoute: AuthenticatedQuizSessionIdRoute,
   AuthenticatedQuizJoinRoute: AuthenticatedQuizJoinRoute,
   AuthenticatedQuizNewRoute: AuthenticatedQuizNewRoute,
+  AuthenticatedExamIndexRoute: AuthenticatedExamIndexRoute,
   AuthenticatedFlashcardsIndexRoute: AuthenticatedFlashcardsIndexRoute,
 }
 

@@ -9,6 +9,7 @@ import {
   Trophy,
   Coins,
   Gift,
+  FileText,
   type LucideIcon,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,6 +35,7 @@ const SOURCE_META: Record<XpSource, { icon: LucideIcon; label: string }> = {
   achievement: { icon: Trophy, label: tr("ความสำเร็จ") },
   shop_purchase: { icon: Coins, label: tr("ร้านค้า") },
   admin_adjustment: { icon: Zap, label: tr("ปรับปรุง") },
+  exam: { icon: FileText, label: tr("สอบ") },
 };
 
 const RANGE_OPTIONS: { value: TimeRange; label: string }[] = [

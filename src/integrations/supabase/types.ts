@@ -757,6 +757,206 @@ export type Database = {
         }
         Relationships: []
       }
+      exam_answers: {
+        Row: {
+          id: string
+          question_id: string
+          session_id: string
+          user_id: string
+          answer_idx: number | null
+          answer_text: string | null
+          is_correct: boolean | null
+          score_awarded: number | null
+          graded_by: "server" | "ai" | "teacher" | null
+          graded_at: string | null
+          answered_at: string
+        }
+        Insert: {
+          id?: string
+          question_id: string
+          session_id: string
+          user_id: string
+          answer_idx?: number | null
+          answer_text?: string | null
+          is_correct?: boolean | null
+          score_awarded?: number | null
+          graded_by?: "server" | "ai" | "teacher" | null
+          graded_at?: string | null
+          answered_at?: string
+        }
+        Update: Partial<Database["public"]["Tables"]["exam_answers"]["Insert"]>
+        Relationships: [
+          {
+            foreignKeyName: "exam_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "exam_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_participants: {
+        Row: {
+          id: string
+          session_id: string
+          user_id: string
+          started_at: string | null
+          submitted_at: string | null
+          total_score: number | null
+          violation_count: number
+          auto_submitted: boolean
+          auto_submit_reason: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          session_id: string
+          user_id: string
+          started_at?: string | null
+          submitted_at?: string | null
+          total_score?: number | null
+          violation_count?: number
+          auto_submitted?: boolean
+          auto_submit_reason?: string | null
+          created_at?: string
+        }
+        Update: Partial<Database["public"]["Tables"]["exam_participants"]["Insert"]>
+        Relationships: [
+          {
+            foreignKeyName: "exam_participants_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "exam_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_proctoring_events: {
+        Row: {
+          id: string
+          session_id: string
+          user_id: string
+          event_type:
+            | "tab_blur"
+            | "window_blur"
+            | "fullscreen_exit"
+            | "copy_attempt"
+            | "paste_attempt"
+          payload: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          session_id: string
+          user_id: string
+          event_type:
+            | "tab_blur"
+            | "window_blur"
+            | "fullscreen_exit"
+            | "copy_attempt"
+            | "paste_attempt"
+          payload?: Json
+          created_at?: string
+        }
+        Update: Partial<Database["public"]["Tables"]["exam_proctoring_events"]["Insert"]>
+        Relationships: [
+          {
+            foreignKeyName: "exam_proctoring_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "exam_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_questions: {
+        Row: {
+          id: string
+          session_id: string
+          idx: number
+          question_type: "multiple_choice" | "short_answer"
+          question: string
+          options: string[] | null
+          correct_idx: number | null
+          expected_answer: string | null
+          points: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          session_id: string
+          idx: number
+          question_type: "multiple_choice" | "short_answer"
+          question: string
+          options?: string[] | null
+          correct_idx?: number | null
+          expected_answer?: string | null
+          points?: number
+          created_at?: string
+        }
+        Update: Partial<Database["public"]["Tables"]["exam_questions"]["Insert"]>
+        Relationships: [
+          {
+            foreignKeyName: "exam_questions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "exam_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_sessions: {
+        Row: {
+          id: string
+          classroom_id: string
+          host_id: string
+          title: string
+          status: "draft" | "scheduled" | "active" | "closed"
+          join_code: string
+          starts_at: string | null
+          ends_at: string | null
+          duration_minutes: number
+          violation_threshold: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          classroom_id: string
+          host_id: string
+          title: string
+          status?: "draft" | "scheduled" | "active" | "closed"
+          join_code?: string
+          starts_at?: string | null
+          ends_at?: string | null
+          duration_minutes?: number
+          violation_threshold?: number
+          created_at?: string
+        }
+        Update: Partial<Database["public"]["Tables"]["exam_sessions"]["Insert"]>
+        Relationships: [
+          {
+            foreignKeyName: "exam_sessions_classroom_id_fkey"
+            columns: ["classroom_id"]
+            isOneToOne: false
+            referencedRelation: "classrooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_sessions_host_id_fkey"
+            columns: ["host_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       flashcard_decks: {
         Row: {
           classroom_id: string | null
@@ -2270,6 +2470,29 @@ export type Database = {
         }
         Relationships: []
       }
+      exam_questions_safe: {
+        Row: {
+          id: string | null
+          session_id: string | null
+          idx: number | null
+          question_type: "multiple_choice" | "short_answer" | null
+          question: string | null
+          options: string[] | null
+          correct_idx: number | null
+          expected_answer: string | null
+          points: number | null
+          created_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_questions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "exam_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leaderboard: {
         Row: {
           active_title: string | null
@@ -2344,6 +2567,10 @@ export type Database = {
           leveled_up: boolean
         }[]
       }
+      auto_submit_exam: {
+        Args: { _exam_id: string; _user_id: string; _reason: string }
+        Returns: undefined
+      }
       check_and_award_achievements: {
         Args: { _user_id: string }
         Returns: undefined
@@ -2351,6 +2578,13 @@ export type Database = {
       check_birthday_visit: { Args: never; Returns: Json }
       claim_achievement: { Args: { _achievement_id: string }; Returns: Json }
       claim_daily_bonus: { Args: never; Returns: Json }
+      close_exam: {
+        Args: { _exam_id: string }
+        Returns: {
+          user_id: string
+          auto_submitted: boolean
+        }[]
+      }
       close_weekly_mission: {
         Args: { _mission_id: string }
         Returns: {
@@ -2359,6 +2593,15 @@ export type Database = {
         }[]
       }
       complete_quest: { Args: { _quest_id: string }; Returns: Json }
+      create_exam: {
+        Args: {
+          _classroom_id: string
+          _title: string
+          _duration_minutes?: number
+          _violation_threshold?: number
+        }
+        Returns: string
+      }
       finalize_my_quest_progress: { Args: { _quest_id: string }; Returns: Json }
       finalize_quest_from_progress: {
         Args: { _quest_id: string; _user_id: string }
@@ -2370,6 +2613,16 @@ export type Database = {
         Returns: string
       }
       get_quest_for_grading: { Args: { _quest_id: string }; Returns: Json }
+      grade_short_answer: {
+        Args: {
+          _question_id: string
+          _user_id: string
+          _is_correct: boolean
+          _score: number
+          _graded_by: string
+        }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2410,6 +2663,13 @@ export type Database = {
         Returns: boolean
       }
       join_classroom_by_code: { Args: { _code: string }; Returns: string }
+      join_exam_by_code: {
+        Args: { _code: string }
+        Returns: {
+          exam_id: string
+          title: string
+        }[]
+      }
       join_quiz_by_code: { Args: { _code: string }; Returns: Json }
       next_quiz_question: { Args: { _session_id: string }; Returns: Json }
       open_attendance_check_in: {
@@ -2419,7 +2679,27 @@ export type Database = {
           expires_at: string
         }[]
       }
+      open_exam: { Args: { _exam_id: string }; Returns: undefined }
       purchase_shop_item: { Args: { _item_id: string }; Returns: Json }
+      publish_exam: {
+        Args: {
+          _exam_id: string
+          _starts_at: string
+          _ends_at: string
+        }
+        Returns: undefined
+      }
+      record_exam_violation: {
+        Args: {
+          _exam_id: string
+          _event_type: string
+          _payload?: Json
+        }
+        Returns: {
+          violation_count: number
+          auto_submitted: boolean
+        }[]
+      }
       reject_teacher_application: {
         Args: { _note?: string; _user_id: string }
         Returns: undefined
@@ -2441,11 +2721,42 @@ export type Database = {
         }[]
       }
       set_active_title: { Args: { _title_id: string }; Returns: undefined }
+      start_exam_attempt: {
+        Args: { _exam_id: string }
+        Returns: {
+          ends_at: string
+          violation_threshold: number
+          duration_minutes: number
+          started_at: string
+        }[]
+      }
       start_quiz_session: { Args: { _session_id: string }; Returns: undefined }
       strip_quest_answer_keys: { Args: { qs: Json }; Returns: Json }
+      submit_exam: {
+        Args: { _exam_id: string }
+        Returns: {
+          total_score: number
+          xp_awarded: number
+        }[]
+      }
+      submit_exam_answer: {
+        Args: {
+          _question_id: string
+          _answer_idx?: number | null
+          _answer_text?: string | null
+        }
+        Returns: {
+          is_correct: boolean | null
+          score_awarded: number | null
+        }[]
+      }
       submit_quiz_answer: {
         Args: { _answer_idx: number; _question_id: string }
         Returns: Json
+      }
+      update_exam_questions: {
+        Args: { _exam_id: string; _questions: Json }
+        Returns: undefined
       }
     }
     Enums: {
@@ -2458,6 +2769,7 @@ export type Database = {
         | "achievement"
         | "shop_purchase"
         | "admin_adjustment"
+        | "exam"
       attendance_status: "present" | "late" | "absent" | "excused"
       booking_status: "pending" | "approved" | "rejected" | "cancelled"
     }
@@ -2596,6 +2908,7 @@ export const Constants = {
         "achievement",
         "shop_purchase",
         "admin_adjustment",
+        "exam",
       ],
       attendance_status: ["present", "late", "absent", "excused"],
       booking_status: ["pending", "approved", "rejected", "cancelled"],
