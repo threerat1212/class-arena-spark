@@ -17,7 +17,6 @@ import {
   UserCheck,
   UserPlus,
   ScrollText,
-  FileText,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -58,7 +57,6 @@ const groups: Group[] = [
     items: [
       { label: "เควสต์", url: "/quests", icon: Sparkles, roles: ["student", "admin"] },
       { label: "เข้าร่วมควิซ", url: "/quiz/join", icon: Zap, roles: ["student", "admin"] },
-      { label: "เข้าสอบ", url: "/exam/join", icon: FileText, roles: ["student", "admin"] },
       { label: "รางวัล", url: "/rewards", icon: Trophy, roles: ["student", "admin"] },
       { label: "หอเกียรติยศ", url: "/hall-of-fame", icon: Crown, roles: ["student", "admin"] },
       { label: "AI ผู้ช่วย", url: "/ai-chat", icon: MessagesSquare, roles: ["student", "admin"] },
@@ -69,7 +67,6 @@ const groups: Group[] = [
     roles: ["teacher", "admin"],
     items: [
       { label: "การจองห้อง", url: "/bookings", icon: Calendar, roles: ["teacher", "admin"] },
-      { label: "การสอบ", url: "/exam", icon: FileText, roles: ["teacher", "admin"] },
       {
         label: "วิเคราะห์ห้องเรียน",
         url: "/analytics",

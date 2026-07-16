@@ -15,8 +15,10 @@ const supabasePublishableKey =
 
 // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
 // @cloudflare/vite-plugin builds from this — wrangler.jsonc main alone is insufficient.
+const plugins: any[] = [mcpPlugin()];
+
 export default defineConfig({
-  plugins: [process.env.SKIP_MCP_PLUGIN ? {} : mcpPlugin()].filter(Boolean),
+  plugins: process.env.SKIP_MCP_PLUGIN ? [] : plugins,
   tanstackStart: {
     server: { entry: "server" },
   },

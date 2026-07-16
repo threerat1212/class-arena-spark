@@ -60,6 +60,7 @@ import {
   FileText,
   Calendar,
   ClipboardList,
+  ClipboardCheck,
   Upload,
   ExternalLink,
   BookOpenCheck,
@@ -79,6 +80,7 @@ import {
 } from "lucide-react";
 import { AssignmentComments } from "@/components/assignment-comments";
 import { CanvaTab } from "@/components/canva-tab";
+import { ExamsTab } from "@/components/exam/exams-tab";
 import { QuestCard, StudentQuestQuestions } from "./quests";
 
 export const Route = createFileRoute("/_authenticated/classrooms/$id")({
@@ -440,6 +442,10 @@ function ClassroomDetail() {
             <Trophy className="size-4 mr-1" />
             {tr("Leaderboard")}
           </TabsTrigger>
+          <TabsTrigger value="exams">
+            <ClipboardCheck className="size-4 mr-1" />
+            {tr("การสอบ")}
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="announcements">
           <AnnouncementsTab classroomId={id} isOwner={isOwner} />
@@ -470,6 +476,9 @@ function ClassroomDetail() {
         </TabsContent>
         <TabsContent value="leaderboard">
           <LeaderboardTab classroomId={id} isOwner={isOwner} />
+        </TabsContent>
+        <TabsContent value="exams">
+          <ExamsTab classroomId={id} isOwner={isOwner} />
         </TabsContent>
       </Tabs>
     </div>

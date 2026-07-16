@@ -68,7 +68,7 @@ function ExamIndexPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{tr("📝 การสอบ")}</h1>
         <Button asChild>
-          <Link to="/exam/new">
+          <Link to="/exam/new" search={{ classroom: "" }}>
             <Plus className="size-4 mr-1" />
             {tr("สร้างข้อสอบ")}
           </Link>

@@ -38,6 +38,7 @@ import { Route as AuthenticatedQuizSessionIdRouteImport } from './routes/_authen
 import { Route as AuthenticatedFlashcardsDeckIdRouteImport } from './routes/_authenticated/flashcards.$deckId'
 import { Route as AuthenticatedExamNewRouteImport } from './routes/_authenticated/exam.new'
 import { Route as AuthenticatedExamJoinRouteImport } from './routes/_authenticated/exam.join'
+import { Route as AuthenticatedExamDemoRouteImport } from './routes/_authenticated/exam.demo'
 import { Route as AuthenticatedExamExamIdRouteImport } from './routes/_authenticated/exam.$examId'
 import { Route as AuthenticatedClassroomsIdRouteImport } from './routes/_authenticated/classrooms.$id'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
@@ -200,6 +201,11 @@ const AuthenticatedExamJoinRoute = AuthenticatedExamJoinRouteImport.update({
   path: '/exam/join',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedExamDemoRoute = AuthenticatedExamDemoRouteImport.update({
+  id: '/exam/demo',
+  path: '/exam/demo',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedExamExamIdRoute = AuthenticatedExamExamIdRouteImport.update({
   id: '/exam/$examId',
   path: '/exam/$examId',
@@ -279,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/classrooms/$id': typeof AuthenticatedClassroomsIdRoute
   '/exam/$examId': typeof AuthenticatedExamExamIdRouteWithChildren
+  '/exam/demo': typeof AuthenticatedExamDemoRoute
   '/exam/join': typeof AuthenticatedExamJoinRoute
   '/exam/new': typeof AuthenticatedExamNewRoute
   '/flashcards/$deckId': typeof AuthenticatedFlashcardsDeckIdRoute
@@ -317,6 +324,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/classrooms/$id': typeof AuthenticatedClassroomsIdRoute
   '/exam/$examId': typeof AuthenticatedExamExamIdRouteWithChildren
+  '/exam/demo': typeof AuthenticatedExamDemoRoute
   '/exam/join': typeof AuthenticatedExamJoinRoute
   '/exam/new': typeof AuthenticatedExamNewRoute
   '/flashcards/$deckId': typeof AuthenticatedFlashcardsDeckIdRoute
@@ -358,6 +366,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/classrooms/$id': typeof AuthenticatedClassroomsIdRoute
   '/_authenticated/exam/$examId': typeof AuthenticatedExamExamIdRouteWithChildren
+  '/_authenticated/exam/demo': typeof AuthenticatedExamDemoRoute
   '/_authenticated/exam/join': typeof AuthenticatedExamJoinRoute
   '/_authenticated/exam/new': typeof AuthenticatedExamNewRoute
   '/_authenticated/flashcards/$deckId': typeof AuthenticatedFlashcardsDeckIdRoute
@@ -399,6 +408,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/classrooms/$id'
     | '/exam/$examId'
+    | '/exam/demo'
     | '/exam/join'
     | '/exam/new'
     | '/flashcards/$deckId'
@@ -437,6 +447,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/classrooms/$id'
     | '/exam/$examId'
+    | '/exam/demo'
     | '/exam/join'
     | '/exam/new'
     | '/flashcards/$deckId'
@@ -477,6 +488,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/users'
     | '/_authenticated/classrooms/$id'
     | '/_authenticated/exam/$examId'
+    | '/_authenticated/exam/demo'
     | '/_authenticated/exam/join'
     | '/_authenticated/exam/new'
     | '/_authenticated/flashcards/$deckId'
@@ -707,6 +719,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedExamJoinRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/exam/demo': {
+      id: '/_authenticated/exam/demo'
+      path: '/exam/demo'
+      fullPath: '/exam/demo'
+      preLoaderRoute: typeof AuthenticatedExamDemoRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/exam/$examId': {
       id: '/_authenticated/exam/$examId'
       path: '/exam/$examId'
@@ -821,6 +840,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminTeachersRoute: typeof AuthenticatedAdminTeachersRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedExamExamIdRoute: typeof AuthenticatedExamExamIdRouteWithChildren
+  AuthenticatedExamDemoRoute: typeof AuthenticatedExamDemoRoute
   AuthenticatedExamJoinRoute: typeof AuthenticatedExamJoinRoute
   AuthenticatedExamNewRoute: typeof AuthenticatedExamNewRoute
   AuthenticatedFlashcardsDeckIdRoute: typeof AuthenticatedFlashcardsDeckIdRoute
@@ -849,6 +869,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminTeachersRoute: AuthenticatedAdminTeachersRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedExamExamIdRoute: AuthenticatedExamExamIdRouteWithChildren,
+  AuthenticatedExamDemoRoute: AuthenticatedExamDemoRoute,
   AuthenticatedExamJoinRoute: AuthenticatedExamJoinRoute,
   AuthenticatedExamNewRoute: AuthenticatedExamNewRoute,
   AuthenticatedFlashcardsDeckIdRoute: AuthenticatedFlashcardsDeckIdRoute,
