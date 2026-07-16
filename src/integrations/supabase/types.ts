@@ -757,6 +757,272 @@ export type Database = {
         }
         Relationships: []
       }
+      exam_answers: {
+        Row: {
+          answer_idx: number | null
+          answer_text: string | null
+          created_at: string
+          id: string
+          is_correct: boolean | null
+          participant_id: string
+          question_id: string
+          score_awarded: number | null
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          answer_idx?: number | null
+          answer_text?: string | null
+          created_at?: string
+          id?: string
+          is_correct?: boolean | null
+          participant_id: string
+          question_id: string
+          score_awarded?: number | null
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          answer_idx?: number | null
+          answer_text?: string | null
+          created_at?: string
+          id?: string
+          is_correct?: boolean | null
+          participant_id?: string
+          question_id?: string
+          score_awarded?: number | null
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_answers_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "exam_participants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "exam_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "exam_questions_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_answers_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "exam_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_participants: {
+        Row: {
+          auto_submit_reason:
+            | Database["public"]["Enums"]["exam_auto_submit_reason"]
+            | null
+          auto_submitted: boolean
+          created_at: string
+          id: string
+          session_id: string
+          started_at: string | null
+          submitted_at: string | null
+          total_score: number | null
+          user_id: string
+          violation_count: number
+        }
+        Insert: {
+          auto_submit_reason?:
+            | Database["public"]["Enums"]["exam_auto_submit_reason"]
+            | null
+          auto_submitted?: boolean
+          created_at?: string
+          id?: string
+          session_id: string
+          started_at?: string | null
+          submitted_at?: string | null
+          total_score?: number | null
+          user_id: string
+          violation_count?: number
+        }
+        Update: {
+          auto_submit_reason?:
+            | Database["public"]["Enums"]["exam_auto_submit_reason"]
+            | null
+          auto_submitted?: boolean
+          created_at?: string
+          id?: string
+          session_id?: string
+          started_at?: string | null
+          submitted_at?: string | null
+          total_score?: number | null
+          user_id?: string
+          violation_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_participants_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "exam_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_proctoring_events: {
+        Row: {
+          created_at: string
+          event_type: Database["public"]["Enums"]["exam_violation_type"]
+          id: string
+          participant_id: string | null
+          payload: Json
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: Database["public"]["Enums"]["exam_violation_type"]
+          id?: string
+          participant_id?: string | null
+          payload?: Json
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: Database["public"]["Enums"]["exam_violation_type"]
+          id?: string
+          participant_id?: string | null
+          payload?: Json
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_proctoring_events_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "exam_participants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_proctoring_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "exam_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_questions: {
+        Row: {
+          correct_idx: number | null
+          created_at: string
+          expected_answer: string | null
+          id: string
+          idx: number
+          options: Json | null
+          points: number
+          question: string
+          question_type: Database["public"]["Enums"]["exam_question_type"]
+          session_id: string
+        }
+        Insert: {
+          correct_idx?: number | null
+          created_at?: string
+          expected_answer?: string | null
+          id?: string
+          idx: number
+          options?: Json | null
+          points?: number
+          question: string
+          question_type: Database["public"]["Enums"]["exam_question_type"]
+          session_id: string
+        }
+        Update: {
+          correct_idx?: number | null
+          created_at?: string
+          expected_answer?: string | null
+          id?: string
+          idx?: number
+          options?: Json | null
+          points?: number
+          question?: string
+          question_type?: Database["public"]["Enums"]["exam_question_type"]
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_questions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "exam_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_sessions: {
+        Row: {
+          classroom_id: string
+          created_at: string
+          duration_minutes: number
+          ends_at: string | null
+          host_id: string
+          id: string
+          join_code: string
+          starts_at: string | null
+          status: Database["public"]["Enums"]["exam_status"]
+          title: string
+          updated_at: string
+          violation_threshold: number
+        }
+        Insert: {
+          classroom_id: string
+          created_at?: string
+          duration_minutes?: number
+          ends_at?: string | null
+          host_id: string
+          id?: string
+          join_code: string
+          starts_at?: string | null
+          status?: Database["public"]["Enums"]["exam_status"]
+          title: string
+          updated_at?: string
+          violation_threshold?: number
+        }
+        Update: {
+          classroom_id?: string
+          created_at?: string
+          duration_minutes?: number
+          ends_at?: string | null
+          host_id?: string
+          id?: string
+          join_code?: string
+          starts_at?: string | null
+          status?: Database["public"]["Enums"]["exam_status"]
+          title?: string
+          updated_at?: string
+          violation_threshold?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_sessions_classroom_id_fkey"
+            columns: ["classroom_id"]
+            isOneToOne: false
+            referencedRelation: "classrooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       flashcard_decks: {
         Row: {
           classroom_id: string | null
@@ -2207,6 +2473,31 @@ export type Database = {
         }
         Relationships: []
       }
+      exam_questions_safe: {
+        Row: {
+          correct_idx: number | null
+          created_at: string | null
+          expected_answer: string | null
+          id: string | null
+          idx: number | null
+          options: Json | null
+          points: number | null
+          question: string | null
+          question_type:
+            | Database["public"]["Enums"]["exam_question_type"]
+            | null
+          session_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_questions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "exam_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leaderboard: {
         Row: {
           active_title: string | null
@@ -2246,6 +2537,7 @@ export type Database = {
       }
     }
     Functions: {
+      _gen_exam_code: { Args: never; Returns: string }
       approve_teacher_application: {
         Args: { _user_id: string }
         Returns: undefined
@@ -2268,7 +2560,23 @@ export type Database = {
       check_birthday_visit: { Args: never; Returns: Json }
       claim_achievement: { Args: { _achievement_id: string }; Returns: Json }
       claim_daily_bonus: { Args: never; Returns: Json }
+      close_exam: {
+        Args: { _exam_id: string }
+        Returns: {
+          auto_submitted: boolean
+          user_id: string
+        }[]
+      }
       complete_quest: { Args: { _quest_id: string }; Returns: Json }
+      create_exam: {
+        Args: {
+          _classroom_id: string
+          _duration_minutes: number
+          _title: string
+          _violation_threshold: number
+        }
+        Returns: string
+      }
       finalize_my_quest_progress: { Args: { _quest_id: string }; Returns: Json }
       finalize_quest_from_progress: {
         Args: { _quest_id: string; _user_id: string }
@@ -2320,6 +2628,13 @@ export type Database = {
         Returns: boolean
       }
       join_classroom_by_code: { Args: { _code: string }; Returns: string }
+      join_exam_by_code: {
+        Args: { _code: string }
+        Returns: {
+          exam_id: string
+          title: string
+        }[]
+      }
       join_quiz_by_code: { Args: { _code: string }; Returns: Json }
       next_quiz_question: { Args: { _session_id: string }; Returns: Json }
       open_attendance_check_in: {
@@ -2329,7 +2644,23 @@ export type Database = {
           expires_at: string
         }[]
       }
+      open_exam: { Args: { _exam_id: string }; Returns: undefined }
+      publish_exam: {
+        Args: { _ends_at: string; _exam_id: string; _starts_at: string }
+        Returns: undefined
+      }
       purchase_shop_item: { Args: { _item_id: string }; Returns: Json }
+      record_exam_violation: {
+        Args: {
+          _event_type: Database["public"]["Enums"]["exam_violation_type"]
+          _exam_id: string
+          _payload: Json
+        }
+        Returns: {
+          auto_submitted: boolean
+          violation_count: number
+        }[]
+      }
       reject_teacher_application: {
         Args: { _note?: string; _user_id: string }
         Returns: undefined
@@ -2350,17 +2681,58 @@ export type Database = {
         }[]
       }
       set_active_title: { Args: { _title_id: string }; Returns: undefined }
+      start_exam_attempt: {
+        Args: { _exam_id: string }
+        Returns: {
+          duration_minutes: number
+          ends_at: string
+          started_at: string
+          violation_threshold: number
+        }[]
+      }
       start_quiz_session: { Args: { _session_id: string }; Returns: undefined }
       strip_quest_answer_keys: { Args: { qs: Json }; Returns: Json }
+      submit_exam: {
+        Args: { _exam_id: string }
+        Returns: {
+          total_score: number
+          xp_awarded: number
+        }[]
+      }
+      submit_exam_answer: {
+        Args: {
+          _answer_idx: number
+          _answer_text: string
+          _question_id: string
+        }
+        Returns: {
+          is_correct: boolean
+          score_awarded: number
+        }[]
+      }
       submit_quiz_answer: {
         Args: { _answer_idx: number; _question_id: string }
         Returns: Json
+      }
+      update_exam_questions: {
+        Args: { _exam_id: string; _questions: Json }
+        Returns: undefined
       }
     }
     Enums: {
       app_role: "admin" | "teacher" | "student" | "guest" | "room_admin"
       attendance_status: "present" | "late" | "absent" | "excused"
       booking_status: "pending" | "approved" | "rejected" | "cancelled"
+      exam_auto_submit_reason: "violation_threshold" | "time_up"
+      exam_question_type: "multiple_choice" | "short_answer"
+      exam_status: "draft" | "scheduled" | "active" | "closed"
+      exam_violation_type:
+        | "visibility_change"
+        | "blur"
+        | "fullscreen_exit"
+        | "copy_paste"
+        | "dev_tools"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2491,6 +2863,17 @@ export const Constants = {
       app_role: ["admin", "teacher", "student", "guest", "room_admin"],
       attendance_status: ["present", "late", "absent", "excused"],
       booking_status: ["pending", "approved", "rejected", "cancelled"],
+      exam_auto_submit_reason: ["violation_threshold", "time_up"],
+      exam_question_type: ["multiple_choice", "short_answer"],
+      exam_status: ["draft", "scheduled", "active", "closed"],
+      exam_violation_type: [
+        "visibility_change",
+        "blur",
+        "fullscreen_exit",
+        "copy_paste",
+        "dev_tools",
+        "other",
+      ],
     },
   },
 } as const

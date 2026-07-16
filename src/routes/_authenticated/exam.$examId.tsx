@@ -493,7 +493,7 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
             <p className="text-base">{q.question}</p>
             {q.question_type === "multiple_choice" ? (
               <div className="space-y-2">
-                {(q.options ?? []).map((opt, oi) => (
+                {((q.options as string[] | null) ?? []).map((opt: string, oi: number) => (
                   <label
                     key={oi}
                     className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer hover:bg-muted/40 ${answers[qId]?.answer_idx === oi ? "border-primary bg-primary/5" : ""}`}

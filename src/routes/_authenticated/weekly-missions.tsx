@@ -719,7 +719,7 @@ function WeeklyMissionsPage() {
         // Use the close_weekly_mission RPC so XP is batch-awarded to every
         // student with progress. The RPC also sets status='closed' and
         // closed_at=now() atomically, so a separate table update is not needed.
-        const { data, error } = await supabase.rpc("close_weekly_mission", {
+        const { data, error } = await (supabase.rpc as any)("close_weekly_mission", {
           _mission_id: activeMission.id,
         });
         if (error) throw error;
