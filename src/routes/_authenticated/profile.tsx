@@ -126,7 +126,7 @@ function ProfilePage() {
 
   // Auto-check birthday easter egg whenever profile loads with a birthday set
   useEffect(() => {
-    if (!user || !profile?.birthday) return;
+    if (!user || !privateProfile?.birthday) return;
     supabase.rpc("check_birthday_visit").then(({ data }) => {
       const result = data as { birthday?: boolean } | null;
       if (result?.birthday) {
@@ -137,17 +137,16 @@ function ProfilePage() {
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id, profile?.birthday]);
+  }, [user?.id, privateProfile?.birthday]);
 
   async function saveBirthday(value: string) {
     const { error } = await supabase
-      .from("profiles")
-      .update({ birthday: value || null })
-      .eq("id", user!.id);
+      .from("profiles_private")
+      .upsert({ user_id: user!.id, birthday: value || null }, { onConflict: "user_id" });
     if (error) toast.error(error.message);
     else {
       toast.success(tr("บันทึกวันเกิดแล้ว"));
-      qc.invalidateQueries({ queryKey: ["me-profile"] });
+      qc.invalidateQueries({ queryKey: ["me-profile-private"] });
     }
   }
 
