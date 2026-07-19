@@ -50,6 +50,19 @@ function ProfilePage() {
     enabled: !!user,
   });
 
+  const { data: privateProfile } = useQuery({
+    queryKey: ["me-profile-private", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles_private")
+        .select("birthday, bio, grade_level")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
+
   const { data: achievements } = useQuery({
     queryKey: ["all-ach"],
     queryFn: async () =>
