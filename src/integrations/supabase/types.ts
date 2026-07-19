@@ -762,6 +762,8 @@ export type Database = {
           answer_idx: number | null
           answer_text: string | null
           created_at: string
+          graded_at: string | null
+          graded_by: string | null
           id: string
           is_correct: boolean | null
           participant_id: string
@@ -774,6 +776,8 @@ export type Database = {
           answer_idx?: number | null
           answer_text?: string | null
           created_at?: string
+          graded_at?: string | null
+          graded_by?: string | null
           id?: string
           is_correct?: boolean | null
           participant_id: string
@@ -786,6 +790,8 @@ export type Database = {
           answer_idx?: number | null
           answer_text?: string | null
           created_at?: string
+          graded_at?: string | null
+          graded_by?: string | null
           id?: string
           is_correct?: boolean | null
           participant_id?: string
@@ -2588,6 +2594,16 @@ export type Database = {
         Returns: string
       }
       get_quest_for_grading: { Args: { _quest_id: string }; Returns: Json }
+      grade_short_answer: {
+        Args: {
+          _graded_by: string
+          _is_correct: boolean
+          _question_id: string
+          _score: number
+          _user_id: string
+        }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
