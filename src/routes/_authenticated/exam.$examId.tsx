@@ -515,7 +515,7 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
                 value={answers[qId]?.answer_text ?? ""}
                 onChange={(e) => saveAnswer(qId, { answer_text: e.target.value })}
                 placeholder={tr("พิมพ์คำตอบ...")}
-                rows={3}
+                rows={8}
               />
             )}
           </CardContent>

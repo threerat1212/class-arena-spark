@@ -195,3 +195,78 @@ export async function rpcSubmitExam(
   const row = Array.isArray(data) ? data[0] : data;
   return row ?? { total_score: 0, xp_awarded: 0 };
 }
+
+// ===== Teacher grading helpers =====
+
+/**
+ * ตอบ short_answer พร้อมข้อมูล question (สำหรับ UI ครูตรวจข้อเขียน)
+ *
+ * หมายเหตุ: เรา select * แล้ว cast เอง เพราะ migration 20260719100000
+ * เพิ่ม columns graded_by/graded_at ที่ types.ts (Schema B) ยังไม่รู้จัก
+ * เมื่อมีการ regenerate types แล้ว สามารถเปลี่ยนไปใช้ generated Row type ได้
+ */
+export type ShortAnswerForGrading = {
+  answer: {
+    id: string;
+    question_id: string;
+    session_id: string;
+    user_id: string;
+    answer_text: string | null;
+    score_awarded: number | null;
+    graded_by: "server" | "ai" | "teacher" | null;
+    graded_at: string | null;
+  };
+  question: ExamQuestionRow;
+};
+
+export async function fetchShortAnswersForGrading(
+  examId: string,
+): Promise<ShortAnswerForGrading[]> {
+  const { data, error } = await supabase
+    .from("exam_answers")
+    .select(`*, question:exam_questions!inner(*)`)
+    .eq("session_id", examId)
+    .not("answer_text", "is", null)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return ((data ?? []) as unknown[]).map((row) => {
+    const r = row as Record<string, unknown>;
+    return {
+      answer: {
+        id: r.id as string,
+        question_id: r.question_id as string,
+        session_id: r.session_id as string,
+        user_id: r.user_id as string,
+        answer_text: r.answer_text as string | null,
+        score_awarded: r.score_awarded as number | null,
+        graded_by: (r.graded_by as ShortAnswerForGrading["answer"]["graded_by"]) ?? null,
+        graded_at: (r.graded_at as string | null) ?? null,
+      },
+      question: r.question as ExamQuestionRow,
+    };
+  });
+}
+
+/**
+ * ครูให้คะแนน short_answer ด้วยมือ (graded_by='teacher')
+ * เขียนทับคะแนน AI ได้ และแก้ไขคะแนนตัวเองได้
+ */
+export async function rpcGradeShortAnswer(args: {
+  question_id: string;
+  user_id: string;
+  is_correct: boolean;
+  score: number;
+}): Promise<void> {
+  // cast เพราะ types.ts (Schema B) ยังไม่รู้จัก RPC นี้ — หลัง regenerate types แล้วเอา cast ออกได้
+  const { error } = await (supabase.rpc as unknown as (name: string, args: Record<string, unknown>) => Promise<{ error: unknown }>)(
+    "grade_short_answer",
+    {
+      _question_id: args.question_id,
+      _user_id: args.user_id,
+      _is_correct: args.is_correct,
+      _score: args.score,
+      _graded_by: "teacher",
+    },
+  );
+  if (error) throw error;
+}
