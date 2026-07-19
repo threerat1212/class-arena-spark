@@ -258,9 +258,9 @@ function ProfilePage() {
             id="bday"
             type="date"
             className="w-44"
-            defaultValue={profile.birthday ?? ""}
+            defaultValue={privateProfile?.birthday ?? ""}
             onBlur={(e) => {
-              if (e.target.value !== (profile.birthday ?? "")) saveBirthday(e.target.value);
+              if (e.target.value !== (privateProfile?.birthday ?? "")) saveBirthday(e.target.value);
             }}
           />
         </CardContent>
