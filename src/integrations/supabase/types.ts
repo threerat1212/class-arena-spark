@@ -1307,14 +1307,11 @@ export type Database = {
         Row: {
           active_title_id: string | null
           avatar_url: string | null
-          bio: string | null
-          birthday: string | null
           birthday_visited: boolean
           created_at: string
           display_name: string | null
           early_bird_quests: number
           gold: number
-          grade_level: string | null
           id: string
           last_login_bonus_date: string | null
           last_quest_date: string | null
@@ -1333,14 +1330,11 @@ export type Database = {
         Insert: {
           active_title_id?: string | null
           avatar_url?: string | null
-          bio?: string | null
-          birthday?: string | null
           birthday_visited?: boolean
           created_at?: string
           display_name?: string | null
           early_bird_quests?: number
           gold?: number
-          grade_level?: string | null
           id: string
           last_login_bonus_date?: string | null
           last_quest_date?: string | null
@@ -1359,14 +1353,11 @@ export type Database = {
         Update: {
           active_title_id?: string | null
           avatar_url?: string | null
-          bio?: string | null
-          birthday?: string | null
           birthday_visited?: boolean
           created_at?: string
           display_name?: string | null
           early_bird_quests?: number
           gold?: number
-          grade_level?: string | null
           id?: string
           last_login_bonus_date?: string | null
           last_quest_date?: string | null
@@ -1381,6 +1372,30 @@ export type Database = {
           updated_at?: string
           weekend_warrior_quests?: number
           xp?: number
+        }
+        Relationships: []
+      }
+      profiles_private: {
+        Row: {
+          bio: string | null
+          birthday: string | null
+          grade_level: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bio?: string | null
+          birthday?: string | null
+          grade_level?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bio?: string | null
+          birthday?: string | null
+          grade_level?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

@@ -50,6 +50,19 @@ function ProfilePage() {
     enabled: !!user,
   });
 
+  const { data: privateProfile } = useQuery({
+    queryKey: ["me-profile-private", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles_private")
+        .select("birthday, bio, grade_level")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
+
   const { data: achievements } = useQuery({
     queryKey: ["all-ach"],
     queryFn: async () =>
@@ -113,7 +126,7 @@ function ProfilePage() {
 
   // Auto-check birthday easter egg whenever profile loads with a birthday set
   useEffect(() => {
-    if (!user || !profile?.birthday) return;
+    if (!user || !privateProfile?.birthday) return;
     supabase.rpc("check_birthday_visit").then(({ data }) => {
       const result = data as { birthday?: boolean } | null;
       if (result?.birthday) {
@@ -124,17 +137,16 @@ function ProfilePage() {
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id, profile?.birthday]);
+  }, [user?.id, privateProfile?.birthday]);
 
   async function saveBirthday(value: string) {
     const { error } = await supabase
-      .from("profiles")
-      .update({ birthday: value || null })
-      .eq("id", user!.id);
+      .from("profiles_private")
+      .upsert({ user_id: user!.id, birthday: value || null }, { onConflict: "user_id" });
     if (error) toast.error(error.message);
     else {
       toast.success(tr("บันทึกวันเกิดแล้ว"));
-      qc.invalidateQueries({ queryKey: ["me-profile"] });
+      qc.invalidateQueries({ queryKey: ["me-profile-private"] });
     }
   }
 
@@ -246,9 +258,9 @@ function ProfilePage() {
             id="bday"
             type="date"
             className="w-44"
-            defaultValue={profile.birthday ?? ""}
+            defaultValue={privateProfile?.birthday ?? ""}
             onBlur={(e) => {
-              if (e.target.value !== (profile.birthday ?? "")) saveBirthday(e.target.value);
+              if (e.target.value !== (privateProfile?.birthday ?? "")) saveBirthday(e.target.value);
             }}
           />
         </CardContent>
