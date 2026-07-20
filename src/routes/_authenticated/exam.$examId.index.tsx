@@ -468,7 +468,29 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
       : "--:--";
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
+      {/* Blocking overlay: shown whenever not fullscreen — student cannot continue until they return */}
+      {!isFullscreenActive && (
+        <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm grid place-items-center p-6">
+          <Card className="max-w-md w-full">
+            <CardContent className="pt-6 space-y-4 text-center">
+              <AlertTriangle className="size-12 mx-auto text-red-500" />
+              <h2 className="text-xl font-bold">{tr("คุณออกจากโหมดเต็มจอ")}</h2>
+              <p className="text-sm text-muted-foreground">
+                {tr("การย่อจอ / สลับแท็บ / ออกจากเต็มจอ ถูกนับเป็นการโกง")}
+                <br />
+                {tr("ตอนนี้โกง")} <b className="text-red-500">{violationCount}/{threshold}</b>{" "}
+                {tr("ครั้ง — ครบจะส่งอัตโนมัติ")}
+              </p>
+              <Button onClick={requestFullscreen} size="lg" className="w-full">
+                <Maximize2 className="size-4 mr-2" />
+                {tr("กลับเข้าเต็มจอเพื่อทำต่อ")}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* sticky top bar */}
       <div className="sticky top-0 z-10 bg-background border-b px-4 py-2 flex items-center justify-between text-sm">
         <span className="flex items-center gap-1">
