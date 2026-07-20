@@ -119,6 +119,17 @@ function HostView({ exam }: { exam: ExamSessionRow }) {
       </Card>
 
       {exam.status === "draft" && (
+        <div className="flex justify-end">
+          <Button asChild variant="outline" size="sm">
+            <Link to="/exam/$examId/edit" params={{ examId: exam.id }}>
+              <Pencil className="size-4 mr-1" />
+              {tr("แก้ไขข้อสอบ")}
+            </Link>
+          </Button>
+        </div>
+      )}
+
+      {exam.status === "draft" && (
         <Card>
           <CardHeader>
             <CardTitle className="text-base">{tr("กำหนดเวลาและเปิดสอบ")}</CardTitle>
