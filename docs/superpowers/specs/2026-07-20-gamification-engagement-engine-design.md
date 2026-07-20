@@ -10,13 +10,17 @@
 ## 1. Problem & Goal
 
 ### Problem
+
 Today the reward loop is **linear and flat**:
+
 > do action → `+amount XP` → accumulate → level up → repeat
 
-There is no **variance**, no **surprise**, no **bonus for excellence**. A perfect quiz and a barely-passing quiz award the same per-action XP (only the score differs). The user feedback: *"ตอนนี้มันขาด gimmicks ที่ทำให้แต่ละครั้งรู้สึกพิเศษ มีแค่ขยัน→ได้ XP+ทอง".*
+There is no **variance**, no **surprise**, no **bonus for excellence**. A perfect quiz and a barely-passing quiz award the same per-action XP (only the score differs). The user feedback: _"ตอนนี้มันขาด gimmicks ที่ทำให้แต่ละครั้งรู้สึกพิเศษ มีแค่ขยัน→ได้ XP+ทอง"._
 
 ### Goal (Phase 1)
+
 Make **every XP-granting action feel different** by adding:
+
 1. **Combo system** — consecutive correct answers stack a multiplier
 2. **Perfect-score bonus** — excellence gets rewarded on top of the score
 3. **Multiplier events** — global "double-XP hour" windows
@@ -25,6 +29,7 @@ Make **every XP-granting action feel different** by adding:
 All four flow through the **existing central funnel**: `award_xp()` RPC + `xp_transactions` ledger + `app_xp_source` enum. No parallel reward paths are introduced. This matches the PRODUCT.md design ethos ("calm gamification, no flashy noise").
 
 ### Non-goals (deferred to Phase 2/3)
+
 - Daily challenge rotation, mission chains (Phase 2)
 - Streak freeze, comeback bonus, milestone rewards (Phase 2)
 - Cosmetic catalog, loot box, rare title drops (Phase 3)
@@ -36,14 +41,14 @@ All four flow through the **existing central funnel**: `award_xp()` RPC + `xp_tr
 
 These constraints come from the codebase survey and cannot be relaxed:
 
-| # | Constraint | Why |
-|---|---|---|
-| C1 | All rewards flow through `award_xp()` | Single source of truth, idempotent, RLS-safe. Spec: `2026-07-15-xp-activity-ledger-design.md`. |
-| C2 | Additive signature change only (named params) | All 6 internal SQL callers use named parameters. Renames/reorders would break them. |
-| C3 | `xp_transactions` is append-only | Ledger integrity. We never UPDATE rows; combo state lives elsewhere. |
-| C4 | Idempotency keys must remain stable | Existing keys like `quest_finalize:<uid>:<qid>` must still dedupe. |
-| C5 | `SECURITY DEFINER` only — no client writes | Clients cannot mint XP. All multipliers computed server-side. |
-| C6 | Stay "calm" per PRODUCT.md | No neon UI, no mandatory popups; opt-in animations, dismissible toasts. |
+| #   | Constraint                                    | Why                                                                                            |
+| --- | --------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| C1  | All rewards flow through `award_xp()`         | Single source of truth, idempotent, RLS-safe. Spec: `2026-07-15-xp-activity-ledger-design.md`. |
+| C2  | Additive signature change only (named params) | All 6 internal SQL callers use named parameters. Renames/reorders would break them.            |
+| C3  | `xp_transactions` is append-only              | Ledger integrity. We never UPDATE rows; combo state lives elsewhere.                           |
+| C4  | Idempotency keys must remain stable           | Existing keys like `quest_finalize:<uid>:<qid>` must still dedupe.                             |
+| C5  | `SECURITY DEFINER` only — no client writes    | Clients cannot mint XP. All multipliers computed server-side.                                  |
+| C6  | Stay "calm" per PRODUCT.md                    | No neon UI, no mandatory popups; opt-in animations, dismissible toasts.                        |
 
 ---
 
@@ -74,7 +79,7 @@ These constraints come from the codebase survey and cannot be relaxed:
                                     (separate source: 'lucky_drop')
 ```
 
-**Key principle:** `award_xp()` becomes a *smart* function. It computes the final amount from `base × combo_multiplier × event_multiplier + perfect_bonus`, then optionally rolls a lucky drop. The single `xp_transactions` row records the **base amount** in `amount`; the breakdown lives in `metadata.bonus_breakdown` so the ledger stays sum-correct (no double counting) but the UI can show "base 50 + combo 1.5× + perfect 25 = 100".
+**Key principle:** `award_xp()` becomes a _smart_ function. It computes the final amount from `base × combo_multiplier × event_multiplier + perfect_bonus`, then optionally rolls a lucky drop. The single `xp_transactions` row records the **base amount** in `amount`; the breakdown lives in `metadata.bonus_breakdown` so the ledger stays sum-correct (no double counting) but the UI can show "base 50 + combo 1.5× + perfect 25 = 100".
 
 Wait — re-examining: if `amount` is the base and breakdown is in metadata, then `SUM(amount)` under-counts what the user actually received. That breaks `profiles.xp` reconciliation. **Decision:** `amount` = **total applied** (after all multipliers and bonuses). `metadata.base_amount` = original. The ledger sum always equals the actual XP granted. This keeps the invariant `profiles.xp = SUM(xp_transactions.amount WHERE user_id)` intact.
 
@@ -159,24 +164,26 @@ ALTER TYPE public.app_xp_source ADD VALUE IF NOT EXISTS 'quiz';           -- new
 > **Phase 1 scope:** multiplier events are **global only**. The `classroom_id` column exists in the schema for future use (see §13 O1) but every Phase 1 row will have `classroom_id = NULL`.
 
 > Why separate transactions for `lucky_drop` and `perfect_bonus` but not `combo`?
-> - **Lucky drop** is stochastic and post-hoc — it happens *after* the action resolves. Separate row lets us revoke it independently (admin adjustment) and clearly attribute it.
+>
+> - **Lucky drop** is stochastic and post-hoc — it happens _after_ the action resolves. Separate row lets us revoke it independently (admin adjustment) and clearly attribute it.
 > - **Perfect bonus** is also conceptually separate from "you did the action" — it's an excellence reward. Separating it lets the UI highlight "🎯 +25 perfect bonus!" distinctly.
-> - **Combo** is intrinsic to the action — it's how we value *this* action, not a side reward. Folding it into the same row keeps the per-action granularity clean.
+> - **Combo** is intrinsic to the action — it's how we value _this_ action, not a side reward. Folding it into the same row keeps the per-action granularity clean.
 
 ### 4.4 Combo decay rules
 
 A combo is **broken** (resets to 0) when:
 
-| Trigger | Action |
-|---|---|
-| Action succeeds (correct/perfect) | `current_combo += 1`, then update `max_combo` if exceeded |
-| Action fails (wrong answer / failed quest) | `current_combo := 0` |
-| 30 minutes pass since `last_success_at` | `current_combo := 0` (computed lazily on next read) |
-| Calendar day changes (Asia/Bangkok) | `current_combo := 0` (computed lazily) |
+| Trigger                                    | Action                                                    |
+| ------------------------------------------ | --------------------------------------------------------- |
+| Action succeeds (correct/perfect)          | `current_combo += 1`, then update `max_combo` if exceeded |
+| Action fails (wrong answer / failed quest) | `current_combo := 0`                                      |
+| 30 minutes pass since `last_success_at`    | `current_combo := 0` (computed lazily on next read)       |
+| Calendar day changes (Asia/Bangkok)        | `current_combo := 0` (computed lazily)                    |
 
 **Scoping:** Combo **does NOT break on `ref_id` change**. Rationale: a student doing their morning daily quest, then immediately doing a 5-question quiz, should keep the streak alive — that's the engagement we want to reward. The 30-min decay handles "left the app" naturally.
 
 **Which actions count?** Only actions that pass `_metadata.outcome = 'success' | 'perfect' | 'fail'`. The caller decides the outcome:
+
 - Daily quest: `perfect` if score == max, `success` if score > 0, `fail` if score == 0
 - Exam: same logic on per-exam score
 - Quiz: per-question outcome (the quiz loop calls `award_xp` once per answered batch)
@@ -191,13 +198,13 @@ The outcome is **always passed by the caller in `_metadata`**, never guessed by 
 
 Capped, sub-linear, design for "feel" not for inflation:
 
-| Combo | Multiplier |
-|---|---|
-| 1-2 | 1.00× |
-| 3-4 | 1.20× |
-| 5-6 | 1.50× |
-| 7-9 | 1.80× |
-| 10+ | 2.00× (cap) |
+| Combo | Multiplier  |
+| ----- | ----------- |
+| 1-2   | 1.00×       |
+| 3-4   | 1.20×       |
+| 5-6   | 1.50×       |
+| 7-9   | 1.80×       |
+| 10+   | 2.00× (cap) |
 
 Curve is a SQL function so it can be tuned without redeploying RPC logic.
 
@@ -217,25 +224,28 @@ $$;
 ### 4.6 Perfect bonus formula
 
 When `_metadata.outcome = 'perfect'`, an **additive** bonus is added (separate transaction):
+
 ```
 perfect_bonus = floor(base_amount × 0.50)   -- 50% of base, floored
 ```
+
 Capped at +100 XP per action to avoid runaway on big exam submissions.
 
 ### 4.7 Lucky drop roll
 
 After every successful action (outcome in `success`, `perfect`), `award_xp` rolls:
+
 - **P(lucky) = 8%** base chance
 - Modifiers: +2% per combo above 5 (capped at +10%) → max 18%
 - Drop table (rolled if hit):
 
-| Roll | Reward | Notes |
-|---|---|---|
-| 60% | +10 gold | small treat |
-| 25% | +25 XP | mid reward |
-| 10% | +50 XP | big reward |
-| 4% | cosmetic voucher (Phase 3 stub) | recorded as metadata; redeemable later |
-| 1% | rare title drop (Phase 3 stub) | recorded as metadata |
+| Roll | Reward                          | Notes                                  |
+| ---- | ------------------------------- | -------------------------------------- |
+| 60%  | +10 gold                        | small treat                            |
+| 25%  | +25 XP                          | mid reward                             |
+| 10%  | +50 XP                          | big reward                             |
+| 4%   | cosmetic voucher (Phase 3 stub) | recorded as metadata; redeemable later |
+| 1%   | rare title drop (Phase 3 stub)  | recorded as metadata                   |
 
 Phase 1 only implements gold/XP drops. Cosmetic/title drops are **recorded in `lucky_drop_log` (new table) with status='pending'** so Phase 3 can build the redemption UI without losing drops that happened in Phase 1.
 
@@ -401,19 +411,20 @@ Skip combo/multiplier/perfect/lucky entirely. They make no sense for deductions.
 
 Each caller needs to pass `_metadata->>'outcome'` so `award_xp` knows whether to update combo. **No signature changes** — just richer metadata.
 
-| Caller | Outcome mapping |
-|---|---|
-| `finalize_quest_from_progress` | `outcome = 'perfect' if score=max_score else 'success' if score>0 else 'fail'` |
+| Caller                             | Outcome mapping                                                                |
+| ---------------------------------- | ------------------------------------------------------------------------------ |
+| `finalize_quest_from_progress`     | `outcome = 'perfect' if score=max_score else 'success' if score>0 else 'fail'` |
 | `submit_exam` / `auto_submit_exam` | `outcome = 'perfect' if score=max_score else 'success' if score>0 else 'fail'` |
-| `self_check_in` (attendance) | `outcome = 'success'` (no fail concept) |
-| `close_weekly_mission` | `outcome = NULL` (bulk; no combo impact) |
-| `claim_achievement` | `outcome = NULL` (one-shot) |
+| `self_check_in` (attendance)       | `outcome = 'success'` (no fail concept)                                        |
+| `close_weekly_mission`             | `outcome = NULL` (bulk; no combo impact)                                       |
+| `claim_achievement`                | `outcome = NULL` (one-shot)                                                    |
 
 ### 6.2 Legacy triggers — fold into `award_xp`
 
 Two triggers still bypass the ledger (§3 of survey). We migrate them so combos/multipliers/lucky drops work for submissions and attendance too.
 
 **`award_submission_grade()` trigger → calls `award_xp` with:**
+
 ```sql
 SELECT * FROM public.award_xp(
   _user_id := NEW.student_id,
@@ -445,11 +456,11 @@ SELECT * FROM public.award_xp(
 
 The legacy triggers generated keys differently. New keys must remain stable to avoid double-awards during the migration window:
 
-| Path | Old idempotency key | New key |
-|---|---|---|
-| `award_submission_grade` trigger | (none — direct UPDATE) | `'submission_grade:' \|\| NEW.id \|\| ':' \|\| COALESCE(NEW.graded_at::text,'')` |
-| `award_attendance_checkin` trigger | (none — direct UPDATE) | `'attendance:' \|\| NEW.id` |
-| `finish_quiz_session` | (none — direct UPDATE) | `'quiz_top:' \|\| session_id \|\| ':' \|\| user_id` |
+| Path                               | Old idempotency key    | New key                                                                          |
+| ---------------------------------- | ---------------------- | -------------------------------------------------------------------------------- |
+| `award_submission_grade` trigger   | (none — direct UPDATE) | `'submission_grade:' \|\| NEW.id \|\| ':' \|\| COALESCE(NEW.graded_at::text,'')` |
+| `award_attendance_checkin` trigger | (none — direct UPDATE) | `'attendance:' \|\| NEW.id`                                                      |
+| `finish_quiz_session`              | (none — direct UPDATE) | `'quiz_top:' \|\| session_id \|\| ':' \|\| user_id`                              |
 
 ---
 
@@ -457,15 +468,15 @@ The legacy triggers generated keys differently. New keys must remain stable to a
 
 ### 7.1 Where to surface feedback
 
-| Surface | What to show | File |
-|---|---|---|
-| Quest result page | "🔥 Combo ×5 — 1.5× XP!" + "🎯 Perfect +25" + "🎲 Lucky! +25 XP" | `src/routes/_authenticated/quests.tsx` |
-| Exam result page | same breakdown | `src/routes/_authenticated/exam.$examId.report.tsx` |
-| Quiz scoreboard | combo per question (top-right corner) | `src/routes/_authenticated/quiz.$sessionId.tsx` |
-| Dashboard "Weekly Pulse" panel | current combo, active multiplier event banner | `src/components/gamification-status-panel.tsx` |
-| Global header | small badge if multiplier event is active | `src/components/app-header.tsx` (or wherever the top bar lives) |
-| Toast notifications | ephemeral "🎲 Lucky drop! +10 gold" | sonner (existing) |
-| Rewards page → new "กิจกรรม" tab | multiplier events schedule, combo history | `src/routes/_authenticated/rewards.tsx` |
+| Surface                          | What to show                                                     | File                                                            |
+| -------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------- |
+| Quest result page                | "🔥 Combo ×5 — 1.5× XP!" + "🎯 Perfect +25" + "🎲 Lucky! +25 XP" | `src/routes/_authenticated/quests.tsx`                          |
+| Exam result page                 | same breakdown                                                   | `src/routes/_authenticated/exam.$examId.report.tsx`             |
+| Quiz scoreboard                  | combo per question (top-right corner)                            | `src/routes/_authenticated/quiz.$sessionId.tsx`                 |
+| Dashboard "Weekly Pulse" panel   | current combo, active multiplier event banner                    | `src/components/gamification-status-panel.tsx`                  |
+| Global header                    | small badge if multiplier event is active                        | `src/components/app-header.tsx` (or wherever the top bar lives) |
+| Toast notifications              | ephemeral "🎲 Lucky drop! +10 gold"                              | sonner (existing)                                               |
+| Rewards page → new "กิจกรรม" tab | multiplier events schedule, combo history                        | `src/routes/_authenticated/rewards.tsx`                         |
 
 ### 7.2 New UI components
 
@@ -485,6 +496,7 @@ The legacy triggers generated keys differently. New keys must remain stable to a
 ### 7.4 Admin UI for multiplier events
 
 New admin page: `src/routes/_authenticated/admin/multiplier-events.tsx`
+
 - List active/past events
 - Create new event (start, end, multiplier, label, scope)
 - Auto-spawn toggle: "Auto-spawn 1 double-XP hour per week at random time within school hours" (PG `cron` or app-level scheduler — see §8)
@@ -508,18 +520,18 @@ If `pg_cron` is not enabled, fallback is a daily check from the dashboard that l
 
 ## 9. Edge cases & decisions
 
-| Case | Decision |
-|---|---|
-| Two multiplier events overlap (one global 2×, one classroom 3×) | Use the **highest** multiplier; don't stack. (Survey said stack would inflate too fast.) |
-| Combo at 30+ — does multiplier keep climbing? | No, cap at 2.0× (see curve). |
-| User does exam at 23:55, finishes 00:10 next day | Day-rollover rule applies on **next action**, not mid-action. Exam's single `award_xp` call uses the combo at start. |
-| Lucky drop on a negative XP action | Skipped (§5.4). |
-| Same `idempotency_key` replayed | Returns cached row; lucky drop is NOT re-rolled (stored in metadata). |
-| Admin adjusts XP via direct UPDATE | Not through `award_xp` — no combo/multiplier impact. Documented as expected. |
-| Multiplier event created retroactively covering past hour | Does NOT re-process historical transactions. Only affects future calls. |
-| Student has 100% on a 200-point exam | Perfect bonus capped at +100 (§4.6). |
-| Browser timezone ≠ Asia/Bangkok | Day rollover is server-side, always Asia/Bangkok. Consistent for all users. |
-| Race: two `award_xp` calls concurrently for same user | `FOR UPDATE` row lock on `profiles` + `combo_state` serializes them. |
+| Case                                                                        | Decision                                                                                                                            |
+| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Two multiplier events overlap (one global 2×, one classroom 3×)             | Use the **highest** multiplier; don't stack. (Survey said stack would inflate too fast.)                                            |
+| Combo at 30+ — does multiplier keep climbing?                               | No, cap at 2.0× (see curve).                                                                                                        |
+| User does exam at 23:55, finishes 00:10 next day                            | Day-rollover rule applies on **next action**, not mid-action. Exam's single `award_xp` call uses the combo at start.                |
+| Lucky drop on a negative XP action                                          | Skipped (§5.4).                                                                                                                     |
+| Same `idempotency_key` replayed                                             | Returns cached row; lucky drop is NOT re-rolled (stored in metadata).                                                               |
+| Admin adjusts XP via direct UPDATE                                          | Not through `award_xp` — no combo/multiplier impact. Documented as expected.                                                        |
+| Multiplier event created retroactively covering past hour                   | Does NOT re-process historical transactions. Only affects future calls.                                                             |
+| Student has 100% on a 200-point exam                                        | Perfect bonus capped at +100 (§4.6).                                                                                                |
+| Browser timezone ≠ Asia/Bangkok                                             | Day rollover is server-side, always Asia/Bangkok. Consistent for all users.                                                         |
+| Race: two `award_xp` calls concurrently for same user                       | `FOR UPDATE` row lock on `profiles` + `combo_state` serializes them.                                                                |
 | `award_xp` called inside a trigger that itself fires from `award_xp` writes | No recursion: `award_xp` writes to `xp_transactions` (no trigger on it) and `profiles` (no XP-related trigger on `profiles`). Safe. |
 
 ---
@@ -560,6 +572,7 @@ A single migration file (atomic, idempotent):
 **File:** `supabase/migrations/20260720100000_engagement_engine.sql`
 
 Contents (in order):
+
 1. `ALTER TYPE app_xp_source ADD VALUE IF NOT EXISTS 'lucky_drop'`
 2. `ALTER TYPE app_xp_source ADD VALUE IF NOT EXISTS 'perfect_bonus'`
 3. `CREATE TABLE combo_state ...`

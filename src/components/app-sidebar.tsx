@@ -42,13 +42,48 @@ const groups: Group[] = [
     label: "ทั่วไป",
     roles: ["student", "teacher", "admin", "guest"],
     items: [
-      { label: "แดชบอร์ด", url: "/dashboard", icon: LayoutDashboard, roles: ["student", "teacher", "admin", "guest"] },
-      { label: "ภารกิจสัปดาห์", url: "/weekly-missions", icon: CalendarCheck, roles: ["student", "teacher", "admin", "guest"] },
-      { label: "คะแนนพิเศษ", url: "/bonus-center", icon: Trophy, roles: ["student", "teacher", "admin", "guest"] },
-      { label: "ห้องเรียน", url: "/classrooms", icon: BookOpen, roles: ["student", "teacher", "admin", "guest"] },
-      { label: "บัตรคำศัพท์", url: "/flashcards", icon: Layers, roles: ["student", "teacher", "admin", "guest"] },
-      { label: "บันทึกกิจกรรม", url: "/activity", icon: ScrollText, roles: ["student", "teacher", "admin"] },
-      { label: "โปรไฟล์", url: "/profile", icon: UserCircle, roles: ["student", "teacher", "admin", "guest", "room_admin"] },
+      {
+        label: "แดชบอร์ด",
+        url: "/dashboard",
+        icon: LayoutDashboard,
+        roles: ["student", "teacher", "admin", "guest"],
+      },
+      {
+        label: "ภารกิจสัปดาห์",
+        url: "/weekly-missions",
+        icon: CalendarCheck,
+        roles: ["student", "teacher", "admin", "guest"],
+      },
+      {
+        label: "คะแนนพิเศษ",
+        url: "/bonus-center",
+        icon: Trophy,
+        roles: ["student", "teacher", "admin", "guest"],
+      },
+      {
+        label: "ห้องเรียน",
+        url: "/classrooms",
+        icon: BookOpen,
+        roles: ["student", "teacher", "admin", "guest"],
+      },
+      {
+        label: "บัตรคำศัพท์",
+        url: "/flashcards",
+        icon: Layers,
+        roles: ["student", "teacher", "admin", "guest"],
+      },
+      {
+        label: "บันทึกกิจกรรม",
+        url: "/activity",
+        icon: ScrollText,
+        roles: ["student", "teacher", "admin"],
+      },
+      {
+        label: "โปรไฟล์",
+        url: "/profile",
+        icon: UserCircle,
+        roles: ["student", "teacher", "admin", "guest", "room_admin"],
+      },
     ],
   },
   {
@@ -122,7 +157,9 @@ export function AppSidebar() {
           </div>
           {!collapsed && (
             <div className="min-w-0">
-              <span className="block truncate text-sm font-semibold">โรงเรียนศึกษาสงเคราะห์จิตต์อารีฯ</span>
+              <span className="block truncate text-sm font-semibold">
+                โรงเรียนศึกษาสงเคราะห์จิตต์อารีฯ
+              </span>
               <span className="block truncate text-xs text-sidebar-foreground/65">
                 {tr("Connected classroom")}
               </span>

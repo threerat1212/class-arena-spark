@@ -80,14 +80,23 @@ Deno.serve(async (req) => {
     }
 
     const { startsAt, endsAt } = pickWeeklySlot(now);
-    const inserts: Array<{ label: string; multiplier: string; starts_at: string; ends_at: string; scope: string; is_active: boolean }> = [{
-      label: "ชั่วโมงพิเศษ!",
-      multiplier: "2.00",
-      starts_at: startsAt.toISOString(),
-      ends_at: endsAt.toISOString(),
-      scope: "global",
-      is_active: true,
-    }];
+    const inserts: Array<{
+      label: string;
+      multiplier: string;
+      starts_at: string;
+      ends_at: string;
+      scope: string;
+      is_active: boolean;
+    }> = [
+      {
+        label: "ชั่วโมงพิเศษ!",
+        multiplier: "2.00",
+        starts_at: startsAt.toISOString(),
+        ends_at: endsAt.toISOString(),
+        scope: "global",
+        is_active: true,
+      },
+    ];
 
     // 50% chance: add a 30-min 1.5× midweek boost
     if (Math.random() < 0.5) {
@@ -109,14 +118,18 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         spawned: true,
-        events: inserts.map((i) => ({ label: i.label, starts_at: i.starts_at, multiplier: i.multiplier })),
+        events: inserts.map((i) => ({
+          label: i.label,
+          starts_at: i.starts_at,
+          multiplier: i.multiplier,
+        })),
       }),
       { headers: { ...cors, "Content-Type": "application/json" } },
     );
   } catch (e) {
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : String(e) }),
-      { status: 500, headers: { ...cors, "Content-Type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), {
+      status: 500,
+      headers: { ...cors, "Content-Type": "application/json" },
+    });
   }
 });

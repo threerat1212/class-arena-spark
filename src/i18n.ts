@@ -160,7 +160,7 @@ const enDict: Record<string, string> = {
   ปลดล็อกแล้ว: "Unlocked",
   ปิดการแสดงฉายา: "Hide Title",
   "ปิดภารกิจและมอบ XP": "Close mission & award XP",
-  "ปิดรอบภารกิจสัปดาห์แล้ว": "Weekly mission closed",
+  ปิดรอบภารกิจสัปดาห์แล้ว: "Weekly mission closed",
   ผลควิซ: "Quiz Results",
   ผิดพลาด: "Error",
   "ผู้จอง:": "Booked by:",
@@ -195,7 +195,7 @@ const enDict: Record<string, string> = {
   ยังไม่มีการแจ้งเตือน: "No notifications yet",
   "ยังไม่มีกิจกรรม — ทำควอสต์หรือมาเรียนเพื่อเริ่มสะสม XP!":
     "No activity yet — complete a quest or attend class to start earning XP!",
-  "ยังไม่มีกิจกรรมในช่วงเวลานี้": "No activity in this period",
+  ยังไม่มีกิจกรรมในช่วงเวลานี้: "No activity in this period",
   ยังไม่มีความคิดเห็น: "No comments yet",
   ยังไม่มีงาน: "No assignments yet",
   ยังไม่มีงานให้ส่งออก: "No assignments to export",
@@ -526,32 +526,42 @@ const enDict: Record<string, string> = {
   // ===== Exam demo test =====
   "🧪 ทดสอบระบบสอบ": "🧪 System test",
   "🧪 โหมดทดสอบ": "🧪 Demo mode",
-  "ทดสอบระบบสอบก่อนขึ้นจริง": "Test the exam system before the real one",
-  "ลองหน้าจอสอบ + ระบบป้องกันการโกง (fullscreen, counter, แจ้งเตือน) — ไม่มีการบันทึกคะแนนจริง": "Try the exam screen + anti-cheat system (fullscreen, counter, warnings) — no real score recording",
-  "เริ่มทดสอบ": "Start test",
-  "ทดสอบระบบ": "Test system",
-  "ทดสอบความคุ้นเคยกับหน้าจอสอบและระบบป้องกันการโกง": "Get familiar with the exam screen and anti-cheat system",
+  ทดสอบระบบสอบก่อนขึ้นจริง: "Test the exam system before the real one",
+  "ลองหน้าจอสอบ + ระบบป้องกันการโกง (fullscreen, counter, แจ้งเตือน) — ไม่มีการบันทึกคะแนนจริง":
+    "Try the exam screen + anti-cheat system (fullscreen, counter, warnings) — no real score recording",
+  เริ่มทดสอบ: "Start test",
+  ทดสอบระบบ: "Test system",
+  ทดสอบความคุ้นเคยกับหน้าจอสอบและระบบป้องกันการโกง:
+    "Get familiar with the exam screen and anti-cheat system",
   "โหมดทดสอบ — ไม่มีการบันทึกคะแนน": "Demo mode — no scores are recorded",
-  "ทุกคำตอบจะไม่ถูกบันทึก ไม่มีการส่งข้อสอบจริง ไม่ได้ XP — เน้นให้คุ้นเคยระบบเท่านั้น": "No answers are saved, no real submission, no XP — just to get familiar with the system",
+  "ทุกคำตอบจะไม่ถูกบันทึก ไม่มีการส่งข้อสอบจริง ไม่ได้ XP — เน้นให้คุ้นเคยระบบเท่านั้น":
+    "No answers are saved, no real submission, no XP — just to get familiar with the system",
   "จำลองเวลาสอบ 5 นาที": "Simulated 5-minute exam",
-  "ระบบป้องกันการโกงจะทำงานจริง (นับการออกจากหน้า + แจ้งเตือน) — แต่ไม่่มีการส่งอัตโนมัติ": "Anti-cheat system works for real (counts exits + warnings) — but no auto-submit",
+  "ระบบป้องกันการโกงจะทำงานจริง (นับการออกจากหน้า + แจ้งเตือน) — แต่ไม่่มีการส่งอัตโนมัติ":
+    "Anti-cheat system works for real (counts exits + warnings) — but no auto-submit",
   "ยกเลิก กลับหน้าหลัก": "Cancel, back to home",
-  "จบการทดสอบ": "End test",
+  จบการทดสอบ: "End test",
   "จบการทดสอบ?": "End the test?",
-  "จบทดสอบ": "End test",
-  "ส่งและดูผล": "Submit and see results",
-  "ทดสอบเสร็จสิ้น": "Test complete",
+  จบทดสอบ: "End test",
+  ส่งและดูผล: "Submit and see results",
+  ทดสอบเสร็จสิ้น: "Test complete",
   "คุณตอบถูก (โหมดทดสอบ — ไม่บันทึกจริง)": "You answered correctly (demo — not recorded)",
-  "🔄 (โหมดทดสอบ) — ถ้าเป็นข้อสอบจริง ตอนนี้จะถูกส่งอัตโนมัติเพราะออกจากหน้าสอบครบเกณฑ์": "🔄 (Demo mode) — in a real exam, this would auto-submit because you reached the exit limit",
-  "ℹ️ ในข้อสอบจริง ตอนนี้จะถูกส่งอัตโนมัติเพราะครบเกณฑ์การออกจากหน้า": "ℹ️ In a real exam, this would auto-submit because you reached the exit limit",
-  "ข้อใดเป็นรากที่สองของ 144? (ตัวอย่างข้อสอบปรนัย — ทดสอบการกดตัวเลือก)": "What is the square root of 144? (Sample MCQ — testing option selection)",
-  "โลกหมุนรอบตัวเองใช้เวลาเท่าใด? (ตัวอย่างข้อสอบปรนัย)": "How long does Earth take to rotate once? (Sample MCQ)",
-  "พิมพ์คำว่า 'สวัสดี' (ตัวอย่างข้อสอบเติมคำสั้น — ทดสอบการพิมพ์คำตอบ)": "Type 'สวัสดี' (Sample short answer — testing text input)",
-  "ไม่่นับในโหมดทดสอบ": "(not counted in demo mode)",
-  "ยังไม่มีข้อสอบในห้องนี้": "No exams in this classroom yet",
-  "ยังไม่มีข้อสอบในห้องนี้ — กด 'สร้างข้อสอบ' ด้านบน": "No exams in this classroom — click 'Create exam' above",
-  "รอครูเปิดสอบ": "Waiting for teacher to open",
-  "ปิดสอบแล้ว": "Exam closed",
+  "🔄 (โหมดทดสอบ) — ถ้าเป็นข้อสอบจริง ตอนนี้จะถูกส่งอัตโนมัติเพราะออกจากหน้าสอบครบเกณฑ์":
+    "🔄 (Demo mode) — in a real exam, this would auto-submit because you reached the exit limit",
+  "ℹ️ ในข้อสอบจริง ตอนนี้จะถูกส่งอัตโนมัติเพราะครบเกณฑ์การออกจากหน้า":
+    "ℹ️ In a real exam, this would auto-submit because you reached the exit limit",
+  "ข้อใดเป็นรากที่สองของ 144? (ตัวอย่างข้อสอบปรนัย — ทดสอบการกดตัวเลือก)":
+    "What is the square root of 144? (Sample MCQ — testing option selection)",
+  "โลกหมุนรอบตัวเองใช้เวลาเท่าใด? (ตัวอย่างข้อสอบปรนัย)":
+    "How long does Earth take to rotate once? (Sample MCQ)",
+  "พิมพ์คำว่า 'สวัสดี' (ตัวอย่างข้อสอบเติมคำสั้น — ทดสอบการพิมพ์คำตอบ)":
+    "Type 'สวัสดี' (Sample short answer — testing text input)",
+  ไม่่นับในโหมดทดสอบ: "(not counted in demo mode)",
+  ยังไม่มีข้อสอบในห้องนี้: "No exams in this classroom yet",
+  "ยังไม่มีข้อสอบในห้องนี้ — กด 'สร้างข้อสอบ' ด้านบน":
+    "No exams in this classroom — click 'Create exam' above",
+  รอครูเปิดสอบ: "Waiting for teacher to open",
+  ปิดสอบแล้ว: "Exam closed",
 
   // ===== Exam system original =====
   "📝 การสอบ": "📝 Exams",
@@ -629,10 +639,47 @@ const enDict: Record<string, string> = {
   เพิ่มข้อ: "Add question",
   เวลาเปิด: "Opens at",
   เวลาปิด: "Closes at",
+  // Engagement Engine — flat dotted keys (keySeparator:false).
+  "gamification.combo.tier.warm": "combo {{count}}",
+  "gamification.combo.tier.spark": "combo {{count}} 🔥",
+  "gamification.combo.tier.blaze": "combo {{count}} 🔥🔥",
+  "gamification.combo.tier.inferno": "INFERNO ×{{count}}",
+  "gamification.combo.tier.max": "MAX ×{{count}}",
+  "gamification.multiplier.active": "XP ×{{multiplier}} for {{remaining}} more",
+  "gamification.breakdown.title": "Bonus breakdown",
+  "gamification.breakdown.base": "Base",
+  "gamification.breakdown.combo": "combo ×{{count}}",
+  "gamification.breakdown.event": "Event",
+  "gamification.breakdown.perfect": "Perfect bonus",
+  "gamification.breakdown.luckyXp": "Lucky XP",
+  "gamification.breakdown.luckyGold": "Lucky gold",
+  "gamification.breakdown.total": "Total",
+  "common.dismiss": "Dismiss",
 };
 
 const resources = {
-  th: { translation: {} },
+  th: {
+    translation: {
+      // Engagement Engine strings — Thai is the default rendering for these
+      // flat keys (i18n is configured with keySeparator:false so dotted
+      // keys are flat strings, not nested paths).
+      "gamification.combo.tier.warm": "combo {{count}}",
+      "gamification.combo.tier.spark": "combo {{count}} 🔥",
+      "gamification.combo.tier.blaze": "combo {{count}} 🔥🔥",
+      "gamification.combo.tier.inferno": "INFERNO ×{{count}}",
+      "gamification.combo.tier.max": "MAX ×{{count}}",
+      "gamification.multiplier.active": "XP ×{{multiplier}} อีก {{remaining}}",
+      "gamification.breakdown.title": "รายละเอียดโบนัส",
+      "gamification.breakdown.base": "พื้นฐาน",
+      "gamification.breakdown.combo": "combo ×{{count}}",
+      "gamification.breakdown.event": "กิจกรรม",
+      "gamification.breakdown.perfect": "โบนัสคะแนนเต็ม",
+      "gamification.breakdown.luckyXp": "ลากได้ XP",
+      "gamification.breakdown.luckyGold": "ลากได้ทอง",
+      "gamification.breakdown.total": "รวม",
+      "common.dismiss": "ปิด",
+    },
+  },
   en: { translation: enDict },
 };
 

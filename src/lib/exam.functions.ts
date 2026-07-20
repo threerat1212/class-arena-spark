@@ -272,15 +272,17 @@ export async function rpcGradeShortAnswer(args: {
   score: number;
 }): Promise<void> {
   // cast เพราะ types.ts (Schema B) ยังไม่รู้จัก RPC นี้ — หลัง regenerate types แล้วเอา cast ออกได้
-  const { error } = await (supabase.rpc as unknown as (name: string, args: Record<string, unknown>) => Promise<{ error: unknown }>)(
-    "grade_short_answer",
-    {
-      _question_id: args.question_id,
-      _user_id: args.user_id,
-      _is_correct: args.is_correct,
-      _score: args.score,
-      _graded_by: "teacher",
-    },
-  );
+  const { error } = await (
+    supabase.rpc as unknown as (
+      name: string,
+      args: Record<string, unknown>,
+    ) => Promise<{ error: unknown }>
+  )("grade_short_answer", {
+    _question_id: args.question_id,
+    _user_id: args.user_id,
+    _is_correct: args.is_correct,
+    _score: args.score,
+    _graded_by: "teacher",
+  });
   if (error) throw error;
 }

@@ -39,7 +39,10 @@ export function ComboBadge({ combo, multiplier, className, compact }: ComboBadge
         <span>
           {compact
             ? `×${combo}`
-            : t(`gamification.combo.tier.${tier.label}`, { count: combo, defaultValue: `combo ×${combo}` })}
+            : t(`gamification.combo.tier.${tier.label}`, {
+                count: combo,
+                defaultValue: `combo ×${combo}`,
+              })}
         </span>
         {multiplier && multiplier > 1 && (
           <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] text-primary">

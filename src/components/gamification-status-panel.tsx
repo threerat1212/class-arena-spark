@@ -150,10 +150,7 @@ export function GamificationStatusPanel({
         {(activeEvent || (comboState && comboState.current_combo > 0)) && (
           <div className="flex flex-wrap items-center gap-2">
             {activeEvent && (
-              <MultiplierEventBanner
-                event={activeEvent}
-                className="flex-1 min-w-[200px]"
-              />
+              <MultiplierEventBanner event={activeEvent} className="flex-1 min-w-[200px]" />
             )}
             {comboState && comboState.current_combo > 0 && (
               <div className="inline-flex items-center gap-2">
@@ -168,126 +165,126 @@ export function GamificationStatusPanel({
           </div>
         )}
         <div className="grid gap-5 lg:grid-cols-[1.05fr_1.4fr]">
-        <div className="flex items-center gap-4">
-          <div
-            className="scholar-progress-ring grid size-28 shrink-0 place-items-center rounded-full p-2"
-            style={{
-              background: `conic-gradient(var(--xp) ${levelProgress}%, color-mix(in oklch, var(--muted) 75%, transparent) 0)`,
-            }}
-            aria-label={`${levelProgress}% ${tr("ความคืบหน้าเลเวล")}`}
-          >
-            <div className="grid size-full place-items-center rounded-full bg-card text-center">
+          <div className="flex items-center gap-4">
+            <div
+              className="scholar-progress-ring grid size-28 shrink-0 place-items-center rounded-full p-2"
+              style={{
+                background: `conic-gradient(var(--xp) ${levelProgress}%, color-mix(in oklch, var(--muted) 75%, transparent) 0)`,
+              }}
+              aria-label={`${levelProgress}% ${tr("ความคืบหน้าเลเวล")}`}
+            >
+              <div className="grid size-full place-items-center rounded-full bg-card text-center">
+                <div>
+                  <p className="text-xs text-muted-foreground">Lv.</p>
+                  <p className="font-display text-3xl font-semibold">{level}</p>
+                </div>
+              </div>
+            </div>
+            <div className="min-w-0 space-y-3">
               <div>
-                <p className="text-xs text-muted-foreground">Lv.</p>
-                <p className="font-display text-3xl font-semibold">{level}</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="font-display text-2xl">{tr("Weekly Pulse")}</h2>
+                  <Badge variant="outline" className="gap-1">
+                    <Flame className="size-3.5 text-orange-500" />
+                    {streak} {tr("วัน")}
+                  </Badge>
+                </div>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {xpInLevel}/100 XP {tr("เพื่อไปยังเลเวล")} {level + 1}
+                </p>
+              </div>
+              <Progress value={levelProgress} className="h-2.5" />
+              <div className="grid grid-cols-3 gap-2 text-xs">
+                <PulseStat
+                  icon={<Zap className="size-3.5" />}
+                  label="XP"
+                  value={xp.toLocaleString()}
+                />
+                <PulseStat
+                  icon={<Gift className="size-3.5" />}
+                  label={tr("ทอง")}
+                  value={gold.toLocaleString()}
+                  reward
+                />
+                <PulseStat
+                  icon={<Award className="size-3.5" />}
+                  label={tr("ตรา")}
+                  value={`${badgeCount}/${achievementCount}`}
+                />
               </div>
             </div>
           </div>
-          <div className="min-w-0 space-y-3">
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="font-display text-2xl">{tr("Weekly Pulse")}</h2>
-                <Badge variant="outline" className="gap-1">
-                  <Flame className="size-3.5 text-orange-500" />
-                  {streak} {tr("วัน")}
-                </Badge>
-              </div>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {xpInLevel}/100 XP {tr("เพื่อไปยังเลเวล")} {level + 1}
-              </p>
-            </div>
-            <Progress value={levelProgress} className="h-2.5" />
-            <div className="grid grid-cols-3 gap-2 text-xs">
-              <PulseStat
-                icon={<Zap className="size-3.5" />}
-                label="XP"
-                value={xp.toLocaleString()}
-              />
-              <PulseStat
-                icon={<Gift className="size-3.5" />}
-                label={tr("ทอง")}
-                value={gold.toLocaleString()}
-                reward
-              />
-              <PulseStat
-                icon={<Award className="size-3.5" />}
-                label={tr("ตรา")}
-                value={`${badgeCount}/${achievementCount}`}
-              />
-            </div>
-          </div>
-        </div>
 
-        <div className="space-y-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="font-display text-lg">{tr("Weekly Mission Board")}</p>
-              <p className="text-sm text-muted-foreground">{nextUnlock}</p>
+          <div className="space-y-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="font-display text-lg">{tr("Weekly Mission Board")}</p>
+                <p className="text-sm text-muted-foreground">{nextUnlock}</p>
+              </div>
+              <Badge className="shrink-0 gap-1">
+                <Target className="size-3.5" />
+                {completedMissions}/{missions.length}
+              </Badge>
             </div>
-            <Badge className="shrink-0 gap-1">
-              <Target className="size-3.5" />
-              {completedMissions}/{missions.length}
-            </Badge>
-          </div>
-          <div className="grid gap-2">
-            {missions.map((mission) => (
-              <Link
-                key={mission.label}
-                to={mission.to}
-                className="group rounded-lg border bg-card/80 p-3 transition-colors hover:border-primary/45 hover:bg-secondary/40"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span
-                      className={`grid size-8 shrink-0 place-items-center rounded-md ${
-                        mission.done
-                          ? "scholar-complete-cue bg-primary text-primary-foreground"
-                          : "bg-primary/10 text-primary"
-                      }`}
-                    >
-                      {mission.done ? (
-                        <Check className="size-4" />
-                      ) : (
-                        <Sparkles className="size-4" />
-                      )}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">{mission.label}</p>
-                      <p className="truncate text-xs text-muted-foreground">{mission.detail}</p>
+            <div className="grid gap-2">
+              {missions.map((mission) => (
+                <Link
+                  key={mission.label}
+                  to={mission.to}
+                  className="group rounded-lg border bg-card/80 p-3 transition-colors hover:border-primary/45 hover:bg-secondary/40"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span
+                        className={`grid size-8 shrink-0 place-items-center rounded-md ${
+                          mission.done
+                            ? "scholar-complete-cue bg-primary text-primary-foreground"
+                            : "bg-primary/10 text-primary"
+                        }`}
+                      >
+                        {mission.done ? (
+                          <Check className="size-4" />
+                        ) : (
+                          <Sparkles className="size-4" />
+                        )}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium">{mission.label}</p>
+                        <p className="truncate text-xs text-muted-foreground">{mission.detail}</p>
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <Badge
+                        variant="outline"
+                        className={
+                          mission.reward === "+Gold"
+                            ? "scholar-reward-cue border-[color:var(--gold)]/40 text-[color:var(--gold)]"
+                            : undefined
+                        }
+                      >
+                        {mission.reward}
+                      </Badge>
+                      <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                     </div>
                   </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    <Badge
-                      variant="outline"
-                      className={
-                        mission.reward === "+Gold"
-                          ? "scholar-reward-cue border-[color:var(--gold)]/40 text-[color:var(--gold)]"
-                          : undefined
-                      }
-                    >
-                      {mission.reward}
-                    </Badge>
-                    <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-                  </div>
-                </div>
-                <Progress value={mission.progress} className="mt-2 h-1.5" />
-              </Link>
-            ))}
-          </div>
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card/70 px-3 py-2">
-            <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-              <Trophy className="size-4 text-primary" />
-              Perfect streak: {perfectStreak}
-            </span>
-            <Button asChild size="sm" variant="outline">
-              <Link to="/rewards">
-                {tr("ดูรางวัล")}
-                <Star className="size-4" />
-              </Link>
-            </Button>
+                  <Progress value={mission.progress} className="mt-2 h-1.5" />
+                </Link>
+              ))}
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card/70 px-3 py-2">
+              <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+                <Trophy className="size-4 text-primary" />
+                Perfect streak: {perfectStreak}
+              </span>
+              <Button asChild size="sm" variant="outline">
+                <Link to="/rewards">
+                  {tr("ดูรางวัล")}
+                  <Star className="size-4" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
       </CardContent>
     </Card>
   );

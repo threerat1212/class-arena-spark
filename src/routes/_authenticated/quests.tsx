@@ -1007,7 +1007,10 @@ function AttemptResultView({
           {tr("คะแนน")} {score}/{maxScore} • +{attempt.xp_awarded ?? 0} XP • +
           {attempt.gold_awarded ?? 0} {tr("ทอง")}
         </p>
-        {(attempt.combo_applied || attempt.multiplier_applied || attempt.perfect_bonus || attempt.lucky_drop) ? (
+        {attempt.combo_applied ||
+        attempt.multiplier_applied ||
+        attempt.perfect_bonus ||
+        attempt.lucky_drop ? (
           <div className="pt-1 space-y-2">
             {attempt.combo_applied ? (
               <ComboBadge combo={attempt.combo_applied} multiplier={attempt.multiplier_applied} />
@@ -1017,8 +1020,8 @@ function AttemptResultView({
               comboCount={attempt.combo_applied ?? 0}
               comboMultiplier={attempt.multiplier_applied}
               perfectBonus={attempt.perfect_bonus}
-              luckyXp={attempt.lucky_drop?.kind === "xp" ? attempt.lucky_drop.amount ?? 0 : 0}
-              luckyGold={attempt.lucky_drop?.kind === "gold" ? attempt.lucky_drop.amount ?? 0 : 0}
+              luckyXp={attempt.lucky_drop?.kind === "xp" ? (attempt.lucky_drop.amount ?? 0) : 0}
+              luckyGold={attempt.lucky_drop?.kind === "gold" ? (attempt.lucky_drop.amount ?? 0) : 0}
             />
           </div>
         ) : null}

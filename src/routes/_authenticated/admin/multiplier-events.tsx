@@ -89,24 +89,19 @@ function AdminMultiplierEventsPage() {
       qc.invalidateQueries({ queryKey: ["admin-multiplier-events"] });
       qc.invalidateQueries({ queryKey: ["active-multiplier-event"] });
     },
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : tr("อัปเดตล้มเหลว")),
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : tr("อัปเดตล้มเหลว")),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("multiplier_events")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("multiplier_events").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-multiplier-events"] });
       qc.invalidateQueries({ queryKey: ["multiplier-events-history"] });
     },
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : tr("ลบล้มเหลว")),
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : tr("ลบล้มเหลว")),
   });
 
   if (loading) {
@@ -165,11 +160,7 @@ function AdminMultiplierEventsPage() {
           </div>
           <Button
             onClick={() => createMutation.mutate()}
-            disabled={
-              !form.startsAt ||
-              !form.endsAt ||
-              createMutation.isPending
-            }
+            disabled={!form.startsAt || !form.endsAt || createMutation.isPending}
           >
             {createMutation.isPending ? tr("กำลังสร้าง...") : tr("สร้าง")}
           </Button>
@@ -195,9 +186,7 @@ function AdminMultiplierEventsPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{e.label}</span>
-                      {!e.is_active && (
-                        <Badge variant="outline">{tr("ปิดแล้ว")}</Badge>
-                      )}
+                      {!e.is_active && <Badge variant="outline">{tr("ปิดแล้ว")}</Badge>}
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {fmt(e.starts_at)} — {fmt(e.ends_at)}
@@ -219,11 +208,7 @@ function AdminMultiplierEventsPage() {
                     >
                       {e.is_active ? tr("ปิด") : tr("เปิด")}
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => deleteMutation.mutate(e.id)}
-                    >
+                    <Button size="sm" variant="ghost" onClick={() => deleteMutation.mutate(e.id)}>
                       {tr("ลบ")}
                     </Button>
                   </div>

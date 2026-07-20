@@ -19,9 +19,7 @@ function formatRemaining(ms: number, lang: string): string {
   if (totalMinutes >= 60) {
     const hours = Math.floor(totalMinutes / 60);
     const mins = totalMinutes % 60;
-    return lang === "th"
-      ? `${hours} ชม. ${mins} นาที`
-      : `${hours}h ${mins}m`;
+    return lang === "th" ? `${hours} ชม. ${mins} นาที` : `${hours}h ${mins}m`;
   }
   return rtf.format(totalMinutes, "minute");
 }

@@ -82,15 +82,7 @@ export function BonusBreakdown({
   );
 }
 
-function Row({
-  label,
-  value,
-  highlight,
-}: {
-  label: string;
-  value: string;
-  highlight?: boolean;
-}) {
+function Row({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className={cn("flex justify-between", highlight && "text-primary font-medium")}>
       <span>{label}</span>

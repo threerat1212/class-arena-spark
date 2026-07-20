@@ -248,12 +248,6 @@ const AuthenticatedAdminMultiplierEventsRoute =
     path: '/admin/multiplier-events',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedAdminMultiplierEventsRoute =
-  AuthenticatedAdminMultiplierEventsRouteImport.update({
-    id: '/admin/multiplier-events',
-    path: '/admin/multiplier-events',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -306,8 +300,8 @@ export interface FileRoutesByFullPath {
   '/weekly-missions': typeof AuthenticatedWeeklyMissionsRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/admin/multiplier-events': typeof AuthenticatedAdminMultiplierEventsRoute
+  '/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/admin/teachers': typeof AuthenticatedAdminTeachersRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -348,8 +342,8 @@ export interface FileRoutesByTo {
   '/weekly-missions': typeof AuthenticatedWeeklyMissionsRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/admin/multiplier-events': typeof AuthenticatedAdminMultiplierEventsRoute
+  '/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/admin/teachers': typeof AuthenticatedAdminTeachersRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -392,8 +386,8 @@ export interface FileRoutesById {
   '/_authenticated/weekly-missions': typeof AuthenticatedWeeklyMissionsRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/_authenticated/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/_authenticated/admin/multiplier-events': typeof AuthenticatedAdminMultiplierEventsRoute
+  '/_authenticated/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/_authenticated/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/_authenticated/admin/teachers': typeof AuthenticatedAdminTeachersRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -437,8 +431,8 @@ export interface FileRouteTypes {
     | '/weekly-missions'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
-    | '/admin/rooms'
     | '/admin/multiplier-events'
+    | '/admin/rooms'
     | '/admin/students'
     | '/admin/teachers'
     | '/admin/users'
@@ -479,8 +473,8 @@ export interface FileRouteTypes {
     | '/weekly-missions'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
-    | '/admin/rooms'
     | '/admin/multiplier-events'
+    | '/admin/rooms'
     | '/admin/students'
     | '/admin/teachers'
     | '/admin/users'
@@ -522,8 +516,8 @@ export interface FileRouteTypes {
     | '/_authenticated/weekly-missions'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
-    | '/_authenticated/admin/rooms'
     | '/_authenticated/admin/multiplier-events'
+    | '/_authenticated/admin/rooms'
     | '/_authenticated/admin/students'
     | '/_authenticated/admin/teachers'
     | '/_authenticated/admin/users'
@@ -903,6 +897,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedQuestsRoute: typeof AuthenticatedQuestsRoute
   AuthenticatedRewardsRoute: typeof AuthenticatedRewardsRoute
   AuthenticatedWeeklyMissionsRoute: typeof AuthenticatedWeeklyMissionsRoute
+  AuthenticatedAdminMultiplierEventsRoute: typeof AuthenticatedAdminMultiplierEventsRoute
   AuthenticatedAdminRoomsRoute: typeof AuthenticatedAdminRoomsRoute
   AuthenticatedAdminStudentsRoute: typeof AuthenticatedAdminStudentsRoute
   AuthenticatedAdminTeachersRoute: typeof AuthenticatedAdminTeachersRoute
@@ -932,6 +927,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedQuestsRoute: AuthenticatedQuestsRoute,
   AuthenticatedRewardsRoute: AuthenticatedRewardsRoute,
   AuthenticatedWeeklyMissionsRoute: AuthenticatedWeeklyMissionsRoute,
+  AuthenticatedAdminMultiplierEventsRoute:
+    AuthenticatedAdminMultiplierEventsRoute,
   AuthenticatedAdminRoomsRoute: AuthenticatedAdminRoomsRoute,
   AuthenticatedAdminStudentsRoute: AuthenticatedAdminStudentsRoute,
   AuthenticatedAdminTeachersRoute: AuthenticatedAdminTeachersRoute,

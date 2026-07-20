@@ -34,7 +34,6 @@ export function announceLuckyDrop(drop: LuckyDropReward | null | undefined) {
   const Icon = cfg.icon;
   toast(cfg.msg, {
     icon: <Icon className={`h-4 w-4 ${cfg.color}`} />,
-    duration:
-      drop.kind === "rare_title" || drop.kind === "cosmetic_voucher" ? 6000 : 4000,
+    duration: drop.kind === "rare_title" || drop.kind === "cosmetic_voucher" ? 6000 : 4000,
   });
 }

@@ -8,7 +8,17 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Coins, Lock, Check, Trophy, ShoppingBag, Award, Crown, Star, Sparkles } from "lucide-react";
+import {
+  Coins,
+  Lock,
+  Check,
+  Trophy,
+  ShoppingBag,
+  Award,
+  Crown,
+  Star,
+  Sparkles,
+} from "lucide-react";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
 import type { MultiplierEventRow, LuckyDropLogRow } from "@/lib/gamification.types";
@@ -599,10 +609,8 @@ function EventsTab({ userId }: { userId?: string }) {
                 <span>
                   {d.reward_kind === "gold" && `🪙 +${d.reward_amount} ${tr("ทอง")}`}
                   {d.reward_kind === "xp" && `✨ +${d.reward_amount} XP`}
-                  {d.reward_kind === "cosmetic_voucher" &&
-                    `🎁 Voucher (${tr("รอเปิดใช้")})`}
-                  {d.reward_kind === "rare_title" &&
-                    `👑 ${tr("ฉายาหายาก")} (${tr("รอเปิดใช้")})`}
+                  {d.reward_kind === "cosmetic_voucher" && `🎁 Voucher (${tr("รอเปิดใช้")})`}
+                  {d.reward_kind === "rare_title" && `👑 ${tr("ฉายาหายาก")} (${tr("รอเปิดใช้")})`}
                 </span>
                 <span className="text-xs text-muted-foreground">
                   {new Date(d.created_at).toLocaleString("th-TH")}

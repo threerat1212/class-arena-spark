@@ -18,29 +18,29 @@
 
 ### New files
 
-| Path | Responsibility |
-|---|---|
+| Path                                                       | Responsibility                                               |
+| ---------------------------------------------------------- | ------------------------------------------------------------ |
 | `supabase/migrations/20260720100000_engagement_engine.sql` | All schema + RPC + trigger changes (single atomic migration) |
-| `src/components/gamification/combo-badge.tsx` | Animated combo pill |
-| `src/components/gamification/multiplier-event-banner.tsx` | Dismissible event banner |
-| `src/components/gamification/bonus-breakdown.tsx` | Math breakdown renderer |
-| `src/components/gamification/lucky-drop-toast.tsx` | Sonner wrapper for lucky drops |
-| `src/lib/gamification.types.ts` | TypeScript types for new return fields + tables |
-| `src/routes/_authenticated/admin/multiplier-events.tsx` | Admin CRUD page for events |
-| `supabase/functions/spawn-weekly-multiplier/index.ts` | Weekly auto-spawn edge function |
+| `src/components/gamification/combo-badge.tsx`              | Animated combo pill                                          |
+| `src/components/gamification/multiplier-event-banner.tsx`  | Dismissible event banner                                     |
+| `src/components/gamification/bonus-breakdown.tsx`          | Math breakdown renderer                                      |
+| `src/components/gamification/lucky-drop-toast.tsx`         | Sonner wrapper for lucky drops                               |
+| `src/lib/gamification.types.ts`                            | TypeScript types for new return fields + tables              |
+| `src/routes/_authenticated/admin/multiplier-events.tsx`    | Admin CRUD page for events                                   |
+| `supabase/functions/spawn-weekly-multiplier/index.ts`      | Weekly auto-spawn edge function                              |
 
 ### Modified files
 
-| Path | Reason |
-|---|---|
-| `src/integrations/supabase/types.ts` | Regenerated via `supabase gen types` after migration |
-| `src/routes/_authenticated/quests.tsx` | Wire bonus breakdown into result screen |
-| `src/routes/_authenticated/exam.$examId.report.tsx` | Wire bonus breakdown into exam report |
-| `src/routes/_authenticated/quiz.$sessionId.tsx` | Combo badge per question batch |
-| `src/components/gamification-status-panel.tsx` | Show combo + event banner |
-| `src/components/app-sidebar.tsx` | Add admin multiplier-events nav (admin role only) |
-| `src/i18n.ts` | Add Thai + English strings for new UI |
-| `src/routes/_authenticated/rewards.tsx` | New "กิจกรรม" (Events) tab |
+| Path                                                | Reason                                               |
+| --------------------------------------------------- | ---------------------------------------------------- |
+| `src/integrations/supabase/types.ts`                | Regenerated via `supabase gen types` after migration |
+| `src/routes/_authenticated/quests.tsx`              | Wire bonus breakdown into result screen              |
+| `src/routes/_authenticated/exam.$examId.report.tsx` | Wire bonus breakdown into exam report                |
+| `src/routes/_authenticated/quiz.$sessionId.tsx`     | Combo badge per question batch                       |
+| `src/components/gamification-status-panel.tsx`      | Show combo + event banner                            |
+| `src/components/app-sidebar.tsx`                    | Add admin multiplier-events nav (admin role only)    |
+| `src/i18n.ts`                                       | Add Thai + English strings for new UI                |
+| `src/routes/_authenticated/rewards.tsx`             | New "กิจกรรม" (Events) tab                           |
 
 ---
 
@@ -61,6 +61,7 @@ The tasks are grouped by layer. Each task is self-contained and independently co
 ### Task 1: Create the engagement engine migration (schema only)
 
 **Files:**
+
 - Create: `supabase/migrations/20260720100000_engagement_engine.sql`
 
 This task creates ONLY the tables, enum values, and the `combo_multiplier()` helper. The `award_xp` rewrite and trigger migrations are separate tasks (2, 4, 5) so each can be verified independently.
@@ -225,9 +226,11 @@ ON CONFLICT (user_id) DO NOTHING;
 - [ ] **Step 7: Verify syntax with local Supabase**
 
 Run:
+
 ```bash
 bunx supabase db reset --linked
 ```
+
 (If no linked project, run against local: `bunx supabase start && bunx supabase db reset`)
 
 Expected: migration applies without errors. If you see `has_role` not found, check that the helper exists (it is used elsewhere — search migrations for `CREATE FUNCTION has_role`).
@@ -252,6 +255,7 @@ Spec: docs/superpowers/specs/2026-07-20-gamification-engagement-engine-design.md
 ### Task 2: Rewrite `award_xp()` with multipliers, perfect bonus, lucky drops
 
 **Files:**
+
 - Modify: `supabase/migrations/20260720100000_engagement_engine.sql` (append to existing file)
 
 This task appends the new `award_xp()` body to the migration created in Task 1. Keeping it in the same migration keeps the deployment atomic.
@@ -651,9 +655,11 @@ GRANT EXECUTE ON FUNCTION public.award_xp(
 - [ ] **Step 3: Verify SQL loads**
 
 If local Supabase is available:
+
 ```bash
 bunx supabase db reset
 ```
+
 Expected: completes without error. If `combo_state` / `multiplier_events` / `lucky_drop_log` already exist (from Task 1 running twice), the `IF NOT EXISTS` clauses protect you.
 
 If no local Supabase, skip; the migration is exercised when you push to a linked project.
@@ -678,16 +684,19 @@ Spec: docs/superpowers/specs/2026-07-20-gamification-engagement-engine-design.md
 ### Task 3: Regenerate Supabase types
 
 **Files:**
+
 - Modify: `src/integrations/supabase/types.ts` (regenerated, not hand-edited)
 
 - [ ] **Step 1: Regenerate types**
 
 Run:
+
 ```bash
 bunx supabase gen types typescript --linked > src/integrations/supabase/types.ts
 ```
 
 If `--linked` fails or no linked project:
+
 ```bash
 bunx supabase gen types typescript --local > src/integrations/supabase/types.ts
 ```
@@ -701,9 +710,11 @@ Update the `award_xp` RPC return type if it's typed; otherwise leave (TS code re
 - [ ] **Step 2: Typecheck**
 
 Run:
+
 ```bash
 bun run typecheck
 ```
+
 Expected: zero errors related to new tables/RPC. Pre-existing errors are acceptable to carry forward.
 
 - [ ] **Step 3: Commit**
@@ -721,6 +732,7 @@ new award_xp() return shape."
 ### Task 4: Migrate `finalize_quest_from_progress` + `submit_exam` to pass outcome
 
 **Files:**
+
 - Modify: `supabase/migrations/20260720100000_engagement_engine.sql` (append)
 
 These callers already route through `award_xp`. We only need to add `outcome` to their `_metadata` so combo/perfect/lucky logic activates.
@@ -940,9 +952,11 @@ $$;
 - [ ] **Step 3: Verify column names match**
 
 Run this search to confirm `exam_participants` columns:
+
 ```bash
 grep -A 30 "CREATE TABLE public.exam_participants" supabase/migrations/20260716090000_exam_schema.sql
 ```
+
 If `violation_count` or `total_score` is named differently, fix the Step 2 snippet before continuing.
 
 - [ ] **Step 4: Commit**
@@ -961,6 +975,7 @@ include bonus breakdown for UI rendering."
 ### Task 5: Fold `award_submission_grade` trigger into `award_xp`
 
 **Files:**
+
 - Modify: `supabase/migrations/20260720100000_engagement_engine.sql` (append)
 
 - [ ] **Step 1: Read the current trigger body**
@@ -1040,9 +1055,11 @@ $$;
 - [ ] **Step 3: Verify the trigger is still wired**
 
 The existing migration `20260527031735...sql` lines 58-61 wires the trigger. We don't need to re-wire. Confirm:
+
 ```bash
 grep -n "submissions_award_xp" supabase/migrations/*.sql
 ```
+
 Expected: at least one `CREATE TRIGGER submissions_award_xp` definition in the historical migrations.
 
 - [ ] **Step 4: Commit**
@@ -1062,6 +1079,7 @@ graded_at timestamp."
 ### Task 6: Fold `award_attendance_checkin` trigger into `award_xp`
 
 **Files:**
+
 - Modify: `supabase/migrations/20260720100000_engagement_engine.sql` (append)
 
 - [ ] **Step 1: Read current trigger body**
@@ -1143,6 +1161,7 @@ Re-grades are handled via idempotency key (one row per attendance_record id)."
 ### Task 7: Fold `finish_quiz_session` into `award_xp`
 
 **Files:**
+
 - Modify: `supabase/migrations/20260720100000_engagement_engine.sql` (append)
 
 - [ ] **Step 1: Read current `finish_quiz_session` body**
@@ -1226,9 +1245,11 @@ $$;
 - [ ] **Step 3: Verify the `quiz_participants` schema**
 
 Run:
+
 ```bash
 grep -A 15 "CREATE TABLE public.quiz_participants" supabase/migrations/*.sql | head -25
 ```
+
 Adjust column names in Step 2 if `user_id`, `score`, `session_id` differ.
 
 - [ ] **Step 4: Commit**
@@ -1248,6 +1269,7 @@ id + user id to dedupe re-finishes."
 ### Task 8: Create TypeScript types for new return shape + tables
 
 **Files:**
+
 - Create: `src/lib/gamification.types.ts`
 
 - [ ] **Step 1: Write the types file**
@@ -1332,16 +1354,16 @@ export interface LuckyDropLogRow {
 export interface ComboTier {
   min: number;
   multiplier: number;
-  label: string;          // i18n key suffix
-  glowClass: string;      // tailwind classes
+  label: string; // i18n key suffix
+  glowClass: string; // tailwind classes
 }
 
 export const COMBO_TIERS: ComboTier[] = [
-  { min: 0,  multiplier: 1.0,  label: "warm",   glowClass: "" },
-  { min: 3,  multiplier: 1.2,  label: "spark",  glowClass: "text-amber-500" },
-  { min: 5,  multiplier: 1.5,  label: "blaze",  glowClass: "text-orange-500" },
-  { min: 7,  multiplier: 1.8,  label: "inferno",glowClass: "text-red-500 animate-pulse" },
-  { min: 10, multiplier: 2.0,  label: "max",    glowClass: "text-fuchsia-500 animate-pulse" },
+  { min: 0, multiplier: 1.0, label: "warm", glowClass: "" },
+  { min: 3, multiplier: 1.2, label: "spark", glowClass: "text-amber-500" },
+  { min: 5, multiplier: 1.5, label: "blaze", glowClass: "text-orange-500" },
+  { min: 7, multiplier: 1.8, label: "inferno", glowClass: "text-red-500 animate-pulse" },
+  { min: 10, multiplier: 2.0, label: "max", glowClass: "text-fuchsia-500 animate-pulse" },
 ];
 
 export function comboTierFor(combo: number): ComboTier {
@@ -1358,6 +1380,7 @@ export function comboTierFor(combo: number): ComboTier {
 ```bash
 bun run typecheck
 ```
+
 Expected: no new errors from this file.
 
 - [ ] **Step 3: Commit**
@@ -1375,6 +1398,7 @@ lucky_drop_log tables. Includes ComboTier styling metadata for UI."
 ### Task 9: Create `<ComboBadge>` component
 
 **Files:**
+
 - Create: `src/components/gamification/combo-badge.tsx`
 
 - [ ] **Step 1: Write the component**
@@ -1455,6 +1479,7 @@ blaze → inferno → max. Pulses at tier ≥ 7. Hidden when combo = 0."
 ### Task 10: Create `<MultiplierEventBanner>` component
 
 **Files:**
+
 - Create: `src/components/gamification/multiplier-event-banner.tsx`
 
 - [ ] **Step 1: Write the component**
@@ -1552,6 +1577,7 @@ Dismissal persists in localStorage keyed by event id."
 ### Task 11: Create `<BonusBreakdown>` component
 
 **Files:**
+
 - Create: `src/components/gamification/bonus-breakdown.tsx`
 
 - [ ] **Step 1: Write the component**
@@ -1671,6 +1697,7 @@ result, exam report, and quiz scoreboard to make rewards legible."
 ### Task 12: Create `<LuckyDropToast>` helper
 
 **Files:**
+
 - Create: `src/components/gamification/lucky-drop-toast.tsx`
 
 - [ ] **Step 1: Write the helper**
@@ -1722,6 +1749,7 @@ fires outside React tree). Rare drops stay visible 6s, others 4s."
 ### Task 13: Wire bonus breakdown into quest result page
 
 **Files:**
+
 - Modify: `src/routes/_authenticated/quests.tsx`
 
 - [ ] **Step 1: Read the existing quest finalization path**
@@ -1757,6 +1785,7 @@ In the result screen (after the existing "ได้รับ XP" message), add:
 ```
 
 Add imports at top of file:
+
 ```typescript
 import { BonusBreakdown } from "@/components/gamification/bonus-breakdown";
 import { ComboBadge } from "@/components/gamification/combo-badge";
@@ -1764,6 +1793,7 @@ import { announceLuckyDrop } from "@/components/gamification/lucky-drop-toast";
 ```
 
 After setting the result state, fire the lucky toast:
+
 ```typescript
 if (luckyDrop) announceLuckyDrop(luckyDrop);
 ```
@@ -1773,6 +1803,7 @@ if (luckyDrop) announceLuckyDrop(luckyDrop);
 ```bash
 bun run typecheck 2>&1 | grep quests.tsx | head -20
 ```
+
 Fix any errors. Common gotcha: the existing code may use `(supabase.rpc as any)(...)` so types are loose — that's fine, our destructuring with `?? 0` is safe.
 
 - [ ] **Step 5: Commit**
@@ -1791,6 +1822,7 @@ ComboBadge. Fires lucky drop toast when applicable."
 ### Task 14: Wire bonus breakdown into exam report
 
 **Files:**
+
 - Modify: `src/routes/_authenticated/exam.$examId.report.tsx`
 
 - [ ] **Step 1: Read the exam report page**
@@ -1830,6 +1862,7 @@ ComboBadge. Fires lucky drop toast when applicable."
 ### Task 15: Add combo + event banner to dashboard panel
 
 **Files:**
+
 - Modify: `src/components/gamification-status-panel.tsx`
 
 - [ ] **Step 1: Read the current panel**
@@ -1852,7 +1885,7 @@ const { data: comboState } = useQuery({
     if (error) throw error;
     return data;
   },
-  refetchInterval: 30_000,  // refresh combo decay
+  refetchInterval: 30_000, // refresh combo decay
 });
 
 const { data: activeEvent } = useQuery({
@@ -1874,21 +1907,25 @@ const { data: activeEvent } = useQuery({
 ```
 
 Add at the top of the panel render:
+
 ```tsx
-{activeEvent && <MultiplierEventBanner event={activeEvent} className="mb-3" />}
-{comboState && comboState.current_combo > 0 && (
-  <div className="mb-3 flex items-center gap-2">
-    <ComboBadge combo={comboState.current_combo} />
-    {comboState.max_combo > comboState.current_combo && (
-      <span className="text-xs text-muted-foreground">
-        สูงสุด: ×{comboState.max_combo}
-      </span>
-    )}
-  </div>
-)}
+{
+  activeEvent && <MultiplierEventBanner event={activeEvent} className="mb-3" />;
+}
+{
+  comboState && comboState.current_combo > 0 && (
+    <div className="mb-3 flex items-center gap-2">
+      <ComboBadge combo={comboState.current_combo} />
+      {comboState.max_combo > comboState.current_combo && (
+        <span className="text-xs text-muted-foreground">สูงสุด: ×{comboState.max_combo}</span>
+      )}
+    </div>
+  );
+}
 ```
 
 Imports to add:
+
 ```typescript
 import { useQuery } from "@tanstack/react-query";
 import { ComboBadge } from "@/components/gamification/combo-badge";
@@ -1920,6 +1957,7 @@ at the top of the Weekly Pulse panel."
 ### Task 16: Add "กิจกรรม" (Events) tab to Rewards page
 
 **Files:**
+
 - Modify: `src/routes/_authenticated/rewards.tsx`
 
 - [ ] **Step 1: Read the rewards page tab structure**
@@ -1929,6 +1967,7 @@ Read `src/routes/_authenticated/rewards.tsx` to find the existing `<Tabs>` / `<T
 - [ ] **Step 2: Add a new tab for events + recent lucky drops**
 
 Add a new `<TabsTrigger value="events">กิจกรรม</TabsTrigger>` and corresponding `<TabsContent value="events">` showing:
+
 - Upcoming + past multiplier events (last 30 days)
 - Lucky drop history (last 30 entries from `lucky_drop_log`)
 
@@ -2001,7 +2040,10 @@ function LuckyDropHistory() {
   return (
     <div className="space-y-1">
       {data.map((d) => (
-        <div key={d.id} className="flex items-center justify-between rounded-md p-2 text-sm hover:bg-muted/50">
+        <div
+          key={d.id}
+          className="flex items-center justify-between rounded-md p-2 text-sm hover:bg-muted/50"
+        >
           <span>
             {d.reward_kind === "gold" && `🪙 +${d.reward_amount} ทอง`}
             {d.reward_kind === "xp" && `✨ +${d.reward_amount} XP`}
@@ -2042,6 +2084,7 @@ redemption UI ships."
 ### Task 17: Admin page for multiplier events
 
 **Files:**
+
 - Create: `src/routes/_authenticated/admin/multiplier-events.tsx`
 - Modify: `src/components/app-sidebar.tsx` (add nav entry)
 
@@ -2222,6 +2265,7 @@ end, multiplier (1-5x). Nav entry added under admin section."
 ### Task 18: Auto-spawn weekly multiplier edge function
 
 **Files:**
+
 - Create: `supabase/functions/spawn-weekly-multiplier/index.ts`
 
 - [ ] **Step 1: Read an existing edge function for the pattern**
@@ -2365,6 +2409,7 @@ Supabase scheduled-functions dashboard)."
 ### Task 19: i18n strings + final build verification
 
 **Files:**
+
 - Modify: `src/i18n.ts`
 
 - [ ] **Step 1: Add Thai + English strings**
@@ -2399,6 +2444,7 @@ gamification: {
 ```
 
 For English, add the equivalent section with English strings:
+
 ```typescript
 gamification: {
   combo: {
@@ -2427,6 +2473,7 @@ gamification: {
 ```
 
 Also add a `common.dismiss` entry to both languages:
+
 ```typescript
 // th
 common: { ..., dismiss: "ปิด" }
@@ -2439,6 +2486,7 @@ common: { ..., dismiss: "Dismiss" }
 ```bash
 bun run typecheck
 ```
+
 Expected: ideally zero new errors. Pre-existing errors remain acceptable but should not grow.
 
 - [ ] **Step 3: Build**
@@ -2446,6 +2494,7 @@ Expected: ideally zero new errors. Pre-existing errors remain acceptable but sho
 ```bash
 bun run build
 ```
+
 Expected: completes successfully.
 
 - [ ] **Step 4: Run project health check**
@@ -2453,6 +2502,7 @@ Expected: completes successfully.
 ```bash
 bun run check
 ```
+
 Expected: completes without new errors.
 
 - [ ] **Step 5: Commit**
@@ -2498,6 +2548,7 @@ git tag -a gamification-phase-1 -m "Phase 1: Engagement Engine — combos, multi
 ## Self-review notes (post-write)
 
 **Spec coverage:**
+
 - §3 architecture → Tasks 1-7 (DB) + 8-12 (UI components)
 - §4 data model → Task 1 (tables + enum + helper)
 - §5 award_xp signature → Task 2
@@ -2513,6 +2564,7 @@ git tag -a gamification-phase-1 -m "Phase 1: Engagement Engine — combos, multi
 **Type consistency:** `AwardXpResult`, `LuckyDropReward`, `ComboTier`, `MultiplierEventRow`, `ComboStateRow`, `LuckyDropLogRow` all defined in Task 8 and referenced consistently.
 
 **Open risks:**
+
 - Trigger folding (Tasks 5-7) changes long-standing behavior. If something breaks, the smoke test in Task 19 Step 9 (ledger integrity query) catches it.
 - The `(supabase.rpc as any)(...)` pattern in TS means some call sites won't type-check the new return fields. The `?? 0` defaults protect against that.
 - pg_cron / pg_net availability is Supabase-plan-dependent. Task 18 documents both options.
