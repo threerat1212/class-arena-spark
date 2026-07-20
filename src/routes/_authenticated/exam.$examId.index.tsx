@@ -560,7 +560,9 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
               <Button
                 variant={isLast && unanswered === 0 ? "default" : "outline"}
                 size="sm"
+                disabled={submitting || submitted}
                 onClick={() => {
+                  if (submitting || submitted) return;
                   const msg =
                     unanswered > 0
                       ? tr("ยังไม่ได้ทำ ") +
@@ -582,7 +584,17 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
                   }
                 }}
               >
-                <Send className="size-4 mr-1" /> {tr("ส่งข้อสอบ")} ({answeredCount}/{total})
+                {submitting || submitted ? (
+                  <Loader2 className="size-4 mr-1 animate-spin" />
+                ) : (
+                  <Send className="size-4 mr-1" />
+                )}
+                {submitted
+                  ? tr("ส่งแล้ว")
+                  : submitting
+                    ? tr("กำลังส่ง...")
+                    : tr("ส่งข้อสอบ")}{" "}
+                ({answeredCount}/{total})
               </Button>
             );
           })()}
