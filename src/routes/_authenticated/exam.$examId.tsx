@@ -469,12 +469,15 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
           <Clock className="size-4" /> {tr("เหลือ")}{" "}
           <span className="font-mono font-bold">{mmss}</span>
         </span>
-        <span className="flex items-center gap-1">
-          <AlertTriangle
-            className={`size-4 ${violationCount >= threshold - 1 ? "text-red-500" : "text-amber-500"}`}
-          />
-          {tr("โกง")} {violationCount}/{threshold}
-        </span>
+        <div className="flex items-center gap-3">
+          <CanvaStudentButton examId={exam.id} canAssign compact />
+          <span className="flex items-center gap-1">
+            <AlertTriangle
+              className={`size-4 ${violationCount >= threshold - 1 ? "text-red-500" : "text-amber-500"}`}
+            />
+            {tr("โกง")} {violationCount}/{threshold}
+          </span>
+        </div>
       </div>
 
       <div className="flex-1 container max-w-2xl py-6 space-y-4">
