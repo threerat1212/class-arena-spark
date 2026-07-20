@@ -27,7 +27,7 @@ import {
 import type { ExamSessionRow, ExamParticipantRow } from "@/lib/exam.functions";
 import { useExamProctoring } from "@/hooks/use-exam-proctoring";
 
-export const Route = createFileRoute("/_authenticated/exam/$examId")({
+export const Route = createFileRoute("/_authenticated/exam/$examId/")({
   component: ExamDetailPage,
 });
 
