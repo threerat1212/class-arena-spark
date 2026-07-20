@@ -3201,6 +3201,7 @@ export type Database = {
         Args: { _answer_idx: number; _question_id: string }
         Returns: Json
       }
+      topup_teacher_profile: { Args: { _user_id: string }; Returns: undefined }
       update_exam_questions: {
         Args: { _exam_id: string; _questions: Json }
         Returns: undefined
