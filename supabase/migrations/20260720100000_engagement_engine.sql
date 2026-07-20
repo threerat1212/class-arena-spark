@@ -781,3 +781,23 @@ BEGIN
 END;
 $func$;
 GRANT EXECUTE ON FUNCTION public.finish_quiz_session(uuid) TO authenticated;
+
+-- =====================================================================
+-- 12. Scheduling note: weekly auto-spawn of multiplier event
+-- =====================================================================
+-- The edge function `spawn-weekly-multiplier` should be invoked weekly
+-- via Supabase's scheduled functions dashboard (UI) or pg_cron:
+--
+--   SELECT cron.schedule(
+--     'spawn-multiplier-weekly',
+--     '0 6 * * 1',                              -- Monday 06:00 UTC = 13:00 Bangkok
+--     $$SELECT net.http_post(
+--       url := 'https://<project>.functions.supabase.co/spawn-weekly-multiplier',
+--       headers := jsonb_build_object('Content-Type', 'application/json'),
+--       body := '{}'::jsonb
+--     )$$
+--   );
+--
+-- NOT executed in this migration because pg_cron + pg_net extension
+-- availability varies per Supabase plan. Configure via Dashboard →
+-- Database → Cron schedules (or Functions → Triggers) after deploying.
