@@ -538,15 +538,48 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
           </CardContent>
         </Card>
 
-        <div className="flex justify-between">
-          <Button
-            variant="ghost"
-            onClick={() => {
-              if (confirm(tr("ส่งข้อสอบเลย? ไม่สามารถแก้ไขได้หลังส่ง"))) submitAll();
-            }}
-          >
-            <Send className="size-4 mr-1" /> {tr("ส่งข้อสอบ")}
-          </Button>
+        <div className="flex justify-end">
+          {(() => {
+            const answeredCount = questions.filter((qq) => {
+              if (!qq.id) return false;
+              const a = answers[qq.id];
+              if (!a) return false;
+              if (qq.question_type === "multiple_choice") return typeof a.answer_idx === "number";
+              return !!a.answer_text && a.answer_text.trim().length > 0;
+            }).length;
+            const total = questions.length;
+            const unanswered = total - answeredCount;
+            const isLast = currentIdx === total - 1;
+            return (
+              <Button
+                variant={isLast && unanswered === 0 ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  const msg =
+                    unanswered > 0
+                      ? tr("ยังไม่ได้ทำ ") +
+                        `${unanswered}/${total} ` +
+                        tr("ข้อ — ยืนยันส่งข้อสอบเลย? ไม่สามารถแก้ไขได้หลังส่ง")
+                      : tr("ทำครบทุกข้อแล้ว — ยืนยันส่งข้อสอบ? ไม่สามารถแก้ไขได้หลังส่ง");
+                  if (confirm(msg)) {
+                    if (unanswered > 0) {
+                      if (
+                        !confirm(
+                          tr("ยืนยันอีกครั้ง: ยังไม่ได้ทำ ") +
+                            `${unanswered} ` +
+                            tr("ข้อ จะส่งจริงหรือไม่?"),
+                        )
+                      )
+                        return;
+                    }
+                    submitAll();
+                  }
+                }}
+              >
+                <Send className="size-4 mr-1" /> {tr("ส่งข้อสอบ")} ({answeredCount}/{total})
+              </Button>
+            );
+          })()}
         </div>
       </div>
     </div>
