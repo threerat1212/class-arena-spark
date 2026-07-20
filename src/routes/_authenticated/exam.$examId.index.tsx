@@ -344,6 +344,39 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
     queryKey: ["my-exam-answers", exam.id],
     queryFn: () => fetchMyExamAnswers(exam.id),
   });
+  const { data: participant } = useQuery({
+    queryKey: ["my-exam-participant", exam.id],
+    queryFn: () => fetchMyParticipant(exam.id),
+    refetchInterval: 30_000,
+  });
+  const { data: extraTimeStock } = useQuery({
+    queryKey: ["inv", "extra_time"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("user_inventory")
+        .select("quantity")
+        .eq("item_kind", "extra_time")
+        .maybeSingle();
+      return data?.quantity ?? 0;
+    },
+  });
+  const extraSeconds = participant?.extra_time_seconds ?? 0;
+  const [usingExtra, setUsingExtra] = useState(false);
+  async function useExtraTime() {
+    setUsingExtra(true);
+    try {
+      const { error } = await supabase.rpc("use_extra_time_token", { _exam_id: exam.id, _minutes: 5 });
+      if (error) throw error;
+      toast.success(tr("เพิ่มเวลา +5 นาที"));
+      qc.invalidateQueries({ queryKey: ["my-exam-participant", exam.id] });
+      qc.invalidateQueries({ queryKey: ["inv", "extra_time"] });
+      qc.invalidateQueries({ queryKey: ["active-boosts"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : tr("ใช้ไม่สำเร็จ"));
+    } finally {
+      setUsingExtra(false);
+    }
+  }
 
   // merge existing answers into local state once on load
   useEffect(() => {
