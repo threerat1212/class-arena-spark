@@ -106,7 +106,7 @@ function XpLedgerPage() {
   if (!hasRole("admin")) return <Navigate to="/dashboard" />;
 
   const nameOf = (uid: string) =>
-    profileMap[uid]?.display_name || profileMap[uid]?.username || uid.slice(0, 8);
+    profileMap[uid]?.display_name || uid.slice(0, 8);
 
   return (
     <div className="container mx-auto max-w-6xl space-y-4 p-4">
