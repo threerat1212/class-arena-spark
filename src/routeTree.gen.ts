@@ -41,6 +41,7 @@ import { Route as AuthenticatedExamJoinRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedExamDemoRouteImport } from './routes/_authenticated/exam.demo'
 import { Route as AuthenticatedExamExamIdRouteImport } from './routes/_authenticated/exam.$examId'
 import { Route as AuthenticatedClassroomsIdRouteImport } from './routes/_authenticated/classrooms.$id'
+import { Route as AuthenticatedAdminXpLedgerRouteImport } from './routes/_authenticated/admin/xp-ledger'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminTeachersRouteImport } from './routes/_authenticated/admin/teachers'
 import { Route as AuthenticatedAdminStudentsRouteImport } from './routes/_authenticated/admin/students'
@@ -220,6 +221,12 @@ const AuthenticatedClassroomsIdRoute =
     path: '/$id',
     getParentRoute: () => AuthenticatedClassroomsRoute,
   } as any)
+const AuthenticatedAdminXpLedgerRoute =
+  AuthenticatedAdminXpLedgerRouteImport.update({
+    id: '/admin/xp-ledger',
+    path: '/admin/xp-ledger',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/admin/users',
   path: '/admin/users',
@@ -305,6 +312,7 @@ export interface FileRoutesByFullPath {
   '/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/admin/teachers': typeof AuthenticatedAdminTeachersRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/admin/xp-ledger': typeof AuthenticatedAdminXpLedgerRoute
   '/classrooms/$id': typeof AuthenticatedClassroomsIdRoute
   '/exam/$examId': typeof AuthenticatedExamExamIdRouteWithChildren
   '/exam/demo': typeof AuthenticatedExamDemoRoute
@@ -347,6 +355,7 @@ export interface FileRoutesByTo {
   '/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/admin/teachers': typeof AuthenticatedAdminTeachersRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/admin/xp-ledger': typeof AuthenticatedAdminXpLedgerRoute
   '/classrooms/$id': typeof AuthenticatedClassroomsIdRoute
   '/exam/demo': typeof AuthenticatedExamDemoRoute
   '/exam/join': typeof AuthenticatedExamJoinRoute
@@ -391,6 +400,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/_authenticated/admin/teachers': typeof AuthenticatedAdminTeachersRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/admin/xp-ledger': typeof AuthenticatedAdminXpLedgerRoute
   '/_authenticated/classrooms/$id': typeof AuthenticatedClassroomsIdRoute
   '/_authenticated/exam/$examId': typeof AuthenticatedExamExamIdRouteWithChildren
   '/_authenticated/exam/demo': typeof AuthenticatedExamDemoRoute
@@ -436,6 +446,7 @@ export interface FileRouteTypes {
     | '/admin/students'
     | '/admin/teachers'
     | '/admin/users'
+    | '/admin/xp-ledger'
     | '/classrooms/$id'
     | '/exam/$examId'
     | '/exam/demo'
@@ -478,6 +489,7 @@ export interface FileRouteTypes {
     | '/admin/students'
     | '/admin/teachers'
     | '/admin/users'
+    | '/admin/xp-ledger'
     | '/classrooms/$id'
     | '/exam/demo'
     | '/exam/join'
@@ -521,6 +533,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/students'
     | '/_authenticated/admin/teachers'
     | '/_authenticated/admin/users'
+    | '/_authenticated/admin/xp-ledger'
     | '/_authenticated/classrooms/$id'
     | '/_authenticated/exam/$examId'
     | '/_authenticated/exam/demo'
@@ -777,6 +790,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClassroomsIdRouteImport
       parentRoute: typeof AuthenticatedClassroomsRoute
     }
+    '/_authenticated/admin/xp-ledger': {
+      id: '/_authenticated/admin/xp-ledger'
+      path: '/admin/xp-ledger'
+      fullPath: '/admin/xp-ledger'
+      preLoaderRoute: typeof AuthenticatedAdminXpLedgerRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
       path: '/admin/users'
@@ -902,6 +922,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminStudentsRoute: typeof AuthenticatedAdminStudentsRoute
   AuthenticatedAdminTeachersRoute: typeof AuthenticatedAdminTeachersRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAdminXpLedgerRoute: typeof AuthenticatedAdminXpLedgerRoute
   AuthenticatedExamExamIdRoute: typeof AuthenticatedExamExamIdRouteWithChildren
   AuthenticatedExamDemoRoute: typeof AuthenticatedExamDemoRoute
   AuthenticatedExamJoinRoute: typeof AuthenticatedExamJoinRoute
@@ -933,6 +954,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminStudentsRoute: AuthenticatedAdminStudentsRoute,
   AuthenticatedAdminTeachersRoute: AuthenticatedAdminTeachersRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+  AuthenticatedAdminXpLedgerRoute: AuthenticatedAdminXpLedgerRoute,
   AuthenticatedExamExamIdRoute: AuthenticatedExamExamIdRouteWithChildren,
   AuthenticatedExamDemoRoute: AuthenticatedExamDemoRoute,
   AuthenticatedExamJoinRoute: AuthenticatedExamJoinRoute,
