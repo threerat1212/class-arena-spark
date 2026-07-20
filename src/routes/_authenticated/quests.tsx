@@ -739,6 +739,31 @@ function QuestionCard({
               )}
               {tr("ส่งคำตอบ")}
             </Button>
+            {hint ? (
+              <div className="rounded-md border border-amber-300/50 bg-amber-50 dark:bg-amber-950/20 p-2 text-xs flex items-start gap-2">
+                <Lightbulb className="size-3.5 text-amber-500 shrink-0 mt-0.5" />
+                <span className="text-amber-900 dark:text-amber-200">{hint}</span>
+              </div>
+            ) : (
+              onUseHint &&
+              (hintStock ?? 0) > 0 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-1 border-amber-300 text-amber-700 hover:bg-amber-50"
+                  onClick={onUseHint}
+                  disabled={hintLoading}
+                >
+                  {hintLoading ? (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  ) : (
+                    <Lightbulb className="size-3.5" />
+                  )}
+                  {tr("ใช้ Hint")} ({hintStock})
+                </Button>
+              )
+            )}
             {total > 1 && (
               <p className="text-[11px] text-muted-foreground">
                 {tr("AI จะตรวจข้อนี้ทันทีและให้คะแนนตามความใกล้เคียง (มีคะแนนบางส่วน)")}
