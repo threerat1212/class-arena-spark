@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2, Play, Square, Send, AlertTriangle, Clock, Maximize2 } from "lucide-react";
+import { Loader2, Play, Square, Send, AlertTriangle, Clock, Maximize2, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { tr } from "@/i18n";
@@ -117,6 +117,17 @@ function HostView({ exam }: { exam: ExamSessionRow }) {
           )}
         </CardContent>
       </Card>
+
+      {exam.status === "draft" && (
+        <div className="flex justify-end">
+          <Button asChild variant="outline" size="sm">
+            <Link to="/exam/$examId/edit" params={{ examId: exam.id }}>
+              <Pencil className="size-4 mr-1" />
+              {tr("แก้ไขข้อสอบ")}
+            </Link>
+          </Button>
+        </div>
+      )}
 
       {exam.status === "draft" && (
         <Card>
