@@ -2664,6 +2664,21 @@ export type Database = {
         Args: { _classroom_id: string }
         Returns: string
       }
+      get_exam_questions_for_edit: {
+        Args: { _exam_id: string }
+        Returns: {
+          correct_idx: number
+          created_at: string
+          expected_answer: string
+          id: string
+          idx: number
+          options: Json
+          points: number
+          question: string
+          question_type: Database["public"]["Enums"]["exam_question_type"]
+          session_id: string
+        }[]
+      }
       get_quest_for_grading: { Args: { _quest_id: string }; Returns: Json }
       grade_short_answer: {
         Args: {
