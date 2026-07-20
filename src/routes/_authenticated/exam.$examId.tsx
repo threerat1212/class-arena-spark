@@ -590,3 +590,211 @@ function ResultsScreen({
     </div>
   );
 }
+
+// ============ Canva pool (host) ============
+type CanvaLinkRow = {
+  id: string;
+  exam_id: string;
+  url: string;
+  label: string | null;
+  assigned_to_user_id: string | null;
+  assigned_at: string | null;
+};
+
+function CanvaPoolCard({ examId }: { examId: string }) {
+  const qc = useQueryClient();
+  const [bulk, setBulk] = useState("");
+  const [label, setLabel] = useState("");
+
+  const { data: links } = useQuery({
+    queryKey: ["exam-canva-links", examId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("exam_canva_links")
+        .select("id,exam_id,url,label,assigned_to_user_id,assigned_at")
+        .eq("exam_id", examId)
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as CanvaLinkRow[];
+    },
+  });
+
+  const addMut = useMutation({
+    mutationFn: async () => {
+      const urls = bulk
+        .split(/\r?\n/)
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+      if (urls.length === 0) throw new Error(tr("ใส่ลิงก์อย่างน้อย 1 อัน"));
+      const rows = urls.map((u, i) => ({
+        exam_id: examId,
+        url: u,
+        label: label ? `${label} #${i + 1}` : null,
+      }));
+      const { error } = await supabase.from("exam_canva_links").insert(rows);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(tr("เพิ่มลิงก์แล้ว"));
+      setBulk("");
+      setLabel("");
+      qc.invalidateQueries({ queryKey: ["exam-canva-links", examId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const delMut = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("exam_canva_links").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["exam-canva-links", examId] }),
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const assigned = links?.filter((l) => l.assigned_to_user_id) ?? [];
+  const available = links?.filter((l) => !l.assigned_to_user_id) ?? [];
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base flex items-center gap-2">
+          <Palette className="size-4" /> {tr("Canva สำหรับข้อสอบ (รายบุคคล)")}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-xs text-muted-foreground">
+          {tr("วางลิงก์ Canva หลายอัน (บรรทัดละ 1 ลิงก์) ระบบจะสุ่มจ่ายให้เด็กคนละ 1 อันโดยอัตโนมัติเมื่อเข้าสอบ")}
+        </p>
+        <Input
+          placeholder={tr("ป้ายชื่อ (ไม่บังคับ) เช่น 'ชุด A'")}
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+        />
+        <Textarea
+          placeholder={"https://www.canva.com/design/xxx\nhttps://www.canva.com/design/yyy"}
+          value={bulk}
+          onChange={(e) => setBulk(e.target.value)}
+          rows={4}
+          className="font-mono text-xs"
+        />
+        <Button size="sm" onClick={() => addMut.mutate()} disabled={addMut.isPending}>
+          {addMut.isPending && <Loader2 className="size-4 mr-1 animate-spin" />}
+          {tr("เพิ่มลิงก์")}
+        </Button>
+
+        <div className="text-xs text-muted-foreground pt-2">
+          {tr("ว่าง")} {available.length} · {tr("แจกแล้ว")} {assigned.length}
+        </div>
+        <div className="space-y-1 max-h-64 overflow-y-auto">
+          {(links ?? []).map((l) => (
+            <div
+              key={l.id}
+              className="flex items-center gap-2 text-xs py-1.5 border-b border-border/40 last:border-0"
+            >
+              <a
+                href={l.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 truncate hover:underline"
+              >
+                {l.label ? `${l.label} — ` : ""}
+                {l.url}
+              </a>
+              {l.assigned_to_user_id ? (
+                <Badge variant="secondary">
+                  {tr("แจก:")} {l.assigned_to_user_id.slice(0, 6)}
+                </Badge>
+              ) : (
+                <Badge variant="outline">{tr("ว่าง")}</Badge>
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-6"
+                onClick={() => delMut.mutate(l.id)}
+                disabled={delMut.isPending}
+              >
+                <Trash2 className="size-3" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ============ Canva link (student) ============
+function CanvaStudentButton({
+  examId,
+  canAssign,
+  compact,
+}: {
+  examId: string;
+  canAssign: boolean;
+  compact?: boolean;
+}) {
+  const qc = useQueryClient();
+  const { data: mine } = useQuery({
+    queryKey: ["exam-canva-mine", examId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("exam_canva_links")
+        .select("id,url,label")
+        .eq("exam_id", examId)
+        .maybeSingle();
+      if (error) throw error;
+      return data as { id: string; url: string; label: string | null } | null;
+    },
+  });
+  // any exam_canva_links row visible to the student is theirs (RLS filters others)
+
+  const [pending, setPending] = useState(false);
+  async function claim() {
+    setPending(true);
+    try {
+      const { data, error } = await supabase.rpc("assign_exam_canva_link", { _exam_id: examId });
+      if (error) throw error;
+      const row = data as unknown as { url?: string } | null;
+      if (row?.url) window.open(row.url, "_blank", "noopener,noreferrer");
+      qc.invalidateQueries({ queryKey: ["exam-canva-mine", examId] });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (msg.includes("no_link_available")) toast.error(tr("ครูยังไม่ได้ตั้งลิงก์ Canva"));
+      else toast.error(msg);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  if (mine) {
+    return (
+      <Button
+        size={compact ? "sm" : "lg"}
+        variant={compact ? "outline" : "secondary"}
+        className={compact ? "" : "w-full"}
+        onClick={() => window.open(mine.url, "_blank", "noopener,noreferrer")}
+      >
+        <Palette className="size-4 mr-1" />
+        {tr("เปิด Canva ของฉัน")}
+        <ExternalLink className="size-3 ml-1" />
+      </Button>
+    );
+  }
+
+  if (!canAssign) return null;
+
+  return (
+    <Button
+      size={compact ? "sm" : "lg"}
+      variant={compact ? "outline" : "secondary"}
+      className={compact ? "" : "w-full"}
+      onClick={claim}
+      disabled={pending}
+    >
+      {pending ? <Loader2 className="size-4 mr-1 animate-spin" /> : <Palette className="size-4 mr-1" />}
+      {tr("รับลิงก์ Canva")}
+    </Button>
+  );
+}
