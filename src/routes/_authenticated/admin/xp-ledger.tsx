@@ -48,13 +48,10 @@ function XpLedgerPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, display_name, username, xp, level");
+        .select("id, display_name, xp, level");
       if (error) throw error;
-      const map: Record<
-        string,
-        { display_name: string | null; username: string | null; xp: number; level: number }
-      > = {};
-      for (const p of data ?? []) map[p.id as string] = p as never;
+      const map: Record<string, { display_name: string | null }> = {};
+      for (const p of data ?? []) map[p.id as string] = { display_name: p.display_name };
       return map;
     },
     enabled: hasRole("admin"),
