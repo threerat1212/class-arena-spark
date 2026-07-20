@@ -316,6 +316,7 @@ function ReadyScreen({ exam }: { exam: ExamSessionRow }) {
             {starting && <Loader2 className="size-4 mr-1 animate-spin" />}
             {tr("เริ่มสอบ")}
           </Button>
+          <CanvaStudentButton examId={exam.id} canAssign={!!exam && exam.status === "active"} />
         </CardContent>
       </Card>
     </div>
