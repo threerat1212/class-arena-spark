@@ -9,6 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { BonusBreakdown } from "@/components/gamification/bonus-breakdown";
+import { ComboBadge } from "@/components/gamification/combo-badge";
+import { announceLuckyDrop } from "@/components/gamification/lucky-drop-toast";
 import {
   Sparkles,
   Zap,
@@ -71,6 +74,17 @@ type GradeQuestResponse = {
 type AwardQuestResult = {
   xp_gained?: number;
   gold_awarded?: number;
+  // Engagement Engine bonus fields (added in Phase 1).
+  // All optional so older RPC responses still type-check.
+  combo_applied?: number;
+  multiplier_applied?: number;
+  perfect_bonus?: number;
+  lucky_drop?: {
+    id: string;
+    kind: "gold" | "xp" | "cosmetic_voucher" | "rare_title";
+    amount: number | null;
+    status: "granted" | "pending" | "revoked";
+  } | null;
 };
 
 type CompletedQuestResult = GradeQuestResponse & AwardQuestResult;
@@ -83,6 +97,11 @@ type QuestAttemptView = {
   ai_feedback?: string | null;
   per_question?: Json | QuestGradeResult[] | null;
   answers?: Json | string[];
+  // Engagement Engine bonus context (passed through from award RPC).
+  combo_applied?: number;
+  multiplier_applied?: number;
+  perfect_bonus?: number;
+  lucky_drop?: AwardQuestResult["lucky_drop"];
 };
 
 function getErrorMessage(error: unknown) {
@@ -357,6 +376,7 @@ export function StudentQuestQuestions({
         toast.success(
           `ได้ ${awardResult?.xp_gained ?? 0} XP + ${awardResult?.gold_awarded ?? 0} ทอง!`,
         );
+        if (awardResult?.lucky_drop) announceLuckyDrop(awardResult.lucky_drop);
         await supabase
           .from("daily_quest_question_progress")
           .delete()
@@ -407,6 +427,7 @@ export function StudentQuestQuestions({
       toast.success(
         `ได้ ${awardResult?.xp_gained ?? 0} XP + ${awardResult?.gold_awarded ?? 0} ทอง!`,
       );
+      if (awardResult?.lucky_drop) announceLuckyDrop(awardResult.lucky_drop);
       qc.invalidateQueries({ queryKey: ["my-attempts"] });
       qc.invalidateQueries({ queryKey: ["my-dq-attempts"] });
       qc.invalidateQueries({ queryKey: ["xp-transactions"] });
@@ -756,6 +777,7 @@ export function QuestCard({
       toast.success(
         `ได้ ${awardResult?.xp_gained ?? 0} XP + ${awardResult?.gold_awarded ?? 0} ทอง!`,
       );
+      if (awardResult?.lucky_drop) announceLuckyDrop(awardResult.lucky_drop);
       qc.invalidateQueries({ queryKey: ["my-attempts"] });
       qc.invalidateQueries({ queryKey: ["my-dq-attempts"] });
       qc.invalidateQueries({ queryKey: ["xp-transactions"] });
@@ -910,6 +932,10 @@ export function QuestCard({
                   ai_feedback: result.overall_feedback,
                   per_question: result.results,
                   answers,
+                  combo_applied: result.combo_applied,
+                  multiplier_applied: result.multiplier_applied,
+                  perfect_bonus: result.perfect_bonus,
+                  lucky_drop: result.lucky_drop,
                 }}
                 questions={questions}
               />
@@ -981,6 +1007,21 @@ function AttemptResultView({
           {tr("คะแนน")} {score}/{maxScore} • +{attempt.xp_awarded ?? 0} XP • +
           {attempt.gold_awarded ?? 0} {tr("ทอง")}
         </p>
+        {(attempt.combo_applied || attempt.multiplier_applied || attempt.perfect_bonus || attempt.lucky_drop) ? (
+          <div className="pt-1 space-y-2">
+            {attempt.combo_applied ? (
+              <ComboBadge combo={attempt.combo_applied} multiplier={attempt.multiplier_applied} />
+            ) : null}
+            <BonusBreakdown
+              base={attempt.xp_awarded ?? 0}
+              comboCount={attempt.combo_applied ?? 0}
+              comboMultiplier={attempt.multiplier_applied}
+              perfectBonus={attempt.perfect_bonus}
+              luckyXp={attempt.lucky_drop?.kind === "xp" ? attempt.lucky_drop.amount ?? 0 : 0}
+              luckyGold={attempt.lucky_drop?.kind === "gold" ? attempt.lucky_drop.amount ?? 0 : 0}
+            />
+          </div>
+        ) : null}
         {attempt.ai_feedback && (
           <p className="italic text-xs text-muted-foreground pt-1">"{attempt.ai_feedback}"</p>
         )}
