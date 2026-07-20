@@ -8,6 +8,7 @@ import { NotificationBell } from "@/components/notification-bell";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useTr } from "@/lib/tr";
 import { AnimatePresence, motion } from "motion/react";
+import { ActiveBoostsBar } from "@/components/gamification/active-boosts-bar";
 
 export const Route = createFileRoute("/_authenticated")({ component: AuthenticatedLayout });
 
@@ -58,6 +59,7 @@ function AuthenticatedLayout() {
               </Button>
             </div>
           </header>
+          <ActiveBoostsBar />
           <main className="flex-1 relative">
             <AnimatePresence mode="wait">
               <motion.div
