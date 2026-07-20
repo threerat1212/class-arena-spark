@@ -951,6 +951,7 @@ export type Database = {
             | null
           auto_submitted: boolean
           created_at: string
+          extra_time_seconds: number
           id: string
           session_id: string
           started_at: string | null
@@ -965,6 +966,7 @@ export type Database = {
             | null
           auto_submitted?: boolean
           created_at?: string
+          extra_time_seconds?: number
           id?: string
           session_id: string
           started_at?: string | null
@@ -979,6 +981,7 @@ export type Database = {
             | null
           auto_submitted?: boolean
           created_at?: string
+          extra_time_seconds?: number
           id?: string
           session_id?: string
           started_at?: string | null
@@ -3203,6 +3206,15 @@ export type Database = {
         Returns: undefined
       }
       use_boost: { Args: { _kind: string }; Returns: Json }
+      use_extra_time_token: {
+        Args: { _exam_id: string; _minutes?: number }
+        Returns: Json
+      }
+      use_hint_token: {
+        Args: { _q_index: number; _quest_id: string }
+        Returns: Json
+      }
+      use_retry_token: { Args: { _quest_id: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "teacher" | "student" | "guest" | "room_admin"
