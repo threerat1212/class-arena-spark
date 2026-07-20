@@ -48,6 +48,7 @@ import { Route as AuthenticatedAdminRoomsRouteImport } from './routes/_authentic
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedExamExamIdReportRouteImport } from './routes/_authenticated/exam.$examId.report'
+import { Route as AuthenticatedExamExamIdEditRouteImport } from './routes/_authenticated/exam.$examId.edit'
 
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
@@ -256,6 +257,12 @@ const AuthenticatedExamExamIdReportRoute =
     path: '/report',
     getParentRoute: () => AuthenticatedExamExamIdRoute,
   } as any)
+const AuthenticatedExamExamIdEditRoute =
+  AuthenticatedExamExamIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => AuthenticatedExamExamIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -295,6 +302,7 @@ export interface FileRoutesByFullPath {
   '/classrooms/': typeof AuthenticatedClassroomsIndexRoute
   '/exam/': typeof AuthenticatedExamIndexRoute
   '/flashcards/': typeof AuthenticatedFlashcardsIndexRoute
+  '/exam/$examId/edit': typeof AuthenticatedExamExamIdEditRoute
   '/exam/$examId/report': typeof AuthenticatedExamExamIdReportRoute
 }
 export interface FileRoutesByTo {
@@ -334,6 +342,7 @@ export interface FileRoutesByTo {
   '/classrooms': typeof AuthenticatedClassroomsIndexRoute
   '/exam': typeof AuthenticatedExamIndexRoute
   '/flashcards': typeof AuthenticatedFlashcardsIndexRoute
+  '/exam/$examId/edit': typeof AuthenticatedExamExamIdEditRoute
   '/exam/$examId/report': typeof AuthenticatedExamExamIdReportRoute
 }
 export interface FileRoutesById {
@@ -376,6 +385,7 @@ export interface FileRoutesById {
   '/_authenticated/classrooms/': typeof AuthenticatedClassroomsIndexRoute
   '/_authenticated/exam/': typeof AuthenticatedExamIndexRoute
   '/_authenticated/flashcards/': typeof AuthenticatedFlashcardsIndexRoute
+  '/_authenticated/exam/$examId/edit': typeof AuthenticatedExamExamIdEditRoute
   '/_authenticated/exam/$examId/report': typeof AuthenticatedExamExamIdReportRoute
 }
 export interface FileRouteTypes {
@@ -418,6 +428,7 @@ export interface FileRouteTypes {
     | '/classrooms/'
     | '/exam/'
     | '/flashcards/'
+    | '/exam/$examId/edit'
     | '/exam/$examId/report'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -457,6 +468,7 @@ export interface FileRouteTypes {
     | '/classrooms'
     | '/exam'
     | '/flashcards'
+    | '/exam/$examId/edit'
     | '/exam/$examId/report'
   id:
     | '__root__'
@@ -498,6 +510,7 @@ export interface FileRouteTypes {
     | '/_authenticated/classrooms/'
     | '/_authenticated/exam/'
     | '/_authenticated/flashcards/'
+    | '/_authenticated/exam/$examId/edit'
     | '/_authenticated/exam/$examId/report'
   fileRoutesById: FileRoutesById
 }
@@ -789,6 +802,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedExamExamIdReportRouteImport
       parentRoute: typeof AuthenticatedExamExamIdRoute
     }
+    '/_authenticated/exam/$examId/edit': {
+      id: '/_authenticated/exam/$examId/edit'
+      path: '/edit'
+      fullPath: '/exam/$examId/edit'
+      preLoaderRoute: typeof AuthenticatedExamExamIdEditRouteImport
+      parentRoute: typeof AuthenticatedExamExamIdRoute
+    }
   }
 }
 
@@ -809,11 +829,13 @@ const AuthenticatedClassroomsRouteWithChildren =
   )
 
 interface AuthenticatedExamExamIdRouteChildren {
+  AuthenticatedExamExamIdEditRoute: typeof AuthenticatedExamExamIdEditRoute
   AuthenticatedExamExamIdReportRoute: typeof AuthenticatedExamExamIdReportRoute
 }
 
 const AuthenticatedExamExamIdRouteChildren: AuthenticatedExamExamIdRouteChildren =
   {
+    AuthenticatedExamExamIdEditRoute: AuthenticatedExamExamIdEditRoute,
     AuthenticatedExamExamIdReportRoute: AuthenticatedExamExamIdReportRoute,
   }
 
