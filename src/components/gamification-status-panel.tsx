@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
   Award,
@@ -16,7 +17,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import type { Database } from "@/integrations/supabase/types";
+import { supabase } from "@/integrations/supabase/client";
 import { tr } from "@/i18n";
+import { ComboBadge } from "@/components/gamification/combo-badge";
+import { MultiplierEventBanner } from "@/components/gamification/multiplier-event-banner";
+import type { ComboStateRow, MultiplierEventRow } from "@/lib/gamification.types";
 
 type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 
@@ -53,6 +58,44 @@ export function GamificationStatusPanel({
   badgeCount?: number;
   achievementCount?: number;
 }) {
+  const userId = profile?.id;
+  const { data: comboState } = useQuery({
+    queryKey: ["combo-state", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("combo_state")
+        .select("*")
+        .eq("user_id", userId as string)
+        .maybeSingle();
+      if (error) throw error;
+      return data as ComboStateRow | null;
+    },
+    enabled: !!userId,
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: true,
+  });
+
+  const { data: activeEvent } = useQuery({
+    queryKey: ["active-multiplier-event"],
+    queryFn: async () => {
+      const nowIso = new Date().toISOString();
+      const { data, error } = await supabase
+        .from("multiplier_events")
+        .select("*")
+        .eq("is_active", true)
+        .lte("starts_at", nowIso)
+        .gte("ends_at", nowIso)
+        .is("classroom_id", null)
+        .order("multiplier", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      return data as MultiplierEventRow | null;
+    },
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
+  });
+
   const xp = profile?.xp ?? 0;
   const level = profile?.level ?? 1;
   const gold = profile?.gold ?? 0;
@@ -103,7 +146,28 @@ export function GamificationStatusPanel({
 
   return (
     <Card className="overflow-hidden border-primary/25 bg-[linear-gradient(135deg,var(--card),color-mix(in_oklch,var(--accent)_28%,var(--card)))]">
-      <CardContent className="grid gap-5 p-5 lg:grid-cols-[1.05fr_1.4fr]">
+      <CardContent className="p-5 space-y-3">
+        {(activeEvent || (comboState && comboState.current_combo > 0)) && (
+          <div className="flex flex-wrap items-center gap-2">
+            {activeEvent && (
+              <MultiplierEventBanner
+                event={activeEvent}
+                className="flex-1 min-w-[200px]"
+              />
+            )}
+            {comboState && comboState.current_combo > 0 && (
+              <div className="inline-flex items-center gap-2">
+                <ComboBadge combo={comboState.current_combo} />
+                {comboState.max_combo > comboState.current_combo && (
+                  <span className="text-xs text-muted-foreground">
+                    {tr("สูงสุด")} ×{comboState.max_combo}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+        <div className="grid gap-5 lg:grid-cols-[1.05fr_1.4fr]">
         <div className="flex items-center gap-4">
           <div
             className="scholar-progress-ring grid size-28 shrink-0 place-items-center rounded-full p-2"
@@ -223,6 +287,7 @@ export function GamificationStatusPanel({
             </Button>
           </div>
         </div>
+      </div>
       </CardContent>
     </Card>
   );
