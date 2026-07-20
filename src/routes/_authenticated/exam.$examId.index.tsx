@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { announceLuckyDrop } from "@/components/gamification/lucky-drop-toast";
 import { Loader2, Play, Square, Send, AlertTriangle, Clock, Maximize2, Pencil, Palette, Trash2, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -449,9 +450,24 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
     if (submitting || submitted) return;
     setSubmitting(true);
     try {
-      await rpcSubmitExam(exam.id);
+      const result = await rpcSubmitExam(exam.id);
       setSubmitted(true);
-      toast.success(tr("ส่งข้อสอบแล้ว"));
+      const xpGained = result.base_amount ?? result.xp_awarded ?? 0;
+      const bonusParts: string[] = [];
+      if (result.combo_applied && result.combo_applied > 0) {
+        bonusParts.push(`🔥 combo ×${result.combo_applied}`);
+      }
+      if (result.multiplier_applied && result.multiplier_applied > 1) {
+        bonusParts.push(`×${result.multiplier_applied.toFixed(2)}`);
+      }
+      if (result.perfect_bonus && result.perfect_bonus > 0) {
+        bonusParts.push(`🎯 +${result.perfect_bonus}`);
+      }
+      const summary = bonusParts.length
+        ? `${tr("ส่งข้อสอบแล้ว")} • +${xpGained} XP ${bonusParts.join(" ")}`
+        : `${tr("ส่งข้อสอบแล้ว")} • +${xpGained} XP`;
+      toast.success(summary);
+      if (result.lucky_drop) announceLuckyDrop(result.lucky_drop);
       qc.invalidateQueries({ queryKey: ["my-exam-participant", exam.id] });
       qc.invalidateQueries({ queryKey: ["xp-transactions"] });
       qc.invalidateQueries({ queryKey: ["xp-summary"] });
