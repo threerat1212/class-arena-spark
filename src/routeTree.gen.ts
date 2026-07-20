@@ -45,6 +45,7 @@ import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminTeachersRouteImport } from './routes/_authenticated/admin/teachers'
 import { Route as AuthenticatedAdminStudentsRouteImport } from './routes/_authenticated/admin/students'
 import { Route as AuthenticatedAdminRoomsRouteImport } from './routes/_authenticated/admin/rooms'
+import { Route as AuthenticatedAdminMultiplierEventsRouteImport } from './routes/_authenticated/admin/multiplier-events'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedExamExamIdIndexRouteImport } from './routes/_authenticated/exam.$examId.index'
@@ -241,6 +242,18 @@ const AuthenticatedAdminRoomsRoute = AuthenticatedAdminRoomsRouteImport.update({
   path: '/admin/rooms',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminMultiplierEventsRoute =
+  AuthenticatedAdminMultiplierEventsRouteImport.update({
+    id: '/admin/multiplier-events',
+    path: '/admin/multiplier-events',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminMultiplierEventsRoute =
+  AuthenticatedAdminMultiplierEventsRouteImport.update({
+    id: '/admin/multiplier-events',
+    path: '/admin/multiplier-events',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -294,6 +307,7 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/rooms': typeof AuthenticatedAdminRoomsRoute
+  '/admin/multiplier-events': typeof AuthenticatedAdminMultiplierEventsRoute
   '/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/admin/teachers': typeof AuthenticatedAdminTeachersRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -335,6 +349,7 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/rooms': typeof AuthenticatedAdminRoomsRoute
+  '/admin/multiplier-events': typeof AuthenticatedAdminMultiplierEventsRoute
   '/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/admin/teachers': typeof AuthenticatedAdminTeachersRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -378,6 +393,7 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/admin/rooms': typeof AuthenticatedAdminRoomsRoute
+  '/_authenticated/admin/multiplier-events': typeof AuthenticatedAdminMultiplierEventsRoute
   '/_authenticated/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/_authenticated/admin/teachers': typeof AuthenticatedAdminTeachersRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -422,6 +438,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/admin/rooms'
+    | '/admin/multiplier-events'
     | '/admin/students'
     | '/admin/teachers'
     | '/admin/users'
@@ -463,6 +480,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/admin/rooms'
+    | '/admin/multiplier-events'
     | '/admin/students'
     | '/admin/teachers'
     | '/admin/users'
@@ -505,6 +523,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/admin/rooms'
+    | '/_authenticated/admin/multiplier-events'
     | '/_authenticated/admin/students'
     | '/_authenticated/admin/teachers'
     | '/_authenticated/admin/users'
@@ -790,6 +809,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/rooms'
       fullPath: '/admin/rooms'
       preLoaderRoute: typeof AuthenticatedAdminRoomsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/multiplier-events': {
+      id: '/_authenticated/admin/multiplier-events'
+      path: '/admin/multiplier-events'
+      fullPath: '/admin/multiplier-events'
+      preLoaderRoute: typeof AuthenticatedAdminMultiplierEventsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/.mcp/invoke-tool/$tool': {

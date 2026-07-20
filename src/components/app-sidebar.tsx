@@ -91,6 +91,7 @@ const groups: Group[] = [
       { label: "จัดการผู้ใช้", url: "/admin/users", icon: Users, roles: ["admin"] },
       { label: "อนุมัติครู", url: "/admin/teachers", icon: UserCheck, roles: ["admin"] },
       { label: "เพิ่มนักเรียน", url: "/admin/students", icon: UserPlus, roles: ["admin"] },
+      { label: "กิจกรรม XP ×", url: "/admin/multiplier-events", icon: Sparkles, roles: ["admin"] },
     ],
   },
 ];
