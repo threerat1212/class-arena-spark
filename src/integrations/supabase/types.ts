@@ -831,6 +831,44 @@ export type Database = {
           },
         ]
       }
+      exam_canva_links: {
+        Row: {
+          assigned_at: string | null
+          assigned_to_user_id: string | null
+          created_at: string
+          exam_id: string
+          id: string
+          label: string | null
+          url: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_to_user_id?: string | null
+          created_at?: string
+          exam_id: string
+          id?: string
+          label?: string | null
+          url: string
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_to_user_id?: string | null
+          created_at?: string
+          exam_id?: string
+          id?: string
+          label?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_canva_links_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exam_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exam_participants: {
         Row: {
           auto_submit_reason:
@@ -2562,6 +2600,24 @@ export type Database = {
       approve_teacher_application: {
         Args: { _user_id: string }
         Returns: undefined
+      }
+      assign_exam_canva_link: {
+        Args: { _exam_id: string }
+        Returns: {
+          assigned_at: string | null
+          assigned_to_user_id: string | null
+          created_at: string
+          exam_id: string
+          id: string
+          label: string | null
+          url: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "exam_canva_links"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       award_quest_attempt: {
         Args: {
