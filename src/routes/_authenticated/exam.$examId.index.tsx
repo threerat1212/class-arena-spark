@@ -446,8 +446,11 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
   }
 
   async function submitAll() {
+    if (submitting || submitted) return;
+    setSubmitting(true);
     try {
       await rpcSubmitExam(exam.id);
+      setSubmitted(true);
       toast.success(tr("ส่งข้อสอบแล้ว"));
       qc.invalidateQueries({ queryKey: ["my-exam-participant", exam.id] });
       qc.invalidateQueries({ queryKey: ["xp-transactions"] });
@@ -455,6 +458,7 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
       nav({ to: "/exam/$examId", params: { examId: exam.id } });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : tr("ส่งข้อสอบล้มเหลว"));
+      setSubmitting(false);
     }
   }
 
