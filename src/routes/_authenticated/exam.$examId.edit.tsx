@@ -53,11 +53,11 @@ function EditExamPage() {
   const { examId } = Route.useParams();
   const nav = useNavigate();
 
-  const { data: exam, isLoading: examLoading } = useQuery({
+  const { data: exam, isLoading: examLoading, error: examError } = useQuery({
     queryKey: ["exam", examId],
     queryFn: () => fetchExamRaw(examId),
   });
-  const { data: rawQuestions, isLoading: qLoading } = useQuery({
+  const { data: rawQuestions, isLoading: qLoading, error: questionsError } = useQuery({
     queryKey: ["exam-questions-raw", examId],
     queryFn: () => fetchExamQuestionsRaw(examId),
   });
@@ -162,7 +162,41 @@ function EditExamPage() {
     );
   }
 
-  if (exam && exam.status === "active") {
+  if (examError || questionsError) {
+    const message = examError instanceof Error
+      ? examError.message
+      : questionsError instanceof Error
+        ? questionsError.message
+        : tr("โหลดข้อสอบไม่สำเร็จ");
+
+    return (
+      <div className="container max-w-2xl py-6 space-y-3 text-center">
+        <p className="text-muted-foreground">{message}</p>
+        <Button asChild variant="outline">
+          <Link to="/exam/$examId" params={{ examId }}>
+            <ArrowLeft className="size-4 mr-1" />
+            {tr("กลับ")}
+          </Link>
+        </Button>
+      </div>
+    );
+  }
+
+  if (!exam) {
+    return (
+      <div className="container max-w-2xl py-6 space-y-3 text-center">
+        <p className="text-muted-foreground">{tr("ไม่พบข้อสอบ")}</p>
+        <Button asChild variant="outline">
+          <Link to="/exam/">
+            <ArrowLeft className="size-4 mr-1" />
+            {tr("กลับ")}
+          </Link>
+        </Button>
+      </div>
+    );
+  }
+
+  if (exam.status === "active") {
     return (
       <div className="container max-w-2xl py-6 space-y-3 text-center">
         <p className="text-muted-foreground">
