@@ -524,41 +524,6 @@ export type Database = {
           },
         ]
       }
-      combo_state: {
-        Row: {
-          user_id: string
-          current_combo: number
-          max_combo: number
-          last_success_at: string | null
-          last_ref_id: string | null
-          updated_at: string
-        }
-        Insert: {
-          user_id: string
-          current_combo?: number
-          max_combo?: number
-          last_success_at?: string | null
-          last_ref_id?: string | null
-          updated_at?: string
-        }
-        Update: {
-          user_id?: string
-          current_combo?: number
-          max_combo?: number
-          last_success_at?: string | null
-          last_ref_id?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "combo_state_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       classroom_members: {
         Row: {
           classroom_id: string
@@ -1241,50 +1206,6 @@ export type Database = {
         }
         Relationships: []
       }
-      lucky_drop_log: {
-        Row: {
-          id: string
-          user_id: string
-          source_ref: string | null
-          reward_kind: "gold" | "xp" | "cosmetic_voucher" | "rare_title"
-          reward_amount: number | null
-          reward_code: string | null
-          status: "granted" | "pending" | "revoked"
-          granted_at: string | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          source_ref?: string | null
-          reward_kind: "gold" | "xp" | "cosmetic_voucher" | "rare_title"
-          reward_amount?: number | null
-          reward_code?: string | null
-          status?: "granted" | "pending" | "revoked"
-          granted_at?: string | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          source_ref?: string | null
-          reward_kind?: "gold" | "xp" | "cosmetic_voucher" | "rare_title"
-          reward_amount?: number | null
-          reward_code?: string | null
-          status?: "granted" | "pending" | "revoked"
-          granted_at?: string | null
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "lucky_drop_log_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       materials: {
         Row: {
           classroom_id: string
@@ -1383,60 +1304,6 @@ export type Database = {
             columns: ["mission_id"]
             isOneToOne: false
             referencedRelation: "weekly_missions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      multiplier_events: {
-        Row: {
-          id: string
-          starts_at: string
-          ends_at: string
-          multiplier: string
-          label: string
-          scope: string
-          classroom_id: string | null
-          is_active: boolean
-          created_by: string | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          starts_at: string
-          ends_at: string
-          multiplier?: string
-          label?: string
-          scope?: string
-          classroom_id?: string | null
-          is_active?: boolean
-          created_by?: string | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          starts_at?: string
-          ends_at?: string
-          multiplier?: string
-          label?: string
-          scope?: string
-          classroom_id?: string | null
-          is_active?: boolean
-          created_by?: string | null
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "multiplier_events_classroom_id_fkey"
-            columns: ["classroom_id"]
-            isOneToOne: false
-            referencedRelation: "classrooms"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "multiplier_events_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
