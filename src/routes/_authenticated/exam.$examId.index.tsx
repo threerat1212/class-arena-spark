@@ -411,13 +411,13 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
     },
   });
 
-  // countdown to ends_at
+  // countdown to ends_at (+ extra time token bonus)
   const [remainingSec, setRemainingSec] = useState<number | null>(null);
   useEffect(() => {
     if (!exam.ends_at) return;
-    const endsAt = exam.ends_at;
+    const endsAtMs = new Date(exam.ends_at).getTime() + extraSeconds * 1000;
     const tick = () => {
-      const s = Math.floor((new Date(endsAt).getTime() - Date.now()) / 1000);
+      const s = Math.floor((endsAtMs - Date.now()) / 1000);
       setRemainingSec(Math.max(0, s));
       if (s <= 0) {
         setEndedReason("time_up");
@@ -427,7 +427,7 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [exam.ends_at, qc, exam.id]);
+  }, [exam.ends_at, extraSeconds, qc, exam.id]);
 
   // enter fullscreen on mount
   useEffect(() => {
