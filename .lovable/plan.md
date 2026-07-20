@@ -1,51 +1,78 @@
 
-# Canva Links รายบุคคลในห้องเรียน
+# Rewards Expansion — ระบบรางวัลครบทั้ง 3 กลุ่ม
 
-## ปัญหา
-ครูใช้ Canva สอน แต่ถ้าแชร์ลิงก์เดียวให้ทั้งห้อง เด็กไปลบงานเพื่อนได้ ต้องการให้แต่ละคนมีลิงก์ของตัวเอง กดจากในห้องเรียนแล้วเข้า Canva ได้เลย (ไม่ต้องล็อกอินอีเมล Canva)
+ต่อยอดจาก Engagement Engine (Phase 1) ที่มี `award_xp`, `combo_state`, `multiplier_events`, `lucky_drop_log`, `shop_items`, `titles` อยู่แล้ว
 
-## วิธีใช้งาน (สำหรับครู)
-1. ใน Canva: สร้างไฟล์/template แล้ว **Duplicate** เป็นชุดเท่าจำนวนนักเรียน (หรือใช้ Canva for Education "Share with class" จะ duplicate ให้อัตโนมัติก็ได้)
-2. ตั้ง share permission แต่ละไฟล์เป็น **"Anyone with the link — can edit"**
-3. มาที่ห้องเรียนในเว็บ → แท็บใหม่ **"Canva Links"** → กด **"เพิ่มชุดลิงก์"**
-   - ตั้งชื่อกิจกรรม เช่น "ใบงานบทที่ 3"
-   - วางลิงก์ Canva ทีละแถว พร้อมเลือกชื่อนักเรียนจาก dropdown (หรือกด **"Bulk paste"** วางลิงก์ทั้งก้อน แล้วระบบจับคู่ตามลำดับรายชื่อให้)
-4. กดบันทึก
+## ขอบเขต
 
-## วิธีใช้งาน (สำหรับนักเรียน)
-- เปิดห้องเรียน → แท็บ **"Canva"** → เห็นเฉพาะการ์ดของกิจกรรมที่ครูแจก พร้อมปุ่ม **"เปิด Canva ของฉัน"** → กดแล้ว redirect ไป Canva ตรงๆ
-- ไม่เห็นลิงก์ของเพื่อน
+### กลุ่ม A — Cosmetic (โชว์อวด ไม่กระทบ balance)
+- **Avatar Frames** — กรอบโปรไฟล์ 5 ระดับ (บรอนซ์/เงิน/ทอง/เพชร/ตำนาน)
+- **Name Colors** — สีชื่อในกระดานผู้นำ 8 สี
+- **Profile Banners** — แบนเนอร์หลังโปรไฟล์ 6 แบบ
+- **Title Badges** — ต่อยอดตาราง `titles` ที่มีอยู่ เพิ่ม 10 ฉายาใหม่
 
-## สิ่งที่จะสร้าง
+### กลุ่ม B — Boosts (มีผลต่อ XP/Combo)
+- **XP Potion (1h)** — คูณ XP ×1.5 ใช้ 60 นาที (สร้าง multiplier_event เฉพาะตัว)
+- **Combo Shield** — กันการรีเซ็ตคอมโบ 1 ครั้งเมื่อทำผิด
+- **Streak Freeze** — กันการหลุด daily streak 1 วัน
 
-### Database (1 migration)
-ตาราง `canva_sessions` (ชุดกิจกรรม) และ `canva_assignments` (ลิงก์รายคน):
+### กลุ่ม C — Utility (ช่วยตอนทำ quest/exam)
+- **Hint Token** — เปิด hint 1 ข้อใน daily quest
+- **Retry Token** — ทำ quest เดิมซ้ำเพื่อชิงคะแนนใหม่ (คะแนนสูงสุดชนะ)
+- **Extra Time (+5m)** — ต่อเวลาข้อสอบ 5 นาที (ใช้ก่อนหมดเวลา)
 
-```text
-canva_sessions
-  id, classroom_id, title, description, created_by, created_at
+## ช่องทางได้รางวัล (ทั้ง 3 ทาง)
 
-canva_assignments
-  id, session_id, student_id (FK profiles), canva_url, opened_at, created_at
-```
+1. **Shop** — ซื้อด้วย Gold (ตาราง `shop_items` มีอยู่แล้ว)
+2. **Lucky Drop** — เพิ่ม kind ใหม่ใน `lucky_drop_log` (`xp_potion`, `combo_shield`, `streak_freeze`, `hint_token`, `retry_token`, `extra_time`, `avatar_frame`, `name_color`, `banner`)
+3. **Level Unlock** — ตาราง `level_unlocks` map level → reward (auto grant ตอนขึ้นเลเวล)
 
-RLS:
-- ครู (owner ห้อง) จัดการได้ทุกอย่างใน session/assignments ของห้องตัวเอง
-- นักเรียนอ่าน `canva_assignments` ที่ `student_id = auth.uid()` เท่านั้น (อ่าน session metadata ได้ถ้าเป็นสมาชิกห้อง)
-- GRANT ตามมาตรฐาน
+## Technical Details
 
-### Frontend (`src/routes/_authenticated/classrooms.$id.tsx`)
-- เพิ่มแท็บ **"Canva"** ในห้องเรียน
-- **มุมมองครู**: list ของ session, ปุ่มสร้าง/แก้ไข/ลบ, dialog ที่:
-  - ใส่ title
-  - ตารางแถวละ {นักเรียน, ลิงก์ Canva} เพิ่มแถวได้
-  - ปุ่ม "Bulk paste" — textarea วางลิงก์บรรทัดละ 1 → auto-pair กับสมาชิกห้องตามลำดับ
-  - validate ว่าเป็น `canva.com/...` หรือ `www.canva.com/...`
-- **มุมมองนักเรียน**: list ของ session ที่มีลิงก์ของตัวเอง พร้อมปุ่มเปิด (target=_blank, rel=noopener), แสดง badge "เปิดแล้ว" หลังคลิก (อัปเดต `opened_at`)
+### Schema เพิ่ม
+- `user_inventory` — เก็บของทุกอย่างที่ user ครอบครอง (frame, banner, boost, token). Columns: `user_id`, `item_kind`, `item_code`, `quantity`, `metadata`, `acquired_at`, `consumed_at`
+- `active_cosmetics` (view หรือคอลัมน์ใน `profiles`) — เพิ่ม `active_frame`, `active_banner`, `active_name_color` ใน `profiles`
+- `level_unlocks` — `level`, `reward_kind`, `reward_code`, `reward_amount`
+- `boost_effects` — track XP potion/combo shield ที่ active อยู่: `user_id`, `effect_kind`, `expires_at`, `used_at`
+- ขยาย `award_xp` ให้เช็ก:
+  - Combo Shield active → ไม่ reset combo ตอน fail
+  - XP Potion active → คูณเพิ่ม (stack กับ event/combo แบบ additive multiplier)
+  - Streak Freeze → skip streak reset (บวกใน `claim_daily_bonus`)
 
-## สิ่งที่ไม่ทำ (ตามที่ user ยืนยัน)
-- ไม่ทำระบบ short link `/c/abc` redirect — ใช้ลิงก์ Canva ตรงๆ
-- ไม่ทำ live session / banner เด้ง — เป็นแบบ on-demand รายบุคคล
+### RPC ใหม่
+- `use_boost(_kind)` — activate XP potion / combo shield / streak freeze
+- `use_hint(_question_id)` — spend hint token, return hint text
+- `use_retry(_quest_id)` — reset attempt
+- `use_extra_time(_exam_id)` — extend `exam_participants.ends_at`
+- `equip_cosmetic(_kind, _code)` — set active frame/banner/color
+- `grant_level_rewards(_user_id, _new_level)` — เรียกจาก award_xp เมื่อ leveled_up
 
-## ผลลัพธ์
-นักเรียนกดจากในห้องเรียน → เปิด Canva ของตัวเองได้เลย ไม่ต้องล็อกอินอีเมล Canva, ไม่ชนงานเพื่อน, ครูจัดชุดลิงก์ได้ในที่เดียว
+### UI
+- **`/rewards`** (มีอยู่แล้ว) — เพิ่ม tab Shop / Inventory / Cosmetic Loadout
+- **Profile card** — แสดง frame + banner + colored name
+- **Leaderboard** — ใช้ active name color
+- **Boost HUD** — แสดง active boost + countdown ที่มุมบน (component ใหม่ `ActiveBoostsBar`)
+- **Exam page** — ปุ่ม "ใช้ Extra Time" ตอนเหลือ <5 นาที
+- **Quest page** — ปุ่ม "ใช้ Hint" / "ใช้ Retry"
+- **Admin** — สร้าง `/admin/rewards-catalog` จัดการ shop_items + level_unlocks
+
+### Seed data (migration)
+- 5 avatar frames + 8 name colors + 6 banners + 10 titles ใน `shop_items`
+- 3 boosts + 3 utility tokens ใน `shop_items`
+- 20 level unlocks (Lv 2, 3, 5, 7, 10, 15, 20, 25, 30, 40, 50 → mix ของ cosmetic + boost)
+- Lucky drop weights ใน constant table
+
+## ลำดับการ deploy
+
+1. **Migration 1** — schema (`user_inventory`, `level_unlocks`, `boost_effects`, profile columns)
+2. **Migration 2** — RPCs ใหม่ + ขยาย `award_xp` + trigger grant_level_rewards
+3. **Migration 3** — seed shop items + level unlocks
+4. **UI** — Rewards page tabs, ActiveBoostsBar, cosmetic display บน profile/leaderboard
+5. **UI** — Hint/Retry/Extra Time buttons ใน quest & exam pages
+6. **Admin catalog** — จัดการรางวัล
+
+## Out of scope (ทำเฟสถัดไป)
+- Physical rewards, class team rewards, pet/companion, exchange system, seasonal titles
+
+---
+ยืนยันแผน → ลุยเลยครับ (ประมาณ 3 migration + 8-10 ไฟล์ UI)

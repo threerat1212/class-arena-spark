@@ -18,6 +18,9 @@ import {
   Crown,
   Star,
   Sparkles,
+  Backpack,
+  Gift,
+  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
@@ -81,7 +84,7 @@ function RewardsPage() {
       </header>
 
       <Tabs defaultValue="achievements">
-        <TabsList>
+        <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="achievements">
             <Trophy className="size-4 mr-1" />
             Achievement
@@ -89,6 +92,14 @@ function RewardsPage() {
           <TabsTrigger value="shop">
             <ShoppingBag className="size-4 mr-1" />
             {tr("ร้านค้า")}
+          </TabsTrigger>
+          <TabsTrigger value="inventory">
+            <Backpack className="size-4 mr-1" />
+            {tr("กระเป๋า")}
+          </TabsTrigger>
+          <TabsTrigger value="unlocks">
+            <Gift className="size-4 mr-1" />
+            {tr("ปลดล็อกตามเลเวล")}
           </TabsTrigger>
           <TabsTrigger value="titles">
             <Crown className="size-4 mr-1" />
@@ -109,6 +120,12 @@ function RewardsPage() {
         </TabsContent>
         <TabsContent value="shop" className="mt-4">
           <ShopTab gold={profile?.gold ?? 0} userId={user?.id} />
+        </TabsContent>
+        <TabsContent value="inventory" className="mt-4">
+          <InventoryTab userId={user?.id} profile={profile} />
+        </TabsContent>
+        <TabsContent value="unlocks" className="mt-4">
+          <LevelUnlocksTab profile={profile} />
         </TabsContent>
         <TabsContent value="titles" className="mt-4">
           <TitlesTab userId={user?.id} activeTitleId={profile?.active_title_id} />
@@ -343,13 +360,15 @@ function ShopTab({ gold, userId }: { gold: number; userId?: string }) {
   async function buy(id: string) {
     setBuying(id);
     try {
-      const { data, error } = await supabase.rpc("purchase_shop_item", { _item_id: id });
+      const { data, error } = await supabase.rpc("purchase_shop_item_v2", { _item_id: id });
       if (error) throw error;
       const result = data as PurchaseShopResult | null;
       toast.success(`ซื้อสำเร็จ! ได้รับ ${result?.item ?? tr("สินค้า")}`);
       qc.invalidateQueries({ queryKey: ["profile"] });
       qc.invalidateQueries({ queryKey: ["my-purchases"] });
       qc.invalidateQueries({ queryKey: ["my-titles"] });
+      qc.invalidateQueries({ queryKey: ["my-inventory"] });
+      qc.invalidateQueries({ queryKey: ["active-boosts"] });
     } catch (e: unknown) {
       toast.error(getErrorMessage(e, tr("ซื้อไม่สำเร็จ")));
     } finally {
@@ -620,6 +639,347 @@ function EventsTab({ userId }: { userId?: string }) {
           </div>
         )}
       </section>
+    </div>
+  );
+}
+
+/* ---------- Inventory (Cosmetics + Boosts + Tokens) ---------- */
+type InventoryRow = {
+  id: string;
+  item_kind: string;
+  item_code: string;
+  quantity: number;
+  acquired_at: string;
+  metadata: Record<string, unknown> | null;
+};
+type BoostRow = {
+  id: string;
+  effect_kind: string;
+  multiplier: number | string | null;
+  activated_at: string;
+  expires_at: string | null;
+  consumed_at: string | null;
+};
+
+const KIND_LABELS: Record<string, string> = {
+  avatar_frame: "กรอบโปรไฟล์",
+  name_color: "สีชื่อ",
+  banner: "แบนเนอร์",
+  title: "ฉายา",
+  xp_potion: "ยา XP Potion",
+  combo_shield: "โล่ Combo",
+  streak_freeze: "Streak Freeze",
+  hint_token: "Hint Token",
+  retry_token: "Retry Token",
+  extra_time: "Extra Time",
+  cosmetic_voucher: "Voucher",
+  rare_title: "ฉายาหายาก",
+};
+
+const FRAME_ICONS: Record<string, string> = {
+  bronze: "🥉",
+  silver: "🥈",
+  gold: "🥇",
+  diamond: "💎",
+  legend: "👑",
+};
+const BANNER_ICONS: Record<string, string> = {
+  sky: "🌤️",
+  ocean: "🌊",
+  mountain: "⛰️",
+  galaxy: "🌌",
+  flame: "🔥",
+  aurora: "🌠",
+};
+
+function InventoryTab({ userId, profile }: { userId?: string; profile?: ProfileRow | null }) {
+  const qc = useQueryClient();
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const { data: inventory } = useQuery({
+    queryKey: ["my-inventory", userId],
+    queryFn: async () =>
+      ((
+        await supabase
+          .from("user_inventory")
+          .select("id,item_kind,item_code,quantity,acquired_at,metadata")
+          .eq("user_id", userId!)
+          .order("acquired_at", { ascending: false })
+      ).data ?? []) as InventoryRow[],
+    enabled: !!userId,
+  });
+
+  const { data: boosts } = useQuery({
+    queryKey: ["active-boosts", userId],
+    queryFn: async () =>
+      ((
+        await supabase
+          .from("boost_effects")
+          .select("*")
+          .eq("user_id", userId!)
+          .is("consumed_at", null)
+          .order("activated_at", { ascending: false })
+      ).data ?? []) as BoostRow[],
+    enabled: !!userId,
+    refetchInterval: 30_000,
+  });
+
+  const items = inventory ?? [];
+  const cosmetics = items.filter((i) =>
+    ["avatar_frame", "name_color", "banner"].includes(i.item_kind),
+  );
+  const boostItems = items.filter((i) =>
+    ["xp_potion", "combo_shield", "streak_freeze"].includes(i.item_kind),
+  );
+  const tokens = items.filter((i) =>
+    ["hint_token", "retry_token", "extra_time"].includes(i.item_kind),
+  );
+
+  const activeMap = {
+    avatar_frame: profile?.active_frame_code ?? null,
+    banner: profile?.active_banner_code ?? null,
+    name_color: profile?.active_name_color ?? null,
+  } as Record<string, string | null>;
+
+  async function equip(kind: string, code: string | null) {
+    setBusy(kind + ":" + (code ?? "off"));
+    try {
+      const { error } = await supabase.rpc("equip_cosmetic", { _kind: kind, _code: code as string });
+      if (error) throw error;
+      toast.success(tr("เลือกแล้ว"));
+      qc.invalidateQueries({ queryKey: ["profile"] });
+    } catch (e: unknown) {
+      toast.error(getErrorMessage(e));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function useBoost(kind: string) {
+    setBusy("boost:" + kind);
+    try {
+      const { error } = await supabase.rpc("use_boost", { _kind: kind });
+      if (error) throw error;
+      toast.success(tr("เปิดใช้งานสำเร็จ"));
+      qc.invalidateQueries({ queryKey: ["my-inventory"] });
+      qc.invalidateQueries({ queryKey: ["active-boosts"] });
+    } catch (e: unknown) {
+      toast.error(getErrorMessage(e));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Active boosts */}
+      {boosts && boosts.length > 0 && (
+        <Card className="border-primary/40">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Zap className="size-4 text-primary" /> {tr("บูสต์ที่กำลังใช้งาน")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            {boosts.map((b) => {
+              const label = KIND_LABELS[b.effect_kind] ?? b.effect_kind;
+              const expires = b.expires_at ? new Date(b.expires_at) : null;
+              const remaining = expires
+                ? Math.max(0, Math.floor((expires.getTime() - Date.now()) / 60000))
+                : null;
+              return (
+                <Badge key={b.id} className="gap-1 bg-primary/10 text-primary border border-primary/30">
+                  <Sparkles className="size-3" />
+                  {label}
+                  {b.multiplier ? ` ×${Number(b.multiplier).toFixed(2)}` : ""}
+                  {remaining != null ? ` · ${remaining} ${tr("นาที")}` : ""}
+                </Badge>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Cosmetics */}
+      <section className="space-y-2">
+        <h3 className="font-semibold flex items-center gap-2">
+          <Crown className="size-4" /> {tr("Cosmetic ที่มี")}
+        </h3>
+        {cosmetics.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            {tr("ยังไม่มี — ลองซื้อในร้านค้าหรือเก็บเลเวลสิ!")}
+          </p>
+        ) : (
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {cosmetics.map((c) => {
+              const isActive = activeMap[c.item_kind] === c.item_code;
+              let preview: React.ReactNode = null;
+              if (c.item_kind === "avatar_frame")
+                preview = <span className="text-3xl">{FRAME_ICONS[c.item_code] ?? "🖼️"}</span>;
+              else if (c.item_kind === "banner")
+                preview = <span className="text-3xl">{BANNER_ICONS[c.item_code] ?? "🖼️"}</span>;
+              else if (c.item_kind === "name_color")
+                preview = (
+                  <span
+                    className="inline-block rounded-md border px-3 py-1 font-semibold text-sm"
+                    style={
+                      c.item_code === "rainbow"
+                        ? {
+                            backgroundImage:
+                              "linear-gradient(90deg,#ef4444,#eab308,#22c55e,#3b82f6,#a855f7)",
+                            WebkitBackgroundClip: "text",
+                            color: "transparent",
+                          }
+                        : { color: c.item_code }
+                    }
+                  >
+                    {profile?.display_name ?? "ชื่อของฉัน"}
+                  </span>
+                );
+              return (
+                <Card key={c.id} className={isActive ? "border-primary" : ""}>
+                  <CardContent className="p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">
+                          {KIND_LABELS[c.item_kind]}
+                        </p>
+                        <p className="font-medium text-sm truncate">{c.item_code}</p>
+                      </div>
+                      {preview}
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant={isActive ? "secondary" : "default"}
+                        className="flex-1"
+                        onClick={() => equip(c.item_kind, isActive ? null : c.item_code)}
+                        disabled={busy === c.item_kind + ":" + c.item_code}
+                      >
+                        {isActive ? tr("ปิดใช้") : tr("ใช้")}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Boosts */}
+      <section className="space-y-2">
+        <h3 className="font-semibold flex items-center gap-2">
+          <Zap className="size-4" /> {tr("บูสต์ในกระเป๋า")}
+        </h3>
+        {boostItems.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{tr("ยังไม่มีบูสต์")}</p>
+        ) : (
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {boostItems.map((b) => (
+              <Card key={b.id}>
+                <CardContent className="p-3 flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm">{KIND_LABELS[b.item_kind]}</p>
+                    <p className="text-xs text-muted-foreground">×{b.quantity}</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={() => useBoost(b.item_kind)}
+                    disabled={busy === "boost:" + b.item_kind}
+                  >
+                    {tr("เปิดใช้")}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Utility tokens */}
+      <section className="space-y-2">
+        <h3 className="font-semibold flex items-center gap-2">
+          <Gift className="size-4" /> {tr("โทเคน Utility")}
+        </h3>
+        {tokens.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{tr("ยังไม่มีโทเคน")}</p>
+        ) : (
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {tokens.map((t) => (
+              <Card key={t.id}>
+                <CardContent className="p-3">
+                  <p className="font-medium text-sm">{KIND_LABELS[t.item_kind]}</p>
+                  <p className="text-xs text-muted-foreground">
+                    ×{t.quantity} · {tr("ใช้ในหน้าที่รองรับ")}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+/* ---------- Level Unlocks ---------- */
+type LevelUnlockRow = {
+  id: string;
+  level: number;
+  reward_kind: string;
+  reward_code: string;
+  reward_amount: number | null;
+  label: string | null;
+  description: string | null;
+};
+
+function LevelUnlocksTab({ profile }: { profile?: ProfileRow | null }) {
+  const currentLevel = profile?.level ?? 1;
+  const { data: unlocks } = useQuery({
+    queryKey: ["level-unlocks"],
+    queryFn: async () =>
+      ((
+        await supabase
+          .from("level_unlocks")
+          .select("*")
+          .order("level", { ascending: true })
+      ).data ?? []) as LevelUnlockRow[],
+  });
+
+  if (!unlocks?.length)
+    return <p className="text-sm text-muted-foreground">{tr("ยังไม่มีรางวัลปลดล็อก")}</p>;
+
+  return (
+    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      {unlocks.map((u) => {
+        const unlocked = currentLevel >= u.level;
+        return (
+          <Card key={u.id} className={unlocked ? "border-green-500/40" : "opacity-70"}>
+            <CardContent className="p-3 space-y-1">
+              <div className="flex items-center justify-between">
+                <Badge variant={unlocked ? "default" : "outline"}>Lv.{u.level}</Badge>
+                {unlocked ? (
+                  <Badge className="bg-green-100 text-green-900 gap-1">
+                    <Check className="size-3" />
+                    {tr("ปลดล็อก")}
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="gap-1">
+                    <Lock className="size-3" />
+                    {tr("ล็อก")}
+                  </Badge>
+                )}
+              </div>
+              <p className="font-medium text-sm">{u.label ?? u.reward_code}</p>
+              <p className="text-xs text-muted-foreground">
+                {KIND_LABELS[u.reward_kind] ?? u.reward_kind} · {u.reward_code}
+                {u.reward_amount && u.reward_amount > 1 ? ` ×${u.reward_amount}` : ""}
+              </p>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }

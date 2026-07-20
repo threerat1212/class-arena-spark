@@ -389,6 +389,39 @@ export type Database = {
           },
         ]
       }
+      boost_effects: {
+        Row: {
+          activated_at: string
+          consumed_at: string | null
+          effect_kind: string
+          expires_at: string | null
+          id: string
+          metadata: Json
+          multiplier: number | null
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string
+          consumed_at?: string | null
+          effect_kind: string
+          expires_at?: string | null
+          id?: string
+          metadata?: Json
+          multiplier?: number | null
+          user_id: string
+        }
+        Update: {
+          activated_at?: string
+          consumed_at?: string | null
+          effect_kind?: string
+          expires_at?: string | null
+          id?: string
+          metadata?: Json
+          multiplier?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       canva_assignments: {
         Row: {
           canva_url: string
@@ -1248,6 +1281,39 @@ export type Database = {
         }
         Relationships: []
       }
+      level_unlocks: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          label: string | null
+          level: number
+          reward_amount: number | null
+          reward_code: string
+          reward_kind: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          label?: string | null
+          level: number
+          reward_amount?: number | null
+          reward_code: string
+          reward_kind: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          label?: string | null
+          level?: number
+          reward_amount?: number | null
+          reward_code?: string
+          reward_kind?: string
+        }
+        Relationships: []
+      }
       lucky_drop_log: {
         Row: {
           created_at: string
@@ -1497,6 +1563,9 @@ export type Database = {
       }
       profiles: {
         Row: {
+          active_banner_code: string | null
+          active_frame_code: string | null
+          active_name_color: string | null
           active_title_id: string | null
           avatar_url: string | null
           birthday_visited: boolean
@@ -1520,6 +1589,9 @@ export type Database = {
           xp: number
         }
         Insert: {
+          active_banner_code?: string | null
+          active_frame_code?: string | null
+          active_name_color?: string | null
           active_title_id?: string | null
           avatar_url?: string | null
           birthday_visited?: boolean
@@ -1543,6 +1615,9 @@ export type Database = {
           xp?: number
         }
         Update: {
+          active_banner_code?: string | null
+          active_frame_code?: string | null
+          active_name_color?: string | null
           active_title_id?: string | null
           avatar_url?: string | null
           birthday_visited?: boolean
@@ -1921,6 +1996,7 @@ export type Database = {
           id: string
           is_active: boolean
           kind: string
+          metadata: Json
           name: string
           title_id: string | null
         }
@@ -1932,6 +2008,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           kind?: string
+          metadata?: Json
           name: string
           title_id?: string | null
         }
@@ -1943,6 +2020,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           kind?: string
+          metadata?: Json
           name?: string
           title_id?: string | null
         }
@@ -2230,6 +2308,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_inventory: {
+        Row: {
+          acquired_at: string
+          id: string
+          item_code: string
+          item_kind: string
+          metadata: Json
+          quantity: number
+          source: string | null
+          user_id: string
+        }
+        Insert: {
+          acquired_at?: string
+          id?: string
+          item_code: string
+          item_kind: string
+          metadata?: Json
+          quantity?: number
+          source?: string | null
+          user_id: string
+        }
+        Update: {
+          acquired_at?: string
+          id?: string
+          item_code?: string
+          item_kind?: string
+          metadata?: Json
+          quantity?: number
+          source?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_quests: {
         Row: {
@@ -2895,6 +3006,7 @@ export type Database = {
       }
       combo_multiplier: { Args: { combo: number }; Returns: number }
       complete_quest: { Args: { _quest_id: string }; Returns: Json }
+      consume_token: { Args: { _kind: string }; Returns: Json }
       create_exam: {
         Args: {
           _classroom_id: string
@@ -2903,6 +3015,10 @@ export type Database = {
           _violation_threshold: number
         }
         Returns: string
+      }
+      equip_cosmetic: {
+        Args: { _code: string; _kind: string }
+        Returns: undefined
       }
       finalize_my_quest_progress: { Args: { _quest_id: string }; Returns: Json }
       finalize_quest_from_progress: {
@@ -2939,6 +3055,21 @@ export type Database = {
           _user_id: string
         }
         Returns: undefined
+      }
+      grant_inventory_item: {
+        Args: {
+          _code: string
+          _kind: string
+          _meta?: Json
+          _qty?: number
+          _source?: string
+          _user_id: string
+        }
+        Returns: string
+      }
+      grant_level_unlocks: {
+        Args: { _new_level: number; _user_id: string }
+        Returns: number
       }
       has_role: {
         Args: {
@@ -3002,6 +3133,7 @@ export type Database = {
         Returns: undefined
       }
       purchase_shop_item: { Args: { _item_id: string }; Returns: Json }
+      purchase_shop_item_v2: { Args: { _item_id: string }; Returns: Json }
       record_exam_violation: {
         Args: {
           _event_type: Database["public"]["Enums"]["exam_violation_type"]
@@ -3070,6 +3202,7 @@ export type Database = {
         Args: { _exam_id: string; _questions: Json }
         Returns: undefined
       }
+      use_boost: { Args: { _kind: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "teacher" | "student" | "guest" | "room_admin"
