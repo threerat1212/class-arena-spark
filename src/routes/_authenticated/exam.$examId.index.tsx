@@ -547,6 +547,22 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
           <span className="font-mono font-bold">{mmss}</span>
         </span>
         <div className="flex items-center gap-3">
+          {(extraTimeStock ?? 0) > 0 && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={useExtraTime}
+              disabled={usingExtra}
+              title={tr("ใช้โทเคนเพิ่มเวลา +5 นาที")}
+            >
+              {usingExtra ? (
+                <Loader2 className="size-3.5 mr-1 animate-spin" />
+              ) : (
+                <TimerReset className="size-3.5 mr-1" />
+              )}
+              +5m ({extraTimeStock})
+            </Button>
+          )}
           <CanvaStudentButton examId={exam.id} canAssign compact />
           <span className="flex items-center gap-1">
             <AlertTriangle
