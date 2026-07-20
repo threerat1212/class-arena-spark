@@ -332,6 +332,8 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<string, AnswerDraft>>({});
   const [answersHydrated, setAnswersHydrated] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const { data: questions } = useQuery({
     queryKey: ["exam-questions-safe", exam.id],
