@@ -625,6 +625,48 @@ export type Database = {
         }
         Relationships: []
       }
+      combo_state: {
+        Row: {
+          current_combo: number
+          last_ref_id: string | null
+          last_success_at: string | null
+          max_combo: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          current_combo?: number
+          last_ref_id?: string | null
+          last_success_at?: string | null
+          max_combo?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          current_combo?: number
+          last_ref_id?: string | null
+          last_success_at?: string | null
+          max_combo?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combo_state_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "combo_state_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_quest_attempts: {
         Row: {
           ai_feedback: string | null
@@ -1206,6 +1248,57 @@ export type Database = {
         }
         Relationships: []
       }
+      lucky_drop_log: {
+        Row: {
+          created_at: string
+          granted_at: string | null
+          id: string
+          reward_amount: number | null
+          reward_code: string | null
+          reward_kind: string
+          source_ref: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          granted_at?: string | null
+          id?: string
+          reward_amount?: number | null
+          reward_code?: string | null
+          reward_kind: string
+          source_ref?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          granted_at?: string | null
+          id?: string
+          reward_amount?: number | null
+          reward_code?: string | null
+          reward_kind?: string
+          source_ref?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lucky_drop_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lucky_drop_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       materials: {
         Row: {
           classroom_id: string
@@ -1304,6 +1397,67 @@ export type Database = {
             columns: ["mission_id"]
             isOneToOne: false
             referencedRelation: "weekly_missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      multiplier_events: {
+        Row: {
+          classroom_id: string | null
+          created_at: string
+          created_by: string | null
+          ends_at: string
+          id: string
+          is_active: boolean
+          label: string
+          multiplier: number
+          scope: string
+          starts_at: string
+        }
+        Insert: {
+          classroom_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          ends_at: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          multiplier?: number
+          scope?: string
+          starts_at: string
+        }
+        Update: {
+          classroom_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          ends_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          multiplier?: number
+          scope?: string
+          starts_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "multiplier_events_classroom_id_fkey"
+            columns: ["classroom_id"]
+            isOneToOne: false
+            referencedRelation: "classrooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "multiplier_events_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "multiplier_events_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -2432,6 +2586,76 @@ export type Database = {
           },
         ]
       }
+      xp_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          classroom_id: string | null
+          created_at: string
+          id: string
+          idempotency_key: string | null
+          metadata: Json
+          ref_id: string | null
+          ref_table: string | null
+          source: Database["public"]["Enums"]["app_xp_source"]
+          source_label: string
+          subject: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          classroom_id?: string | null
+          created_at?: string
+          id?: string
+          idempotency_key?: string | null
+          metadata?: Json
+          ref_id?: string | null
+          ref_table?: string | null
+          source: Database["public"]["Enums"]["app_xp_source"]
+          source_label: string
+          subject?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          classroom_id?: string | null
+          created_at?: string
+          id?: string
+          idempotency_key?: string | null
+          metadata?: Json
+          ref_id?: string | null
+          ref_table?: string | null
+          source?: Database["public"]["Enums"]["app_xp_source"]
+          source_label?: string
+          subject?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "xp_transactions_classroom_id_fkey"
+            columns: ["classroom_id"]
+            isOneToOne: false
+            referencedRelation: "classrooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "xp_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "xp_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       attendance_sessions_safe: {
@@ -2630,6 +2854,31 @@ export type Database = {
         }
         Returns: Json
       }
+      award_xp: {
+        Args: {
+          _amount: number
+          _classroom_id?: string
+          _idempotency_key?: string
+          _metadata?: Json
+          _ref_id?: string
+          _ref_table?: string
+          _source: Database["public"]["Enums"]["app_xp_source"]
+          _source_label: string
+          _subject?: string
+          _user_id: string
+        }
+        Returns: {
+          base_amount: number
+          combo_applied: number
+          leveled_up: boolean
+          lucky_drop: Json
+          multiplier_applied: number
+          new_level: number
+          new_xp: number
+          perfect_bonus: number
+          transaction_id: string
+        }[]
+      }
       check_and_award_achievements: {
         Args: { _user_id: string }
         Returns: undefined
@@ -2644,6 +2893,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      combo_multiplier: { Args: { combo: number }; Returns: number }
       complete_quest: { Args: { _quest_id: string }; Returns: Json }
       create_exam: {
         Args: {
@@ -2659,7 +2909,7 @@ export type Database = {
         Args: { _quest_id: string; _user_id: string }
         Returns: Json
       }
-      finish_quiz_session: { Args: { _session_id: string }; Returns: undefined }
+      finish_quiz_session: { Args: { _session_id: string }; Returns: Json }
       get_classroom_join_code: {
         Args: { _classroom_id: string }
         Returns: string
@@ -2823,6 +3073,19 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "teacher" | "student" | "guest" | "room_admin"
+      app_xp_source:
+        | "daily_quest"
+        | "attendance"
+        | "weekly_mission"
+        | "daily_bonus"
+        | "achievement"
+        | "shop_purchase"
+        | "admin_adjustment"
+        | "exam"
+        | "lucky_drop"
+        | "perfect_bonus"
+        | "submission"
+        | "quiz"
       attendance_status: "present" | "late" | "absent" | "excused"
       booking_status: "pending" | "approved" | "rejected" | "cancelled"
       exam_auto_submit_reason: "violation_threshold" | "time_up"
@@ -2963,6 +3226,20 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "teacher", "student", "guest", "room_admin"],
+      app_xp_source: [
+        "daily_quest",
+        "attendance",
+        "weekly_mission",
+        "daily_bonus",
+        "achievement",
+        "shop_purchase",
+        "admin_adjustment",
+        "exam",
+        "lucky_drop",
+        "perfect_bonus",
+        "submission",
+        "quiz",
+      ],
       attendance_status: ["present", "late", "absent", "excused"],
       booking_status: ["pending", "approved", "rejected", "cancelled"],
       exam_auto_submit_reason: ["violation_threshold", "time_up"],
