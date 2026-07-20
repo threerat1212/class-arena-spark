@@ -162,11 +162,11 @@ function EditExamPage() {
     );
   }
 
-  if (exam && exam.status !== "draft") {
+  if (exam && !["draft", "scheduled"].includes(exam.status)) {
     return (
       <div className="container max-w-2xl py-6 space-y-3 text-center">
         <p className="text-muted-foreground">
-          {tr("แก้ไขได้เฉพาะข้อสอบสถานะ draft เท่านั้น")}
+          {tr("แก้ไขได้เฉพาะข้อสอบที่ยังไม่เริ่มเท่านั้น")}
         </p>
         <Button asChild variant="outline">
           <Link to="/exam/$examId" params={{ examId }}>
