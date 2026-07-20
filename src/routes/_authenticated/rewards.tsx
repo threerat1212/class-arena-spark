@@ -8,9 +8,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Coins, Lock, Check, Trophy, ShoppingBag, Award, Crown, Star } from "lucide-react";
+import { Coins, Lock, Check, Trophy, ShoppingBag, Award, Crown, Star, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
+import type { MultiplierEventRow, LuckyDropLogRow } from "@/lib/gamification.types";
 
 import { tr } from "@/i18n";
 export const Route = createFileRoute("/_authenticated/rewards")({ component: RewardsPage });
@@ -87,6 +88,10 @@ function RewardsPage() {
             <Award className="size-4 mr-1" />
             {tr("เหรียญตรา")}
           </TabsTrigger>
+          <TabsTrigger value="events">
+            <Sparkles className="size-4 mr-1" />
+            {tr("กิจกรรม")}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="achievements" className="mt-4">
@@ -100,6 +105,9 @@ function RewardsPage() {
         </TabsContent>
         <TabsContent value="badges" className="mt-4">
           <BadgesTab userId={user?.id} />
+        </TabsContent>
+        <TabsContent value="events" className="mt-4">
+          <EventsTab userId={user?.id} />
         </TabsContent>
       </Tabs>
     </div>
@@ -510,6 +518,100 @@ function BadgesTab({ userId }: { userId?: string }) {
           </Card>
         );
       })}
+    </div>
+  );
+}
+
+function EventsTab({ userId }: { userId?: string }) {
+  const since = new Date();
+  since.setDate(since.getDate() - 30);
+
+  const { data: events } = useQuery({
+    queryKey: ["multiplier-events-history"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("multiplier_events")
+        .select("*")
+        .gte("starts_at", since.toISOString())
+        .order("starts_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as MultiplierEventRow[];
+    },
+  });
+
+  const { data: drops } = useQuery({
+    queryKey: ["lucky-drop-history", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("lucky_drop_log")
+        .select("*")
+        .eq("user_id", userId as string)
+        .order("created_at", { ascending: false })
+        .limit(30);
+      if (error) throw error;
+      return (data ?? []) as LuckyDropLogRow[];
+    },
+    enabled: !!userId,
+  });
+
+  return (
+    <div className="space-y-6">
+      <section className="space-y-2">
+        <h3 className="text-lg font-semibold">{tr("กิจกรรมพิเศษ")}</h3>
+        {!events || events.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{tr("ยังไม่มีกิจกรรม")}</p>
+        ) : (
+          <div className="space-y-2">
+            {events.map((e) => (
+              <div
+                key={e.id}
+                className="flex items-center justify-between rounded-md border p-2.5 text-sm"
+              >
+                <div>
+                  <div className="font-medium">{e.label}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {new Date(e.starts_at).toLocaleString("th-TH")} —{" "}
+                    {new Date(e.ends_at).toLocaleString("th-TH")}
+                  </div>
+                </div>
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                  ×{Number(e.multiplier).toFixed(2)}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="space-y-2">
+        <h3 className="text-lg font-semibold">{tr("ประวัติลากรับโชค")}</h3>
+        {!drops || drops.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            {tr("ยังไม่เคยลากได้อะไร — ไปทำควอสต์ก่อน!")}
+          </p>
+        ) : (
+          <div className="space-y-1">
+            {drops.map((d) => (
+              <div
+                key={d.id}
+                className="flex items-center justify-between rounded-md p-2 text-sm hover:bg-muted/50"
+              >
+                <span>
+                  {d.reward_kind === "gold" && `🪙 +${d.reward_amount} ${tr("ทอง")}`}
+                  {d.reward_kind === "xp" && `✨ +${d.reward_amount} XP`}
+                  {d.reward_kind === "cosmetic_voucher" &&
+                    `🎁 Voucher (${tr("รอเปิดใช้")})`}
+                  {d.reward_kind === "rare_title" &&
+                    `👑 ${tr("ฉายาหายาก")} (${tr("รอเปิดใช้")})`}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {new Date(d.created_at).toLocaleString("th-TH")}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
