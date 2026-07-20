@@ -35,14 +35,16 @@ export async function fetchExamRaw(examId: string): Promise<ExamSessionRow | nul
 }
 
 export async function fetchExamQuestionsRaw(examId: string): Promise<ExamQuestionRow[]> {
-  // host/admin only (raw table includes correct_idx)
-  const { data, error } = await supabase
-    .from("exam_questions")
-    .select("*")
-    .eq("session_id", examId)
-    .order("idx", { ascending: true });
+  // host/admin only (raw table includes correct_idx). Use the edit RPC so the
+  // edit page can load the full question set even when direct table reads are
+  // tightened by RLS/security-view changes.
+  const { data, error } = await (supabase.rpc as unknown as (
+    name: string,
+    args: Record<string, unknown>,
+  ) => Promise<{ data: unknown; error: Error | null }>)
+  ("get_exam_questions_for_edit", { _exam_id: examId });
   if (error) throw error;
-  return data ?? [];
+  return ((data as ExamQuestionRow[] | null) ?? []).sort((a, b) => a.idx - b.idx);
 }
 
 export async function fetchParticipants(examId: string): Promise<ExamParticipantRow[]> {
