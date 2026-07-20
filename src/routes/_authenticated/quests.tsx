@@ -538,9 +538,29 @@ export function StudentQuestQuestions({
             done={isDone}
             result={result}
             savedAnswer={displayAnswer}
+            hint={hints[i]}
+            hintStock={tokenStock?.hint_token ?? 0}
+            onUseHint={() => useHint(i)}
+            hintLoading={hintLoadingIdx === i}
           />
         );
       })}
+      {(attempt || awarded) && !locked && (tokenStock?.retry_token ?? 0) > 0 && (
+        <div className="rounded-lg border border-purple-300/50 bg-purple-50 dark:bg-purple-950/20 p-3 flex items-center justify-between gap-3">
+          <p className="text-sm text-purple-900 dark:text-purple-200">
+            {tr("ใช้ Retry Token เพื่อทำ quest นี้ใหม่")} ({tokenStock?.retry_token} {tr("คงเหลือ")})
+          </p>
+          <Button size="sm" variant="outline" onClick={useRetry} disabled={retrying} className="shrink-0">
+            {retrying ? (
+              <Loader2 className="size-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="size-4 mr-2" />
+            )}
+            {tr("ทำใหม่")}
+          </Button>
+        </div>
+      )}
+      {/* placeholder-marker */}
       {canFinalize && (
         <div className="rounded-lg border border-amber-300/50 bg-amber-50 dark:bg-amber-950/20 p-3 flex items-center justify-between gap-3">
           <p className="text-sm text-amber-900 dark:text-amber-200">
