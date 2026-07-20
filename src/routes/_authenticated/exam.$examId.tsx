@@ -118,7 +118,7 @@ function HostView({ exam }: { exam: ExamSessionRow }) {
         </CardContent>
       </Card>
 
-      {exam.status === "draft" && (
+      {["draft", "scheduled"].includes(exam.status) && (
         <div className="flex justify-end">
           <Button asChild variant="outline" size="sm">
             <Link to="/exam/$examId/edit" params={{ examId: exam.id }}>
