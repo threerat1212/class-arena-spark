@@ -190,6 +190,8 @@ function HostView({ exam }: { exam: ExamSessionRow }) {
           {tr("ปิดสอบ (force-submit คนที่ยังไม่ส่ง)")}
         </Button>
       )}
+      <CanvaPoolCard examId={exam.id} />
+
 
       <Card>
         <CardHeader>
