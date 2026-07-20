@@ -316,6 +316,68 @@ export function StudentQuestQuestions({
   const [submittingIdx, setSubmittingIdx] = useState<number | null>(null);
   const [perResults, setPerResults] = useState<Record<number, QuestGradeResult>>({});
   const [awarded, setAwarded] = useState<AwardQuestResult | null>(null);
+  const [hints, setHints] = useState<Record<number, string>>({});
+  const [hintLoadingIdx, setHintLoadingIdx] = useState<number | null>(null);
+  const [retrying, setRetrying] = useState(false);
+
+  const { data: tokenStock } = useQuery({
+    queryKey: ["inv-tokens", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("user_inventory")
+        .select("item_kind,quantity")
+        .in("item_kind", ["hint_token", "retry_token"]);
+      const map: Record<string, number> = { hint_token: 0, retry_token: 0 };
+      for (const r of data ?? []) map[r.item_kind] = (map[r.item_kind] ?? 0) + (r.quantity ?? 0);
+      return map;
+    },
+    enabled: !!user,
+  });
+
+  async function useHint(i: number) {
+    if (!questId) return;
+    setHintLoadingIdx(i);
+    try {
+      const { data, error } = await supabase.rpc("use_hint_token", {
+        _quest_id: questId,
+        _q_index: i,
+      });
+      if (error) throw error;
+      const resp = data as { hint?: string } | null;
+      if (resp?.hint) {
+        setHints((h) => ({ ...h, [i]: resp.hint! }));
+        toast.success(tr("ใบ้แล้ว!"));
+        qc.invalidateQueries({ queryKey: ["inv-tokens"] });
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : tr("ใช้ไม่สำเร็จ"));
+    } finally {
+      setHintLoadingIdx(null);
+    }
+  }
+
+  async function useRetry() {
+    if (!questId) return;
+    if (!window.confirm(tr("ใช้ Retry Token เพื่อทำ quest นี้ใหม่? (คะแนน/ทองรอบก่อนจะถูกย้อนคืน)"))) return;
+    setRetrying(true);
+    try {
+      const { error } = await supabase.rpc("use_retry_token", { _quest_id: questId });
+      if (error) throw error;
+      toast.success(tr("รีเซ็ต quest แล้ว — เริ่มใหม่ได้เลย"));
+      qc.invalidateQueries({ queryKey: ["my-attempts"] });
+      qc.invalidateQueries({ queryKey: ["my-dq-attempts"] });
+      qc.invalidateQueries({ queryKey: ["dq-progress", questId] });
+      qc.invalidateQueries({ queryKey: ["inv-tokens"] });
+      qc.invalidateQueries({ queryKey: ["profile"] });
+      setPerResults({});
+      setAwarded(null);
+      setAnswers(questions.map(() => ""));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : tr("ใช้ไม่สำเร็จ"));
+    } finally {
+      setRetrying(false);
+    }
+  }
 
   async function submitOne(i: number) {
     if (!answers[i]?.trim()) return;
