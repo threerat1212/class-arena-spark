@@ -189,9 +189,21 @@ export async function rpcRecordViolation(args: {
   return row ?? { violation_count: 0, auto_submitted: false };
 }
 
+export interface ExamSubmitBonus {
+  combo_applied?: number;
+  multiplier_applied?: number;
+  perfect_bonus?: number;
+  lucky_drop?: {
+    id: string;
+    kind: "gold" | "xp" | "cosmetic_voucher" | "rare_title";
+    amount: number | null;
+    status: "granted" | "pending" | "revoked";
+  } | null;
+}
+
 export async function rpcSubmitExam(
   examId: string,
-): Promise<{ total_score: number; xp_awarded: number }> {
+): Promise<{ total_score: number; xp_awarded: number; base_amount?: number } & ExamSubmitBonus> {
   const { data, error } = await supabase.rpc("submit_exam", { _exam_id: examId });
   if (error) throw error;
   const row = Array.isArray(data) ? data[0] : data;
