@@ -332,6 +332,8 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<string, AnswerDraft>>({});
   const [answersHydrated, setAnswersHydrated] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const { data: questions } = useQuery({
     queryKey: ["exam-questions-safe", exam.id],
@@ -444,8 +446,11 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
   }
 
   async function submitAll() {
+    if (submitting || submitted) return;
+    setSubmitting(true);
     try {
       await rpcSubmitExam(exam.id);
+      setSubmitted(true);
       toast.success(tr("ส่งข้อสอบแล้ว"));
       qc.invalidateQueries({ queryKey: ["my-exam-participant", exam.id] });
       qc.invalidateQueries({ queryKey: ["xp-transactions"] });
@@ -453,6 +458,7 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
       nav({ to: "/exam/$examId", params: { examId: exam.id } });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : tr("ส่งข้อสอบล้มเหลว"));
+      setSubmitting(false);
     }
   }
 
@@ -554,7 +560,9 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
               <Button
                 variant={isLast && unanswered === 0 ? "default" : "outline"}
                 size="sm"
+                disabled={submitting || submitted}
                 onClick={() => {
+                  if (submitting || submitted) return;
                   const msg =
                     unanswered > 0
                       ? tr("ยังไม่ได้ทำ ") +
@@ -576,7 +584,17 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
                   }
                 }}
               >
-                <Send className="size-4 mr-1" /> {tr("ส่งข้อสอบ")} ({answeredCount}/{total})
+                {submitting || submitted ? (
+                  <Loader2 className="size-4 mr-1 animate-spin" />
+                ) : (
+                  <Send className="size-4 mr-1" />
+                )}
+                {submitted
+                  ? tr("ส่งแล้ว")
+                  : submitting
+                    ? tr("กำลังส่ง...")
+                    : tr("ส่งข้อสอบ")}{" "}
+                ({answeredCount}/{total})
               </Button>
             );
           })()}
