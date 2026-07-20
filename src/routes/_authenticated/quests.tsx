@@ -26,6 +26,8 @@ import {
   ChevronDown,
   Loader2,
   Users,
+  Lightbulb,
+  RefreshCw,
 } from "lucide-react";
 import type { Database, Json } from "@/integrations/supabase/types";
 
@@ -314,6 +316,68 @@ export function StudentQuestQuestions({
   const [submittingIdx, setSubmittingIdx] = useState<number | null>(null);
   const [perResults, setPerResults] = useState<Record<number, QuestGradeResult>>({});
   const [awarded, setAwarded] = useState<AwardQuestResult | null>(null);
+  const [hints, setHints] = useState<Record<number, string>>({});
+  const [hintLoadingIdx, setHintLoadingIdx] = useState<number | null>(null);
+  const [retrying, setRetrying] = useState(false);
+
+  const { data: tokenStock } = useQuery({
+    queryKey: ["inv-tokens", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("user_inventory")
+        .select("item_kind,quantity")
+        .in("item_kind", ["hint_token", "retry_token"]);
+      const map: Record<string, number> = { hint_token: 0, retry_token: 0 };
+      for (const r of data ?? []) map[r.item_kind] = (map[r.item_kind] ?? 0) + (r.quantity ?? 0);
+      return map;
+    },
+    enabled: !!user,
+  });
+
+  async function useHint(i: number) {
+    if (!questId) return;
+    setHintLoadingIdx(i);
+    try {
+      const { data, error } = await supabase.rpc("use_hint_token", {
+        _quest_id: questId,
+        _q_index: i,
+      });
+      if (error) throw error;
+      const resp = data as { hint?: string } | null;
+      if (resp?.hint) {
+        setHints((h) => ({ ...h, [i]: resp.hint! }));
+        toast.success(tr("ใบ้แล้ว!"));
+        qc.invalidateQueries({ queryKey: ["inv-tokens"] });
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : tr("ใช้ไม่สำเร็จ"));
+    } finally {
+      setHintLoadingIdx(null);
+    }
+  }
+
+  async function useRetry() {
+    if (!questId) return;
+    if (!window.confirm(tr("ใช้ Retry Token เพื่อทำ quest นี้ใหม่? (คะแนน/ทองรอบก่อนจะถูกย้อนคืน)"))) return;
+    setRetrying(true);
+    try {
+      const { error } = await supabase.rpc("use_retry_token", { _quest_id: questId });
+      if (error) throw error;
+      toast.success(tr("รีเซ็ต quest แล้ว — เริ่มใหม่ได้เลย"));
+      qc.invalidateQueries({ queryKey: ["my-attempts"] });
+      qc.invalidateQueries({ queryKey: ["my-dq-attempts"] });
+      qc.invalidateQueries({ queryKey: ["dq-progress", questId] });
+      qc.invalidateQueries({ queryKey: ["inv-tokens"] });
+      qc.invalidateQueries({ queryKey: ["profile"] });
+      setPerResults({});
+      setAwarded(null);
+      setAnswers(questions.map(() => ""));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : tr("ใช้ไม่สำเร็จ"));
+    } finally {
+      setRetrying(false);
+    }
+  }
 
   async function submitOne(i: number) {
     if (!answers[i]?.trim()) return;
@@ -474,9 +538,29 @@ export function StudentQuestQuestions({
             done={isDone}
             result={result}
             savedAnswer={displayAnswer}
+            hint={hints[i]}
+            hintStock={tokenStock?.hint_token ?? 0}
+            onUseHint={() => useHint(i)}
+            hintLoading={hintLoadingIdx === i}
           />
         );
       })}
+      {(attempt || awarded) && !locked && (tokenStock?.retry_token ?? 0) > 0 && (
+        <div className="rounded-lg border border-purple-300/50 bg-purple-50 dark:bg-purple-950/20 p-3 flex items-center justify-between gap-3">
+          <p className="text-sm text-purple-900 dark:text-purple-200">
+            {tr("ใช้ Retry Token เพื่อทำ quest นี้ใหม่")} ({tokenStock?.retry_token} {tr("คงเหลือ")})
+          </p>
+          <Button size="sm" variant="outline" onClick={useRetry} disabled={retrying} className="shrink-0">
+            {retrying ? (
+              <Loader2 className="size-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="size-4 mr-2" />
+            )}
+            {tr("ทำใหม่")}
+          </Button>
+        </div>
+      )}
+      {/* placeholder-marker */}
       {canFinalize && (
         <div className="rounded-lg border border-amber-300/50 bg-amber-50 dark:bg-amber-950/20 p-3 flex items-center justify-between gap-3">
           <p className="text-sm text-amber-900 dark:text-amber-200">
@@ -515,6 +599,10 @@ function QuestionCard({
   done,
   result,
   savedAnswer,
+  hint,
+  hintStock,
+  onUseHint,
+  hintLoading,
 }: {
   quest: DailyQuest;
   question: QuestQuestion;
@@ -532,6 +620,10 @@ function QuestionCard({
   done: boolean;
   result?: QuestGradeResult;
   savedAnswer?: string;
+  hint?: string;
+  hintStock?: number;
+  onUseHint?: () => void;
+  hintLoading?: boolean;
 }) {
   // Per-question difficulty (fallback to quest difficulty)
   const diffKey = String(
@@ -647,6 +739,31 @@ function QuestionCard({
               )}
               {tr("ส่งคำตอบ")}
             </Button>
+            {hint ? (
+              <div className="rounded-md border border-amber-300/50 bg-amber-50 dark:bg-amber-950/20 p-2 text-xs flex items-start gap-2">
+                <Lightbulb className="size-3.5 text-amber-500 shrink-0 mt-0.5" />
+                <span className="text-amber-900 dark:text-amber-200">{hint}</span>
+              </div>
+            ) : (
+              onUseHint &&
+              (hintStock ?? 0) > 0 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-1 border-amber-300 text-amber-700 hover:bg-amber-50"
+                  onClick={onUseHint}
+                  disabled={hintLoading}
+                >
+                  {hintLoading ? (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  ) : (
+                    <Lightbulb className="size-3.5" />
+                  )}
+                  {tr("ใช้ Hint")} ({hintStock})
+                </Button>
+              )
+            )}
             {total > 1 && (
               <p className="text-[11px] text-muted-foreground">
                 {tr("AI จะตรวจข้อนี้ทันทีและให้คะแนนตามความใกล้เคียง (มีคะแนนบางส่วน)")}

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { announceLuckyDrop } from "@/components/gamification/lucky-drop-toast";
-import { Loader2, Play, Square, Send, AlertTriangle, Clock, Maximize2, Pencil, Palette, Trash2, ExternalLink } from "lucide-react";
+import { Loader2, Play, Square, Send, AlertTriangle, Clock, Maximize2, Pencil, Palette, Trash2, ExternalLink, TimerReset } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { tr } from "@/i18n";
@@ -344,6 +344,39 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
     queryKey: ["my-exam-answers", exam.id],
     queryFn: () => fetchMyExamAnswers(exam.id),
   });
+  const { data: participant } = useQuery({
+    queryKey: ["my-exam-participant", exam.id],
+    queryFn: () => fetchMyParticipant(exam.id),
+    refetchInterval: 30_000,
+  });
+  const { data: extraTimeStock } = useQuery({
+    queryKey: ["inv", "extra_time"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("user_inventory")
+        .select("quantity")
+        .eq("item_kind", "extra_time")
+        .maybeSingle();
+      return data?.quantity ?? 0;
+    },
+  });
+  const extraSeconds = participant?.extra_time_seconds ?? 0;
+  const [usingExtra, setUsingExtra] = useState(false);
+  async function useExtraTime() {
+    setUsingExtra(true);
+    try {
+      const { error } = await supabase.rpc("use_extra_time_token", { _exam_id: exam.id, _minutes: 5 });
+      if (error) throw error;
+      toast.success(tr("เพิ่มเวลา +5 นาที"));
+      qc.invalidateQueries({ queryKey: ["my-exam-participant", exam.id] });
+      qc.invalidateQueries({ queryKey: ["inv", "extra_time"] });
+      qc.invalidateQueries({ queryKey: ["active-boosts"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : tr("ใช้ไม่สำเร็จ"));
+    } finally {
+      setUsingExtra(false);
+    }
+  }
 
   // merge existing answers into local state once on load
   useEffect(() => {
@@ -378,13 +411,13 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
     },
   });
 
-  // countdown to ends_at
+  // countdown to ends_at (+ extra time token bonus)
   const [remainingSec, setRemainingSec] = useState<number | null>(null);
   useEffect(() => {
     if (!exam.ends_at) return;
-    const endsAt = exam.ends_at;
+    const endsAtMs = new Date(exam.ends_at).getTime() + extraSeconds * 1000;
     const tick = () => {
-      const s = Math.floor((new Date(endsAt).getTime() - Date.now()) / 1000);
+      const s = Math.floor((endsAtMs - Date.now()) / 1000);
       setRemainingSec(Math.max(0, s));
       if (s <= 0) {
         setEndedReason("time_up");
@@ -394,7 +427,7 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [exam.ends_at, qc, exam.id]);
+  }, [exam.ends_at, extraSeconds, qc, exam.id]);
 
   // enter fullscreen on mount
   useEffect(() => {
@@ -514,6 +547,22 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
           <span className="font-mono font-bold">{mmss}</span>
         </span>
         <div className="flex items-center gap-3">
+          {(extraTimeStock ?? 0) > 0 && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={useExtraTime}
+              disabled={usingExtra}
+              title={tr("ใช้โทเคนเพิ่มเวลา +5 นาที")}
+            >
+              {usingExtra ? (
+                <Loader2 className="size-3.5 mr-1 animate-spin" />
+              ) : (
+                <TimerReset className="size-3.5 mr-1" />
+              )}
+              +5m ({extraTimeStock})
+            </Button>
+          )}
           <CanvaStudentButton examId={exam.id} canAssign compact />
           <span className="flex items-center gap-1">
             <AlertTriangle
