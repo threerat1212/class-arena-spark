@@ -53,7 +53,7 @@ function AdminMultiplierEventsPage() {
       }
       const { error } = await supabase.from("multiplier_events").insert({
         label: form.label.trim() || tr("ชั่วโมงพิเศษ!"),
-        multiplier: String(mult),
+        multiplier: mult,
         starts_at: startsAt.toISOString(),
         ends_at: endsAt.toISOString(),
         scope: "global",
