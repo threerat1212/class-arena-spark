@@ -599,6 +599,10 @@ function QuestionCard({
   done,
   result,
   savedAnswer,
+  hint,
+  hintStock,
+  onUseHint,
+  hintLoading,
 }: {
   quest: DailyQuest;
   question: QuestQuestion;
@@ -616,6 +620,10 @@ function QuestionCard({
   done: boolean;
   result?: QuestGradeResult;
   savedAnswer?: string;
+  hint?: string;
+  hintStock?: number;
+  onUseHint?: () => void;
+  hintLoading?: boolean;
 }) {
   // Per-question difficulty (fallback to quest difficulty)
   const diffKey = String(
