@@ -154,7 +154,7 @@ function EditExamPage() {
     }
   }
 
-  if (examLoading || qLoading || !hydrated) {
+  if (examLoading || qLoading) {
     return (
       <div className="grid place-items-center py-12">
         <Loader2 className="size-6 animate-spin" />
@@ -178,6 +178,14 @@ function EditExamPage() {
             {tr("กลับ")}
           </Link>
         </Button>
+      </div>
+    );
+  }
+
+  if (!hydrated) {
+    return (
+      <div className="grid place-items-center py-12">
+        <Loader2 className="size-6 animate-spin" />
       </div>
     );
   }
