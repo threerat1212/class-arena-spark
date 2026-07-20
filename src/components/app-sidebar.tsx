@@ -127,6 +127,7 @@ const groups: Group[] = [
       { label: "อนุมัติครู", url: "/admin/teachers", icon: UserCheck, roles: ["admin"] },
       { label: "เพิ่มนักเรียน", url: "/admin/students", icon: UserPlus, roles: ["admin"] },
       { label: "กิจกรรม XP ×", url: "/admin/multiplier-events", icon: Sparkles, roles: ["admin"] },
+      { label: "XP Ledger", url: "/admin/xp-ledger", icon: Sparkles, roles: ["admin"] },
     ],
   },
 ];
