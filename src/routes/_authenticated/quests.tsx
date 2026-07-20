@@ -26,6 +26,8 @@ import {
   ChevronDown,
   Loader2,
   Users,
+  Lightbulb,
+  RefreshCw,
 } from "lucide-react";
 import type { Database, Json } from "@/integrations/supabase/types";
 
