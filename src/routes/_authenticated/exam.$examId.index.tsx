@@ -882,6 +882,16 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
             })()}
               </div>
             ) : (
+              <Textarea
+                value={answers[qId]?.answer_text ?? ""}
+                onChange={(e) => saveAnswer(qId, { answer_text: e.target.value })}
+                placeholder={tr("พิมพ์คำตอบ...")}
+                rows={8}
+              />
+            )}
+          </CardContent>
+        </Card>
+
         <div className="flex items-center justify-between gap-2 pt-2">
           <Button
             variant="outline"
@@ -906,7 +916,7 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
               return (
                 <Button
                   size="lg"
-                  className="min-w-[180px] bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all"
+                  className="min-w-[180px] bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all animate-pulse"
                   onClick={() => setCurrentIdx((i) => Math.min(total - 1, i + 1))}
                 >
                   {tr("ข้อถัดไป")} ▶
@@ -926,14 +936,8 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
             );
           })()}
         </div>
-                submitting={submitting}
-                submitted={submitted}
-                onConfirm={submitAll}
-              />
-            );
-          })()}
-        </div>
       </div>
+
 
     </div>
   );
