@@ -61,6 +61,10 @@ function ExamReportPage() {
     enabled: !!examId,
   });
 
+  const [detailUserId, setDetailUserId] = useState<string | null>(null);
+
+
+
   const queryClient = useQueryClient();
   const gradeMutation = useMutation({
     mutationFn: rpcGradeShortAnswer,
