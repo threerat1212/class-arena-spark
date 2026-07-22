@@ -138,6 +138,16 @@ export async function rpcCloseExam(
   return (data as { user_id: string; auto_submitted: boolean }[]) ?? [];
 }
 
+export async function rpcDeleteExam(examId: string): Promise<void> {
+  const { error } = await (
+    supabase.rpc as unknown as (
+      name: string,
+      args: Record<string, unknown>,
+    ) => Promise<{ error: unknown }>
+  )("delete_exam", { _exam_id: examId });
+  if (error) throw error;
+
+
 export async function rpcJoinExamByCode(code: string): Promise<{ exam_id: string; title: string }> {
   const { data, error } = await supabase.rpc("join_exam_by_code", { _code: code });
   if (error) throw error;
