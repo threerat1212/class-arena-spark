@@ -274,6 +274,13 @@ function EditExamPage() {
         </CardContent>
       </Card>
 
+      <div className="flex justify-end">
+        <AiQuestionGenerator
+          onGenerated={applyAi}
+          hasExisting={questions.some((q) => q.question.trim().length > 0)}
+        />
+      </div>
+
       <div className="space-y-2">
         {questions.map((q, i) => (
           <Card key={i}>
