@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { Sparkles, Loader2, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { tr } from "@/i18n";
