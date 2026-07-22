@@ -840,22 +840,14 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
           <span className="text-sm text-muted-foreground">
             {tr("ข้อ")} {currentIdx + 1}/{questions.length}
           </span>
-          <div className="flex gap-1">
+          <div className="flex gap-2">
             <Button
               size="sm"
               variant="outline"
               disabled={currentIdx === 0}
               onClick={() => setCurrentIdx((i) => i - 1)}
             >
-              ◀
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={currentIdx === questions.length - 1}
-              onClick={() => setCurrentIdx((i) => i + 1)}
-            >
-              ▶
+              ◀ {tr("ก่อนหน้า")}
             </Button>
           </div>
         </div>
