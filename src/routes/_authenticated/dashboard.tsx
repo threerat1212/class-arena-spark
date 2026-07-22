@@ -31,6 +31,7 @@ import { DailyBonusCard } from "@/components/daily-bonus-card";
 import { GamificationStatusPanel } from "@/components/gamification-status-panel";
 import { RecentActivityCard } from "@/components/recent-activity-card";
 import { ClassroomHallOfFame, GradeLeaderboard } from "@/components/showcase-sections";
+import { DisplayNameEditor } from "@/components/display-name-editor";
 import type { Database } from "@/integrations/supabase/types";
 
 import { tr } from "@/i18n";
