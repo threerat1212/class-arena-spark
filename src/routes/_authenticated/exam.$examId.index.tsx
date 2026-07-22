@@ -840,22 +840,14 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
           <span className="text-sm text-muted-foreground">
             {tr("ข้อ")} {currentIdx + 1}/{questions.length}
           </span>
-          <div className="flex gap-1">
+          <div className="flex gap-2">
             <Button
               size="sm"
               variant="outline"
               disabled={currentIdx === 0}
               onClick={() => setCurrentIdx((i) => i - 1)}
             >
-              ◀
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={currentIdx === questions.length - 1}
-              onClick={() => setCurrentIdx((i) => i + 1)}
-            >
-              ▶
+              ◀ {tr("ก่อนหน้า")}
             </Button>
           </div>
         </div>
@@ -900,7 +892,15 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
           </CardContent>
         </Card>
 
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between gap-2 pt-2">
+          <Button
+            variant="outline"
+            size="lg"
+            disabled={currentIdx === 0}
+            onClick={() => setCurrentIdx((i) => i - 1)}
+          >
+            ◀ {tr("ก่อนหน้า")}
+          </Button>
           {(() => {
             const answeredCount = questions.filter((qq) => {
               if (!qq.id) return false;
@@ -912,12 +912,23 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
             const total = questions.length;
             const unanswered = total - answeredCount;
             const isLast = currentIdx === total - 1;
+            if (!isLast) {
+              return (
+                <Button
+                  size="lg"
+                  className="min-w-[180px] bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all animate-pulse"
+                  onClick={() => setCurrentIdx((i) => Math.min(total - 1, i + 1))}
+                >
+                  {tr("ข้อถัดไป")} ▶
+                </Button>
+              );
+            }
             return (
               <SubmitExamButton
                 total={total}
                 answered={answeredCount}
                 unanswered={unanswered}
-                highlight={isLast && unanswered === 0}
+                highlight={unanswered === 0}
                 submitting={submitting}
                 submitted={submitted}
                 onConfirm={submitAll}
@@ -926,6 +937,7 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
           })()}
         </div>
       </div>
+
 
     </div>
   );
