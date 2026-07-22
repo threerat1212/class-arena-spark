@@ -12,6 +12,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/use-auth";
 import { useTranslation } from "react-i18next";
 import { DomTranslator } from "@/components/dom-translator";
+import { PageTransition } from "@/components/motion/page-transition";
 import "@/i18n";
 
 import appCss from "../styles.css?url";
@@ -142,7 +143,9 @@ function RootComponent() {
       <AuthProvider>
         <DomTranslator />
         <div key={i18n.language} className="contents">
-          <Outlet />
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
         </div>
         <Toaster />
       </AuthProvider>

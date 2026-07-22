@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { TestimonialsMarquee } from "@/components/testimonials-marquee";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
+import { AnimatedBackground } from "@/components/motion/animated-background";
 
 import { tr } from "@/i18n";
 
