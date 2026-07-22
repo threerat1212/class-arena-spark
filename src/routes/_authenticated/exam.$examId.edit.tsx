@@ -114,6 +114,13 @@ function EditExamPage() {
   function removeQ(i: number) {
     setQuestions((qs) => qs.filter((_, idx) => idx !== i).map((q, idx) => ({ ...q, idx })));
   }
+  function applyAi(generated: GeneratedQuestion[], mode: "replace" | "append") {
+    setQuestions((qs) => {
+      const base = mode === "replace" ? [] : qs.filter((q) => q.question.trim());
+      const merged = [...base, ...generated.map((g) => ({ ...g, idx: 0 }))];
+      return merged.map((q, idx) => ({ ...q, idx }));
+    });
+  }
 
   async function save() {
     if (!title.trim()) {
