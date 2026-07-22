@@ -28,7 +28,7 @@ import { toast } from "sonner";
 import { tr } from "@/i18n";
 
 export type GeneratedQuestion = {
-  question_type: "multiple_choice" | "short_answer";
+  question_type: "multiple_choice" | "short_answer" | "essay";
   question: string;
   options: string[];
   correct_idx: number;
@@ -48,9 +48,9 @@ export function AiQuestionGenerator({
   const [content, setContent] = useState("");
   const [count, setCount] = useState(5);
   const [optionsCount, setOptionsCount] = useState(4);
-  const [qType, setQType] = useState<"multiple_choice" | "short_answer" | "mixed">(
-    "multiple_choice",
-  );
+  const [qType, setQType] = useState<
+    "multiple_choice" | "short_answer" | "essay" | "mixed"
+  >("multiple_choice");
   const [difficulty, setDifficulty] = useState("ปานกลาง");
   const [loading, setLoading] = useState(false);
 
@@ -84,12 +84,18 @@ export function AiQuestionGenerator({
         return;
       }
       const normalized: GeneratedQuestion[] = questions.map((q) => {
-        const isMC = q.question_type !== "short_answer";
+        const qt: "multiple_choice" | "short_answer" | "essay" =
+          q.question_type === "short_answer"
+            ? "short_answer"
+            : q.question_type === "essay"
+              ? "essay"
+              : "multiple_choice";
+        const isMC = qt === "multiple_choice";
         const opts = Array.isArray(q.options) ? q.options.map((o) => String(o ?? "")) : [];
         const targetLen = isMC ? optionsCount : 4;
         while (opts.length < targetLen) opts.push("");
         return {
-          question_type: isMC ? "multiple_choice" : "short_answer",
+          question_type: qt,
           question: String(q.question ?? "").trim(),
           options: opts.slice(0, targetLen),
           correct_idx: 0,
@@ -162,7 +168,7 @@ export function AiQuestionGenerator({
               <Select
                 value={String(optionsCount)}
                 onValueChange={(v) => setOptionsCount(Number(v))}
-                disabled={qType === "short_answer"}
+                disabled={qType === "short_answer" || qType === "essay"}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -184,6 +190,7 @@ export function AiQuestionGenerator({
                 <SelectContent>
                   <SelectItem value="multiple_choice">{tr("ปรนัย")}</SelectItem>
                   <SelectItem value="short_answer">{tr("เติมคำ")}</SelectItem>
+                  <SelectItem value="essay">{tr("ข้อเขียน (ยาว)")}</SelectItem>
                   <SelectItem value="mixed">{tr("ผสม")}</SelectItem>
                 </SelectContent>
               </Select>
