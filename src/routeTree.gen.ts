@@ -46,6 +46,7 @@ import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminTeachersRouteImport } from './routes/_authenticated/admin/teachers'
 import { Route as AuthenticatedAdminStudentsRouteImport } from './routes/_authenticated/admin/students'
 import { Route as AuthenticatedAdminRoomsRouteImport } from './routes/_authenticated/admin/rooms'
+import { Route as AuthenticatedAdminRewardsCatalogRouteImport } from './routes/_authenticated/admin/rewards-catalog'
 import { Route as AuthenticatedAdminMultiplierEventsRouteImport } from './routes/_authenticated/admin/multiplier-events'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -249,6 +250,12 @@ const AuthenticatedAdminRoomsRoute = AuthenticatedAdminRoomsRouteImport.update({
   path: '/admin/rooms',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminRewardsCatalogRoute =
+  AuthenticatedAdminRewardsCatalogRouteImport.update({
+    id: '/admin/rewards-catalog',
+    path: '/admin/rewards-catalog',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminMultiplierEventsRoute =
   AuthenticatedAdminMultiplierEventsRouteImport.update({
     id: '/admin/multiplier-events',
@@ -308,6 +315,7 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/multiplier-events': typeof AuthenticatedAdminMultiplierEventsRoute
+  '/admin/rewards-catalog': typeof AuthenticatedAdminRewardsCatalogRoute
   '/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/admin/teachers': typeof AuthenticatedAdminTeachersRoute
@@ -351,6 +359,7 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/multiplier-events': typeof AuthenticatedAdminMultiplierEventsRoute
+  '/admin/rewards-catalog': typeof AuthenticatedAdminRewardsCatalogRoute
   '/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/admin/teachers': typeof AuthenticatedAdminTeachersRoute
@@ -396,6 +405,7 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/admin/multiplier-events': typeof AuthenticatedAdminMultiplierEventsRoute
+  '/_authenticated/admin/rewards-catalog': typeof AuthenticatedAdminRewardsCatalogRoute
   '/_authenticated/admin/rooms': typeof AuthenticatedAdminRoomsRoute
   '/_authenticated/admin/students': typeof AuthenticatedAdminStudentsRoute
   '/_authenticated/admin/teachers': typeof AuthenticatedAdminTeachersRoute
@@ -442,6 +452,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/admin/multiplier-events'
+    | '/admin/rewards-catalog'
     | '/admin/rooms'
     | '/admin/students'
     | '/admin/teachers'
@@ -485,6 +496,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/admin/multiplier-events'
+    | '/admin/rewards-catalog'
     | '/admin/rooms'
     | '/admin/students'
     | '/admin/teachers'
@@ -529,6 +541,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/admin/multiplier-events'
+    | '/_authenticated/admin/rewards-catalog'
     | '/_authenticated/admin/rooms'
     | '/_authenticated/admin/students'
     | '/_authenticated/admin/teachers'
@@ -825,6 +838,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRoomsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/rewards-catalog': {
+      id: '/_authenticated/admin/rewards-catalog'
+      path: '/admin/rewards-catalog'
+      fullPath: '/admin/rewards-catalog'
+      preLoaderRoute: typeof AuthenticatedAdminRewardsCatalogRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/multiplier-events': {
       id: '/_authenticated/admin/multiplier-events'
       path: '/admin/multiplier-events'
@@ -918,6 +938,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedRewardsRoute: typeof AuthenticatedRewardsRoute
   AuthenticatedWeeklyMissionsRoute: typeof AuthenticatedWeeklyMissionsRoute
   AuthenticatedAdminMultiplierEventsRoute: typeof AuthenticatedAdminMultiplierEventsRoute
+  AuthenticatedAdminRewardsCatalogRoute: typeof AuthenticatedAdminRewardsCatalogRoute
   AuthenticatedAdminRoomsRoute: typeof AuthenticatedAdminRoomsRoute
   AuthenticatedAdminStudentsRoute: typeof AuthenticatedAdminStudentsRoute
   AuthenticatedAdminTeachersRoute: typeof AuthenticatedAdminTeachersRoute
@@ -950,6 +971,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedWeeklyMissionsRoute: AuthenticatedWeeklyMissionsRoute,
   AuthenticatedAdminMultiplierEventsRoute:
     AuthenticatedAdminMultiplierEventsRoute,
+  AuthenticatedAdminRewardsCatalogRoute: AuthenticatedAdminRewardsCatalogRoute,
   AuthenticatedAdminRoomsRoute: AuthenticatedAdminRoomsRoute,
   AuthenticatedAdminStudentsRoute: AuthenticatedAdminStudentsRoute,
   AuthenticatedAdminTeachersRoute: AuthenticatedAdminTeachersRoute,
