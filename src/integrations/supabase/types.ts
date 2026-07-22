@@ -3019,6 +3019,7 @@ export type Database = {
         }
         Returns: string
       }
+      delete_exam: { Args: { _exam_id: string }; Returns: undefined }
       equip_cosmetic: {
         Args: { _code: string; _kind: string }
         Returns: undefined

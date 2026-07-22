@@ -1,12 +1,26 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, FileText, FlaskConical, ExternalLink } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Loader2, Plus, FileText, FlaskConical, ExternalLink, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { tr } from "@/i18n";
+import { rpcDeleteExam } from "@/lib/exam.functions";
 import type { ExamSessionRow } from "@/lib/exam.functions";
+
 
 interface ExamsTabProps {
   classroomId: string;
@@ -40,6 +54,18 @@ export function ExamsTab({ classroomId, isOwner }: ExamsTabProps) {
       return (data ?? []) as ExamSessionRow[];
     },
   });
+
+  const qc = useQueryClient();
+  const deleteMut = useMutation({
+    mutationFn: (id: string) => rpcDeleteExam(id),
+    onSuccess: () => {
+      toast.success(tr("ลบข้อสอบแล้ว"));
+      qc.invalidateQueries({ queryKey: ["classroom-exams", classroomId] });
+    },
+    onError: (e: unknown) =>
+      toast.error(tr("ลบไม่สำเร็จ: ") + (e instanceof Error ? e.message : String(e))),
+  });
+
 
   return (
     <div className="space-y-4 mt-4">
@@ -137,6 +163,39 @@ export function ExamsTab({ classroomId, isOwner }: ExamsTabProps) {
                           </Link>
                         </Button>
                       )}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-destructive hover:text-destructive"
+                            disabled={deleteMut.isPending}
+                          >
+                            <Trash2 className="size-3 mr-1" />
+                            {tr("ลบ")}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{tr("ลบข้อสอบ?")}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {tr("จะลบข้อสอบ \"")}
+                              {exam.title}
+                              {tr("\" พร้อมคำถาม คำตอบ และผู้เข้าสอบทั้งหมดอย่างถาวร — ไม่สามารถกู้คืนได้")}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{tr("ยกเลิก")}</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-destructive hover:bg-destructive/90"
+                              onClick={() => deleteMut.mutate(exam.id)}
+                            >
+                              {tr("ลบถาวร")}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+
                     </>
                   ) : exam.status === "active" ? (
                     <Button asChild size="sm">
