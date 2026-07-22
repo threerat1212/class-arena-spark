@@ -251,15 +251,15 @@ function ShopTab() {
           )}
           <div className="space-y-1">
             <Label>{tr("ราคา (ทอง)")}</Label>
-            <Input type="number" min={0} value={form.gold_price} onChange={(e) => setForm((f) => ({ ...f, gold_price: parseInt(e.target.value) || 0 }))} />
+            <Input type="number" min={0} value={form.gold_price ?? 0} onChange={(e) => setForm((f) => ({ ...f, gold_price: parseInt(e.target.value) || 0 }))} />
           </div>
           <div className="space-y-1">
             <Label>{tr("ไอคอน")}</Label>
-            <Input value={form.icon} onChange={(e) => setForm((f) => ({ ...f, icon: e.target.value }))} />
+            <Input value={form.icon ?? ""} onChange={(e) => setForm((f) => ({ ...f, icon: e.target.value }))} />
           </div>
           <div className="space-y-1">
             <Label>{tr("คำอธิบาย")}</Label>
-            <Textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
+            <Textarea value={form.description ?? ""} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
           </div>
           <Button onClick={() => createMutation.mutate()} disabled={createMutation.isPending} className="w-full gap-1">
             <Save className="size-4" /> {tr("บันทึก")}
