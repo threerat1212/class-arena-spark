@@ -858,6 +858,9 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
     try {
       const result = await rpcSubmitExam(exam.id);
       setSubmitted(true);
+      // clear offline backup — server has accepted the final submission
+      try { localStorage.removeItem(draftStorageKey(exam.id, user?.id)); } catch { /* ignore */ }
+
       const xpGained = result.base_amount ?? result.xp_awarded ?? 0;
       const bonusParts: string[] = [];
       if (result.combo_applied && result.combo_applied > 0) {
