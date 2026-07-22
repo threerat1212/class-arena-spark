@@ -208,7 +208,7 @@ function EntryGateway({ isSignedIn }: { isSignedIn: boolean }) {
         </span>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <article className="scholar-spotlight-card scholar-sheen rounded-lg border bg-card p-5 shadow-sm">
+        <article className="scholar-spotlight-card scholar-sheen hover-lift press-scale rounded-lg border bg-card p-5 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <span className="inline-flex size-11 items-center justify-center rounded-md bg-primary/10 text-primary">
               <Building2 className="size-5" />
@@ -229,7 +229,7 @@ function EntryGateway({ isSignedIn }: { isSignedIn: boolean }) {
           </Button>
         </article>
 
-        <article className="scholar-spotlight-card scholar-sheen rounded-lg border bg-card p-5 shadow-sm">
+        <article className="scholar-spotlight-card scholar-sheen hover-lift press-scale rounded-lg border bg-card p-5 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <span className="inline-flex size-11 items-center justify-center rounded-md bg-gold/15 text-gold">
               <GraduationCap className="size-5" />
@@ -260,7 +260,7 @@ function EntryGateway({ isSignedIn }: { isSignedIn: boolean }) {
           </div>
         </article>
 
-        <article className="scholar-spotlight-card scholar-sheen rounded-lg border bg-card p-5 shadow-sm">
+        <article className="scholar-spotlight-card scholar-sheen hover-lift press-scale rounded-lg border bg-card p-5 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <span className="inline-flex size-11 items-center justify-center rounded-md bg-primary/10 text-primary">
               <Calendar className="size-5" />
@@ -283,7 +283,7 @@ function EntryGateway({ isSignedIn }: { isSignedIn: boolean }) {
           </Button>
         </article>
 
-        <article className="scholar-spotlight-card scholar-sheen rounded-lg border bg-card p-5 shadow-sm">
+        <article className="scholar-spotlight-card scholar-sheen hover-lift press-scale rounded-lg border bg-card p-5 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <span className="inline-flex size-11 items-center justify-center rounded-md bg-gold/15 text-gold">
               <ClipboardCheck className="size-5" />
