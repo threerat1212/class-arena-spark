@@ -359,6 +359,8 @@ function ReadyScreen({ exam }: { exam: ExamSessionRow }) {
 type AnswerDraft = { answer_idx?: number; answer_text?: string };
 
 function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: number }) {
+  const { user } = useAuth();
+
   const nav = useNavigate();
   const qc = useQueryClient();
   const [endedReason, setEndedReason] = useState<string | null>(null);
