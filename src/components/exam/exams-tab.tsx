@@ -163,6 +163,39 @@ export function ExamsTab({ classroomId, isOwner }: ExamsTabProps) {
                           </Link>
                         </Button>
                       )}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-destructive hover:text-destructive"
+                            disabled={deleteMut.isPending}
+                          >
+                            <Trash2 className="size-3 mr-1" />
+                            {tr("ลบ")}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{tr("ลบข้อสอบ?")}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {tr("จะลบข้อสอบ \"")}
+                              {exam.title}
+                              {tr("\" พร้อมคำถาม คำตอบ และผู้เข้าสอบทั้งหมดอย่างถาวร — ไม่สามารถกู้คืนได้")}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{tr("ยกเลิก")}</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-destructive hover:bg-destructive/90"
+                              onClick={() => deleteMut.mutate(exam.id)}
+                            >
+                              {tr("ลบถาวร")}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+
                     </>
                   ) : exam.status === "active" ? (
                     <Button asChild size="sm">
