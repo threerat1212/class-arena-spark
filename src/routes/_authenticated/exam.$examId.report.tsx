@@ -13,18 +13,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, Download, ArrowLeft } from "lucide-react";
+import { Loader2, Download, ArrowLeft, Eye, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { tr } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   fetchExamRaw,
   fetchParticipants,
   fetchExamQuestionsRaw,
   fetchShortAnswersForGrading,
+  fetchStudentAnswers,
   rpcGradeShortAnswer,
   type ShortAnswerForGrading,
+  type ExamQuestionRow,
+  type ExamAnswerRow,
 } from "@/lib/exam.functions";
+
 
 export const Route = createFileRoute("/_authenticated/exam/$examId/report")({
   component: ExamReportPage,
