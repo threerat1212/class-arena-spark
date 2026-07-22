@@ -563,6 +563,29 @@ function ReadyScreen({ exam }: { exam: ExamSessionRow }) {
 
 type AnswerDraft = { answer_idx?: number; answer_text?: string };
 
+function draftStorageKey(examId: string, userId: string | undefined) {
+  return `exam-draft:${examId}:${userId ?? "anon"}`;
+}
+function readDraftBackup(examId: string, userId: string | undefined): Record<string, AnswerDraft> {
+  try {
+    const raw = localStorage.getItem(draftStorageKey(examId, userId));
+    return raw ? (JSON.parse(raw) as Record<string, AnswerDraft>) : {};
+  } catch {
+    return {};
+  }
+}
+function writeDraftBackup(
+  examId: string,
+  userId: string | undefined,
+  answers: Record<string, AnswerDraft>,
+) {
+  try {
+    localStorage.setItem(draftStorageKey(examId, userId), JSON.stringify(answers));
+  } catch {
+    /* quota / privacy mode — ignore */
+  }
+}
+
 function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: number }) {
   const { user } = useAuth();
 
@@ -572,8 +595,10 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<string, AnswerDraft>>({});
   const [answersHydrated, setAnswersHydrated] = useState(false);
+  const [pendingSaves, setPendingSaves] = useState<Record<string, AnswerDraft>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
 
   const { data: questions } = useQuery({
     queryKey: ["exam-questions-safe", exam.id],
