@@ -563,6 +563,29 @@ function ReadyScreen({ exam }: { exam: ExamSessionRow }) {
 
 type AnswerDraft = { answer_idx?: number; answer_text?: string };
 
+function draftStorageKey(examId: string, userId: string | undefined) {
+  return `exam-draft:${examId}:${userId ?? "anon"}`;
+}
+function readDraftBackup(examId: string, userId: string | undefined): Record<string, AnswerDraft> {
+  try {
+    const raw = localStorage.getItem(draftStorageKey(examId, userId));
+    return raw ? (JSON.parse(raw) as Record<string, AnswerDraft>) : {};
+  } catch {
+    return {};
+  }
+}
+function writeDraftBackup(
+  examId: string,
+  userId: string | undefined,
+  answers: Record<string, AnswerDraft>,
+) {
+  try {
+    localStorage.setItem(draftStorageKey(examId, userId), JSON.stringify(answers));
+  } catch {
+    /* quota / privacy mode — ignore */
+  }
+}
+
 function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: number }) {
   const { user } = useAuth();
 
@@ -572,8 +595,10 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<string, AnswerDraft>>({});
   const [answersHydrated, setAnswersHydrated] = useState(false);
+  const [pendingSaves, setPendingSaves] = useState<Record<string, AnswerDraft>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
 
   const { data: questions } = useQuery({
     queryKey: ["exam-questions-safe", exam.id],
@@ -617,7 +642,8 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
     }
   }
 
-  // merge existing answers into local state once on load
+  // merge existing answers into local state once on load,
+  // then overlay any offline-only drafts from localStorage (server wins per q)
   useEffect(() => {
     if (existingAnswers && !answersHydrated) {
       const m: Record<string, AnswerDraft> = {};
@@ -627,10 +653,49 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
           answer_text: a.answer_text ?? undefined,
         };
       }
+      const backup = readDraftBackup(exam.id, user?.id);
+      const pending: Record<string, AnswerDraft> = {};
+      for (const [qid, draft] of Object.entries(backup)) {
+        const server = m[qid];
+        const hasServer =
+          server &&
+          (typeof server.answer_idx === "number" ||
+            (server.answer_text && server.answer_text.length > 0));
+        if (!hasServer) {
+          m[qid] = draft;
+          // server never received this — queue for resend
+          pending[qid] = draft;
+        }
+      }
       setAnswers(m);
+      if (Object.keys(pending).length > 0) setPendingSaves(pending);
+      writeDraftBackup(exam.id, user?.id, m);
       setAnswersHydrated(true);
     }
-  }, [existingAnswers, answersHydrated]);
+  }, [existingAnswers, answersHydrated, exam.id, user?.id]);
+
+  // background retry: keep trying to flush unsaved drafts until server confirms
+  useEffect(() => {
+    if (Object.keys(pendingSaves).length === 0 || endedReason || submitted) return;
+    const timer = setInterval(async () => {
+      const entries = Object.entries(pendingSaves);
+      for (const [qid, draft] of entries) {
+        try {
+          await rpcSubmitExamAnswer({ question_id: qid, ...draft });
+          setPendingSaves((prev) => {
+            const next = { ...prev };
+            delete next[qid];
+            return next;
+          });
+        } catch {
+          // still offline — keep queued
+          return;
+        }
+      }
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [pendingSaves, endedReason, submitted]);
+
 
   // proctoring hook — only when exam active and not ended
   const { violationCount, isFullscreenActive, violationLog, requestFullscreen } = useExamProctoring({
@@ -764,13 +829,28 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
   const qId = q.id;
 
   async function saveAnswer(questionId: string, value: AnswerDraft) {
-    setAnswers((a) => ({ ...a, [questionId]: value }));
+    setAnswers((a) => {
+      const next = { ...a, [questionId]: value };
+      // mirror to localStorage IMMEDIATELY so a refresh / crash never loses the answer
+      writeDraftBackup(exam.id, user?.id, next);
+      return next;
+    });
     try {
       await rpcSubmitExamAnswer({ question_id: questionId, ...value });
+      // server accepted — drop from retry queue if it was there
+      setPendingSaves((prev) => {
+        if (!(questionId in prev)) return prev;
+        const next = { ...prev };
+        delete next[questionId];
+        return next;
+      });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : tr("บันทึกคำตอบล้มเหลว"));
+      // network / RLS failure — queue for background retry, don't scare the user
+      setPendingSaves((prev) => ({ ...prev, [questionId]: value }));
+      console.warn("[exam] saveAnswer failed, queued for retry", e);
     }
   }
+
 
   async function submitAll() {
     if (submitting || submitted) return;
@@ -778,6 +858,9 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
     try {
       const result = await rpcSubmitExam(exam.id);
       setSubmitted(true);
+      // clear offline backup — server has accepted the final submission
+      try { localStorage.removeItem(draftStorageKey(exam.id, user?.id)); } catch { /* ignore */ }
+
       const xpGained = result.base_amount ?? result.xp_awarded ?? 0;
       const bonusParts: string[] = [];
       if (result.combo_applied && result.combo_applied > 0) {
