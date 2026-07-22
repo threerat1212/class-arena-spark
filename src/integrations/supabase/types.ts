@@ -3235,7 +3235,7 @@ export type Database = {
       attendance_status: "present" | "late" | "absent" | "excused"
       booking_status: "pending" | "approved" | "rejected" | "cancelled"
       exam_auto_submit_reason: "violation_threshold" | "time_up"
-      exam_question_type: "multiple_choice" | "short_answer"
+      exam_question_type: "multiple_choice" | "short_answer" | "essay"
       exam_status: "draft" | "scheduled" | "active" | "closed"
       exam_violation_type:
         | "visibility_change"
@@ -3389,7 +3389,7 @@ export const Constants = {
       attendance_status: ["present", "late", "absent", "excused"],
       booking_status: ["pending", "approved", "rejected", "cancelled"],
       exam_auto_submit_reason: ["violation_threshold", "time_up"],
-      exam_question_type: ["multiple_choice", "short_answer"],
+      exam_question_type: ["multiple_choice", "short_answer", "essay"],
       exam_status: ["draft", "scheduled", "active", "closed"],
       exam_violation_type: [
         "visibility_change",
