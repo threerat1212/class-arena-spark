@@ -680,7 +680,21 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
   const shuffleSeed = user?.id ? `${exam.id}::${user.id}` : "";
   const orderedQuestions = useMemo(() => {
     if (!questions || !shuffleSeed) return questions ?? [];
-    return shuffleWithSeed(questions, seedHash(shuffleSeed));
+    // Shuffle only multiple-choice questions; keep essay questions in their original positions.
+    const mcIndices: number[] = [];
+    const mcItems: typeof questions = [];
+    questions.forEach((qq, i) => {
+      if (qq.question_type === "multiple_choice") {
+        mcIndices.push(i);
+        mcItems.push(qq);
+      }
+    });
+    const shuffledMc = shuffleWithSeed(mcItems, seedHash(shuffleSeed));
+    const result = [...questions];
+    mcIndices.forEach((origIdx, k) => {
+      result[origIdx] = shuffledMc[k];
+    });
+    return result;
   }, [questions, shuffleSeed]);
   const optionOrderMap = useMemo(() => {
     const m: Record<string, number[]> = {};
