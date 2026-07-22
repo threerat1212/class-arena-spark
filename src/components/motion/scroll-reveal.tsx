@@ -1,6 +1,7 @@
 // IntersectionObserver-based reveal. Fires once when element enters viewport.
 // Direction + delay let callers stagger without pulling in motion for simple cases.
 import { useEffect, useRef, useState, type ReactNode, type CSSProperties } from "react";
+import { useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 type Direction = "up" | "down" | "left" | "right" | "scale" | "fade";
@@ -17,11 +18,11 @@ interface ScrollRevealProps {
 }
 
 const initialTransform: Record<Direction, string> = {
-  up: "translate3d(0, 32px, 0)",
-  down: "translate3d(0, -32px, 0)",
-  left: "translate3d(32px, 0, 0)",
-  right: "translate3d(-32px, 0, 0)",
-  scale: "scale(0.92)",
+  up: "translate3d(0, 16px, 0)",
+  down: "translate3d(0, -16px, 0)",
+  left: "translate3d(16px, 0, 0)",
+  right: "translate3d(-16px, 0, 0)",
+  scale: "scale(0.975)",
   fade: "none",
 };
 
@@ -29,7 +30,7 @@ export function ScrollReveal({
   children,
   direction = "up",
   delay = 0,
-  duration = 700,
+  duration = 460,
   className,
   as: Tag = "div",
   threshold = 0.15,
@@ -37,6 +38,7 @@ export function ScrollReveal({
 }: ScrollRevealProps) {
   const ref = useRef<HTMLElement | null>(null);
   const [visible, setVisible] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const node = ref.current;
@@ -63,10 +65,12 @@ export function ScrollReveal({
   }, [threshold, once]);
 
   const style: CSSProperties = {
-    opacity: visible ? 1 : 0,
-    transform: visible ? "none" : initialTransform[direction],
-    transition: `opacity ${duration}ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms, transform ${duration}ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms`,
-    willChange: "opacity, transform",
+    opacity: visible || shouldReduceMotion ? 1 : 0.82,
+    transform: visible || shouldReduceMotion ? "none" : initialTransform[direction],
+    transition: shouldReduceMotion
+      ? "none"
+      : `opacity ${duration}ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms, transform ${duration}ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms`,
+    willChange: !visible && !shouldReduceMotion ? "opacity, transform" : undefined,
   };
 
   const Component = Tag as React.ElementType;

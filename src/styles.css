@@ -189,16 +189,9 @@
     animation: scholar-complete-cue 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
   }
 
-  .scholar-entrance {
-    animation: scholar-rise-in 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  .scholar-entrance-delay-1 {
-    animation-delay: 80ms;
-  }
-
-  .scholar-entrance-delay-2 {
-    animation-delay: 160ms;
+  .scholar-gateway-card {
+    animation: scholar-gateway-in 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: var(--gateway-delay, 0ms);
   }
 
   .scholar-spotlight-card {
@@ -246,40 +239,35 @@
     z-index: 1;
   }
 
-  .scholar-sheen::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-      118deg,
-      transparent 18%,
-      color-mix(in oklch, var(--primary) 34%, transparent) 34%,
-      color-mix(in oklch, var(--gold) 26%, transparent) 45%,
-      transparent 62%
-    );
-    background-size: 240% 100%;
-    opacity: 0.55;
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    animation: scholar-sheen 4.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  .scholar-proof-point {
+    transition:
+      transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .scholar-proof-point:hover {
+    transform: translateY(-2px);
+  }
+
+  .scholar-role-arrow {
+    transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .scholar-role-line:hover .scholar-role-arrow {
+    transform: translateX(4px);
   }
 }
 
-@keyframes scholar-rise-in {
+@keyframes scholar-gateway-in {
   from {
-    opacity: 0;
+    opacity: 0.82;
     transform: translateY(14px) scale(0.985);
+    filter: blur(4px);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
@@ -315,16 +303,6 @@
   }
 }
 
-@keyframes scholar-sheen {
-  0% {
-    background-position: 170% 0;
-  }
-  55%,
-  100% {
-    background-position: -70% 0;
-  }
-}
-
 @keyframes scholar-marquee {
   from {
     transform: translateX(0);
@@ -340,66 +318,9 @@
     will-change: transform;
   }
 
-  .group\/marquee:hover .marquee-track {
+  .group\/marquee:hover .marquee-track,
+  .group\/marquee:focus-within .marquee-track {
     animation-play-state: paused;
-  }
-
-  /* Global animation kit --------------------------------------------------- */
-  .hover-lift {
-    transition:
-      transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 260ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .hover-lift:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 18px 40px -22px color-mix(in oklch, var(--primary) 45%, black);
-  }
-
-  .hover-tilt {
-    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .hover-tilt:hover {
-    transform: perspective(800px) rotateX(2deg) rotateY(-2deg) translateY(-2px);
-  }
-
-  .press-scale {
-    transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .press-scale:active {
-    transform: scale(0.97);
-  }
-
-  .gradient-text {
-    background: linear-gradient(
-      110deg,
-      var(--primary) 0%,
-      color-mix(in oklch, var(--xp) 70%, var(--primary)) 45%,
-      var(--gold) 100%
-    );
-    background-size: 220% 220%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: gradient-shift 6s ease-in-out infinite;
-  }
-
-  .shimmer-text {
-    background: linear-gradient(
-      100deg,
-      var(--foreground) 40%,
-      color-mix(in oklch, var(--primary) 70%, var(--foreground)) 50%,
-      var(--foreground) 60%
-    );
-    background-size: 200% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: shimmer-slide 3.2s linear infinite;
-  }
-
-  .float-slow {
-    animation: float-slow 6s ease-in-out infinite;
   }
 
   .motion-blob {
@@ -423,66 +344,65 @@
     mask-image: radial-gradient(ellipse at center, black 40%, transparent 75%);
   }
 
-  .glow-ring {
-    position: relative;
-  }
-  .glow-ring::after {
-    content: "";
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-      120deg,
-      color-mix(in oklch, var(--primary) 55%, transparent),
-      color-mix(in oklch, var(--gold) 50%, transparent),
-      color-mix(in oklch, var(--xp) 55%, transparent)
-    );
-    background-size: 200% 200%;
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 220ms cubic-bezier(0.22, 1, 0.36, 1);
-    animation: gradient-shift 6s ease-in-out infinite;
-    pointer-events: none;
-  }
-  .glow-ring:hover::after {
-    opacity: 1;
+  .scholar-signal-line {
+    stroke-dasharray: 10 16;
+    animation: scholar-signal-flow 10s linear infinite;
   }
 
-  .underline-grow {
-    background-image: linear-gradient(currentColor, currentColor);
-    background-size: 0 2px;
-    background-position: 0 100%;
-    background-repeat: no-repeat;
-    transition: background-size 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  .scholar-signal-line-delay-1 {
+    animation-duration: 13s;
+    animation-delay: -4s;
   }
-  .underline-grow:hover {
-    background-size: 100% 2px;
+
+  .scholar-signal-line-delay-2 {
+    animation-duration: 16s;
+    animation-delay: -9s;
+  }
+
+  .scholar-signal-node {
+    box-shadow: 0 0 0 5px color-mix(in oklch, var(--primary) 10%, transparent);
+    animation: scholar-signal-pulse 3.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  .scholar-signal-node-delay {
+    animation-delay: -1.2s;
+  }
+
+  .scholar-signal-node-delay-2 {
+    animation-delay: -2.4s;
   }
 }
 
-@keyframes gradient-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-@keyframes shimmer-slide {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-@keyframes float-slow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
 @keyframes blob-drift {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  33% { transform: translate3d(30px, -20px, 0) scale(1.05); }
-  66% { transform: translate3d(-20px, 24px, 0) scale(0.96); }
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(30px, -20px, 0) scale(1.05);
+  }
+  66% {
+    transform: translate3d(-20px, 24px, 0) scale(0.96);
+  }
 }
 
+@keyframes scholar-signal-flow {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+@keyframes scholar-signal-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.15);
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -499,6 +419,10 @@
   }
 
   .scholar-spotlight-card:hover {
+    transform: none;
+  }
+
+  .scholar-role-line:hover .scholar-role-arrow {
     transform: none;
   }
 }

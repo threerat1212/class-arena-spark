@@ -69,10 +69,12 @@ function TestimonialCard({ t }: { t: Testimonial }) {
 
 export function TestimonialsMarquee() {
   const testimonials = getTestimonials();
-  const row = [...testimonials, ...testimonials];
 
   return (
-    <section className="relative overflow-hidden border-t border-border/70 bg-secondary/40 py-12 sm:py-16">
+    <section
+      aria-label={tr("เสียงจากผู้ใช้งาน")}
+      className="relative overflow-hidden border-t border-border/70 bg-secondary/40 py-12 sm:py-16"
+    >
       <div className="mx-auto max-w-6xl px-5 sm:px-6">
         <div className="mb-8 flex flex-col items-start gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -102,12 +104,12 @@ export function TestimonialsMarquee() {
 
         <div className="flex gap-4 overflow-hidden">
           <div className="marquee-track flex shrink-0 gap-4 pr-4">
-            {row.map((t, i) => (
+            {testimonials.map((t, i) => (
               <TestimonialCard key={`a-${i}`} t={t} />
             ))}
           </div>
           <div className="marquee-track flex shrink-0 gap-4 pr-4" aria-hidden>
-            {row.map((t, i) => (
+            {testimonials.map((t, i) => (
               <TestimonialCard key={`b-${i}`} t={t} />
             ))}
           </div>

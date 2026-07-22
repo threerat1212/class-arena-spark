@@ -23,6 +23,7 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { TestimonialsMarquee } from "@/components/testimonials-marquee";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { AnimatedBackground } from "@/components/motion/animated-background";
+import { KineticHeading } from "@/components/motion/kinetic-heading";
 
 import { tr } from "@/i18n";
 
@@ -88,14 +89,16 @@ function Landing() {
             aria-hidden
           />
           <div className="mx-auto grid max-w-6xl gap-8 px-5 py-10 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:py-14">
-            <div className="scholar-entrance max-w-2xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-sm font-medium text-primary float-slow">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
                 <MonitorPlay className="size-4" />
-                {tr("Connected classroom สำหรับโรงเรียน")}
+                {tr("Connected classroom สำหรับโรงเรียนไทย")}
               </div>
-              <h1 className="mt-6 text-5xl font-semibold leading-[1.05] text-balance sm:text-6xl gradient-text">
-                โรงเรียนศึกษาสงเคราะห์จิตต์อารีฯ
-              </h1>
+              <KineticHeading
+                ariaLabel="โรงเรียนศึกษาสงเคราะห์จิตต์อารีฯ"
+                lines={["โรงเรียน", "ศึกษาสงเคราะห์", "จิตต์อารีฯ"]}
+                className="mt-6 text-5xl font-semibold leading-[1.05] sm:text-6xl"
+              />
               <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground text-pretty">
                 {tr("ศูนย์กลางสำหรับจองห้องประชุมและห้องเรียน")}
               </p>
@@ -121,7 +124,7 @@ function Landing() {
           <ProductPreview />
         </section>
 
-        <ScrollReveal as="section" direction="up" className="border-y border-border/70 bg-secondary/55">
+        <section className="border-y border-border/70 bg-secondary/55">
           <div className="mx-auto grid max-w-6xl gap-0 px-5 py-8 sm:px-6 md:grid-cols-4">
             <ProofPoint
               icon={<Calendar className="size-5" />}
@@ -144,9 +147,9 @@ function Landing() {
               value={tr("อนุมัติและดูแลระบบ")}
             />
           </div>
-        </ScrollReveal>
+        </section>
 
-        <ScrollReveal as="section" direction="up" className="mx-auto max-w-6xl px-5 py-12 sm:px-6 lg:py-16">
+        <section className="mx-auto max-w-6xl px-5 py-12 sm:px-6 lg:py-16">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
               <h2 className="text-3xl font-semibold leading-tight text-balance">
@@ -181,7 +184,7 @@ function Landing() {
               />
             </div>
           </div>
-        </ScrollReveal>
+        </section>
 
         <TestimonialsMarquee />
       </main>
@@ -197,7 +200,7 @@ function Landing() {
 
 function EntryGateway({ isSignedIn }: { isSignedIn: boolean }) {
   return (
-    <div className="scholar-entrance scholar-entrance-delay-1">
+    <div>
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground shadow-sm">
           <Sparkles className="size-4 text-gold" />
@@ -208,7 +211,10 @@ function EntryGateway({ isSignedIn }: { isSignedIn: boolean }) {
         </span>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <article className="scholar-spotlight-card scholar-sheen hover-lift press-scale rounded-lg border bg-card p-5 shadow-sm">
+        <article
+          className="scholar-gateway-card scholar-spotlight-card rounded-lg border bg-card p-5 shadow-sm"
+          style={{ "--gateway-delay": "0ms" } as React.CSSProperties}
+        >
           <div className="flex items-start justify-between gap-3">
             <span className="inline-flex size-11 items-center justify-center rounded-md bg-primary/10 text-primary">
               <Building2 className="size-5" />
@@ -229,7 +235,10 @@ function EntryGateway({ isSignedIn }: { isSignedIn: boolean }) {
           </Button>
         </article>
 
-        <article className="scholar-spotlight-card scholar-sheen hover-lift press-scale rounded-lg border bg-card p-5 shadow-sm">
+        <article
+          className="scholar-gateway-card scholar-spotlight-card rounded-lg border bg-card p-5 shadow-sm"
+          style={{ "--gateway-delay": "50ms" } as React.CSSProperties}
+        >
           <div className="flex items-start justify-between gap-3">
             <span className="inline-flex size-11 items-center justify-center rounded-md bg-gold/15 text-gold">
               <GraduationCap className="size-5" />
@@ -260,7 +269,10 @@ function EntryGateway({ isSignedIn }: { isSignedIn: boolean }) {
           </div>
         </article>
 
-        <article className="scholar-spotlight-card scholar-sheen hover-lift press-scale rounded-lg border bg-card p-5 shadow-sm">
+        <article
+          className="scholar-gateway-card scholar-spotlight-card rounded-lg border bg-card p-5 shadow-sm"
+          style={{ "--gateway-delay": "100ms" } as React.CSSProperties}
+        >
           <div className="flex items-start justify-between gap-3">
             <span className="inline-flex size-11 items-center justify-center rounded-md bg-primary/10 text-primary">
               <Calendar className="size-5" />
@@ -283,7 +295,10 @@ function EntryGateway({ isSignedIn }: { isSignedIn: boolean }) {
           </Button>
         </article>
 
-        <article className="scholar-spotlight-card scholar-sheen hover-lift press-scale rounded-lg border bg-card p-5 shadow-sm">
+        <article
+          className="scholar-gateway-card scholar-spotlight-card rounded-lg border bg-card p-5 shadow-sm"
+          style={{ "--gateway-delay": "150ms" } as React.CSSProperties}
+        >
           <div className="flex items-start justify-between gap-3">
             <span className="inline-flex size-11 items-center justify-center rounded-md bg-gold/15 text-gold">
               <ClipboardCheck className="size-5" />
@@ -312,7 +327,11 @@ function EntryGateway({ isSignedIn }: { isSignedIn: boolean }) {
 
 function ProductPreview() {
   return (
-    <div className="scholar-entrance scholar-entrance-delay-2 scholar-spotlight-card mx-5 mb-10 max-w-5xl overflow-hidden rounded-lg border bg-card shadow-sm sm:mx-6 lg:mx-auto lg:mb-14">
+    <ScrollReveal
+      direction="scale"
+      threshold={0.08}
+      className="scholar-spotlight-card mx-5 mb-10 max-w-5xl overflow-hidden rounded-lg border bg-card shadow-sm sm:mx-6 lg:mx-auto lg:mb-14"
+    >
       <div className="grid gap-3 border-b bg-secondary/70 px-4 py-3 text-sm sm:grid-cols-[1fr_auto] sm:items-center">
         <div>
           <span className="font-semibold text-foreground">{tr("Live classroom hub")}</span>
@@ -355,7 +374,7 @@ function ProductPreview() {
           </div>
         </div>
       </div>
-    </div>
+    </ScrollReveal>
   );
 }
 
@@ -403,7 +422,7 @@ function ProofPoint({
   value: string;
 }) {
   return (
-    <div className="border-border/70 py-4 md:border-r md:px-5 md:first:pl-0 md:last:border-r-0">
+    <div className="scholar-proof-point border-border/70 py-4 md:border-r md:px-5 md:first:pl-0 md:last:border-r-0">
       <div className="flex items-center gap-2 text-primary">
         {icon}
         <span className="font-medium">{label}</span>
@@ -415,7 +434,7 @@ function ProofPoint({
 
 function RoleLine({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
   return (
-    <div className="scholar-spotlight-card rounded-lg border bg-card p-5">
+    <div className="scholar-role-line scholar-spotlight-card rounded-lg border bg-card p-5">
       <div className="flex items-start gap-3">
         <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
           {icon}
@@ -425,7 +444,7 @@ function RoleLine({ icon, title, text }: { icon: React.ReactNode; title: string;
           <p className="mt-1 text-sm text-muted-foreground">{text}</p>
         </div>
       </div>
-      <ArrowRight className="mt-4 size-4 text-primary" aria-hidden />
+      <ArrowRight className="scholar-role-arrow mt-4 size-4 text-primary" aria-hidden />
     </div>
   );
 }
