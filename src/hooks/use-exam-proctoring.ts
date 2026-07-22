@@ -33,9 +33,29 @@ export function useExamProctoring({
 }: UseExamProctoringArgs): UseExamProctoringReturn {
   const [violationCount, setViolationCount] = useState(0);
   const [isFullscreenActive, setIsFullscreenActive] = useState(false);
+  const [violationLog, setViolationLog] = useState<ViolationLogEntry[]>([]);
   const lastEventRef = useRef<Record<string, number>>({});
   const onAutoSubmitRef = useRef(onAutoSubmit);
   onAutoSubmitRef.current = onAutoSubmit;
+
+  const reasonForEvent = (t: ViolationEventType): string => {
+    switch (t) {
+      case "visibility_change":
+        return tr("สลับแท็บ / ย่อจอ / เปลี่ยนหน้าต่าง");
+      case "blur":
+        return tr("คลิกออกนอกหน้าสอบ (สูญเสียโฟกัส)");
+      case "fullscreen_exit":
+        return tr("ออกจากโหมดเต็มจอ");
+      case "copy_paste":
+        return tr("พยายามคัดลอก / วาง");
+      case "dev_tools":
+        return tr("พยายามเปิด DevTools (F12 / Ctrl+Shift+I)");
+      case "other":
+        return tr("พยายามรีเฟรช / กด Back / Forward");
+      default:
+        return tr("พฤติกรรมน่าสงสัย");
+    }
+  };
 
   const recordViolation = useCallback(
     async (eventType: ViolationEventType) => {
@@ -47,6 +67,11 @@ export function useExamProctoring({
 
       // Optimistic UI bump so the student sees the count even if RPC is slow/failing
       setViolationCount((c) => c + 1);
+      setViolationLog((log) => [
+        ...log,
+        { type: eventType, reason: reasonForEvent(eventType), at: now },
+      ]);
+
 
       try {
         const result = await rpcRecordViolation({ exam_id: examId, event_type: eventType });
