@@ -262,9 +262,148 @@ function ExamReportPage() {
           </CardContent>
         </Card>
       )}
+
+      <StudentAnswersDialog
+        examId={examId}
+        userId={detailUserId}
+        displayName={detailUserId ? (nameById.get(detailUserId) ?? detailUserId.slice(0, 8)) : ""}
+        questions={questions ?? []}
+        onClose={() => setDetailUserId(null)}
+      />
     </div>
   );
 }
+
+function StudentAnswersDialog({
+  examId,
+  userId,
+  displayName,
+  questions,
+  onClose,
+}: {
+  examId: string;
+  userId: string | null;
+  displayName: string;
+  questions: ExamQuestionRow[];
+  onClose: () => void;
+}) {
+  const { data: answers, isLoading } = useQuery({
+    queryKey: ["exam-student-answers", examId, userId],
+    queryFn: () => fetchStudentAnswers(examId, userId!),
+    enabled: !!userId,
+  });
+
+  const byQid = new Map<string, ExamAnswerRow>();
+  (answers ?? []).forEach((a) => byQid.set(a.question_id, a));
+
+  const totalScore = (answers ?? []).reduce((s, a) => s + Number(a.score_awarded ?? 0), 0);
+  const maxScore = questions.reduce((s, q) => s + Number(q.points), 0);
+
+  return (
+    <Dialog open={!!userId} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>
+            {tr("คำตอบของ")} {displayName}
+            <span className="ml-3 text-base font-normal text-muted-foreground">
+              {tr("รวม")}: <span className="font-mono">{totalScore} / {maxScore}</span>
+            </span>
+          </DialogTitle>
+        </DialogHeader>
+
+        {isLoading ? (
+          <div className="grid place-items-center py-8">
+            <Loader2 className="size-6 animate-spin" />
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {questions.map((q) => {
+              const ans = byQid.get(q.id);
+              const isEssay = q.question_type === "short_answer";
+              const options = (q.options ?? []) as string[];
+              const correct = q.correct_idx;
+              const studentIdx = ans?.answer_idx ?? null;
+              const scored = Number(ans?.score_awarded ?? 0);
+
+              return (
+                <div key={q.id} className="border rounded-md p-3 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="text-sm font-medium">
+                      {tr("ข้อ")} {q.idx + 1}. {q.question}
+                    </div>
+                    <Badge variant={scored >= Number(q.points) ? "default" : scored > 0 ? "secondary" : "outline"} className="shrink-0 font-mono">
+                      {scored} / {q.points}
+                    </Badge>
+                  </div>
+
+                  {isEssay ? (
+                    <>
+                      {q.expected_answer && (
+                        <div className="text-xs text-muted-foreground">
+                          <strong>{tr("เกณฑ์")}:</strong> {q.expected_answer}
+                        </div>
+                      )}
+                      <div className="bg-muted/50 rounded p-2 text-sm whitespace-pre-wrap">
+                        {ans?.answer_text || <em className="text-muted-foreground">{tr("ไม่ได้ตอบ")}</em>}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {ans?.graded_by === "teacher"
+                          ? tr("ตรวจโดยครูแล้ว")
+                          : ans?.graded_by === "ai"
+                            ? tr("ตรวจโดย AI (รอครูยืนยัน)")
+                            : tr("ยังไม่ได้ตรวจ — เลื่อนลงไปที่ 'ตรวจข้อเขียนด้วยมือ'")}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="space-y-1">
+                      {options.map((opt, i) => {
+                        const isCorrect = i === correct;
+                        const isChosen = i === studentIdx;
+                        return (
+                          <div
+                            key={i}
+                            className={`flex items-center gap-2 rounded px-2 py-1 text-sm ${
+                              isCorrect
+                                ? "bg-green-500/10 border border-green-500/40"
+                                : isChosen
+                                  ? "bg-red-500/10 border border-red-500/40"
+                                  : "border border-transparent"
+                            }`}
+                          >
+                            <span className="w-6 text-center font-mono text-xs">
+                              {String.fromCharCode(65 + i)}.
+                            </span>
+                            <span className="flex-1">{opt}</span>
+                            {isChosen && (
+                              <Badge variant="outline" className="text-xs">
+                                {tr("เลือก")}
+                              </Badge>
+                            )}
+                            {isCorrect ? (
+                              <Check className="size-4 text-green-600" />
+                            ) : isChosen ? (
+                              <X className="size-4 text-red-600" />
+                            ) : null}
+                          </div>
+                        );
+                      })}
+                      {studentIdx === null && (
+                        <div className="text-xs text-muted-foreground italic">
+                          {tr("ไม่ได้ตอบ")}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 
 function ManualGradeRow({
   item,
