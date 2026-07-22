@@ -63,6 +63,7 @@ function ExamReportPage() {
   });
 
   const [detailUserId, setDetailUserId] = useState<string | null>(null);
+  const [violationsUserId, setViolationsUserId] = useState<string | null>(null);
 
 
 
@@ -193,7 +194,14 @@ function ExamReportPage() {
                   </TableCell>
                   <TableCell className="text-center">
                     {p.violation_count > 0 ? (
-                      <Badge variant="outline">⚠ {p.violation_count}</Badge>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 gap-1 text-amber-700 border-amber-300"
+                        onClick={() => setViolationsUserId(p.user_id)}
+                      >
+                        <ShieldAlert className="size-3.5" />⚠ {p.violation_count}
+                      </Button>
                     ) : (
                       "—"
                     )}
