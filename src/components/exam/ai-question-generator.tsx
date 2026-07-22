@@ -185,9 +185,9 @@ export function AiQuestionGenerator({
           {tr("ให้ AI ช่วยออกข้อสอบ")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-6">
         <DialogHeader>
-          <DialogTitle>{tr("AI ออกแบบข้อสอบ")}</DialogTitle>
+          <DialogTitle className="text-xl">{tr("AI ออกแบบข้อสอบ")}</DialogTitle>
           <DialogDescription>
             {tr("เลือกบทเรียนในคลาส หรือวางเนื้อหาเอง แล้ว AI จะออกคำถาม+ตัวเลือกให้ (ครูเลือกเฉลยเอง)")}
           </DialogDescription>
