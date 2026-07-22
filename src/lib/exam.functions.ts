@@ -76,6 +76,21 @@ export async function fetchMyExamAnswers(examId: string): Promise<ExamAnswerRow[
   return data ?? [];
 }
 
+/** Host/admin: fetch all answers for a specific student in an exam */
+export async function fetchStudentAnswers(
+  examId: string,
+  userId: string,
+): Promise<ExamAnswerRow[]> {
+  const { data, error } = await supabase
+    .from("exam_answers")
+    .select("*")
+    .eq("session_id", examId)
+    .eq("user_id", userId);
+  if (error) throw error;
+  return data ?? [];
+}
+
+
 export async function fetchMyParticipant(examId: string): Promise<ExamParticipantRow | null> {
   const { data, error } = await supabase
     .from("exam_participants")
