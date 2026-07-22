@@ -642,7 +642,8 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
     }
   }
 
-  // merge existing answers into local state once on load
+  // merge existing answers into local state once on load,
+  // then overlay any offline-only drafts from localStorage (server wins per q)
   useEffect(() => {
     if (existingAnswers && !answersHydrated) {
       const m: Record<string, AnswerDraft> = {};
@@ -652,10 +653,49 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
           answer_text: a.answer_text ?? undefined,
         };
       }
+      const backup = readDraftBackup(exam.id, user?.id);
+      const pending: Record<string, AnswerDraft> = {};
+      for (const [qid, draft] of Object.entries(backup)) {
+        const server = m[qid];
+        const hasServer =
+          server &&
+          (typeof server.answer_idx === "number" ||
+            (server.answer_text && server.answer_text.length > 0));
+        if (!hasServer) {
+          m[qid] = draft;
+          // server never received this — queue for resend
+          pending[qid] = draft;
+        }
+      }
       setAnswers(m);
+      if (Object.keys(pending).length > 0) setPendingSaves(pending);
+      writeDraftBackup(exam.id, user?.id, m);
       setAnswersHydrated(true);
     }
-  }, [existingAnswers, answersHydrated]);
+  }, [existingAnswers, answersHydrated, exam.id, user?.id]);
+
+  // background retry: keep trying to flush unsaved drafts until server confirms
+  useEffect(() => {
+    if (Object.keys(pendingSaves).length === 0 || endedReason || submitted) return;
+    const timer = setInterval(async () => {
+      const entries = Object.entries(pendingSaves);
+      for (const [qid, draft] of entries) {
+        try {
+          await rpcSubmitExamAnswer({ question_id: qid, ...draft });
+          setPendingSaves((prev) => {
+            const next = { ...prev };
+            delete next[qid];
+            return next;
+          });
+        } catch {
+          // still offline — keep queued
+          return;
+        }
+      }
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [pendingSaves, endedReason, submitted]);
+
 
   // proctoring hook — only when exam active and not ended
   const { violationCount, isFullscreenActive, violationLog, requestFullscreen } = useExamProctoring({
