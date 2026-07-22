@@ -55,6 +55,18 @@ export function ExamsTab({ classroomId, isOwner }: ExamsTabProps) {
     },
   });
 
+  const qc = useQueryClient();
+  const deleteMut = useMutation({
+    mutationFn: (id: string) => rpcDeleteExam(id),
+    onSuccess: () => {
+      toast.success(tr("ลบข้อสอบแล้ว"));
+      qc.invalidateQueries({ queryKey: ["classroom-exams", classroomId] });
+    },
+    onError: (e: unknown) =>
+      toast.error(tr("ลบไม่สำเร็จ: ") + (e instanceof Error ? e.message : String(e))),
+  });
+
+
   return (
     <div className="space-y-4 mt-4">
       {/* Demo test banner — มองเห็นได้ทั้งครูและนักเรียน */}
