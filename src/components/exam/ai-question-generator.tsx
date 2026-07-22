@@ -88,9 +88,20 @@ export function AiQuestionGenerator({
     },
   });
 
+  // Clamp so easy + medium <= 100
+  const clampedMediumPct = Math.min(mediumPct, Math.max(0, 100 - easyPct));
+  const hardPct = Math.max(0, 100 - easyPct - clampedMediumPct);
+
+  const { easyCount, mediumCount, hardCount } = useMemo(() => {
+    const e = Math.round((mixTotal * easyPct) / 100);
+    const m = Math.round((mixTotal * clampedMediumPct) / 100);
+    const h = Math.max(0, mixTotal - e - m);
+    return { easyCount: e, mediumCount: m, hardCount: h };
+  }, [mixTotal, easyPct, clampedMediumPct]);
+
   const totalCount = useMemo(
-    () => (diffMode === "mix" ? easyCount + mediumCount + hardCount : singleCount),
-    [diffMode, easyCount, mediumCount, hardCount, singleCount],
+    () => (diffMode === "mix" ? mixTotal : singleCount),
+    [diffMode, mixTotal, singleCount],
   );
 
   function insertSelectedLessons(mode: "append" | "replace") {
