@@ -954,7 +954,7 @@ function ResultsScreen({
   >;
 }) {
   return (
-    <div className="container max-w-md py-12 text-center space-y-4">
+    <div className="mx-auto w-full max-w-md px-4 sm:px-6 lg:px-8 py-12 text-center space-y-4">
       <h1 className="text-2xl font-semibold">{tr("ส่งข้อสอบเรียบร้อย")}</h1>
       <Card>
         <CardContent className="pt-6 space-y-3">
