@@ -523,7 +523,7 @@ function ReadyScreen({ exam }: { exam: ExamSessionRow }) {
   }
 
   return (
-    <div className="container max-w-2xl py-6 space-y-4">
+    <div className="mx-auto w-full max-w-2xl px-4 sm:px-6 lg:px-8 py-6 lg:py-10 space-y-4">
       <Card>
         <CardHeader>
           <CardTitle>{exam.title}</CardTitle>
