@@ -279,6 +279,12 @@ function ExamReportPage() {
         questions={questions ?? []}
         onClose={() => setDetailUserId(null)}
       />
+      <ViolationsDialog
+        examId={examId}
+        userId={violationsUserId}
+        displayName={violationsUserId ? (nameById.get(violationsUserId) ?? violationsUserId.slice(0, 8)) : ""}
+        onOpenChange={(open) => !open && setViolationsUserId(null)}
+      />
     </div>
   );
 }
