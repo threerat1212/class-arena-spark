@@ -28,7 +28,7 @@ import { toast } from "sonner";
 import { tr } from "@/i18n";
 
 export type GeneratedQuestion = {
-  question_type: "multiple_choice" | "short_answer";
+  question_type: "multiple_choice" | "short_answer" | "essay";
   question: string;
   options: string[];
   correct_idx: number;
@@ -48,9 +48,9 @@ export function AiQuestionGenerator({
   const [content, setContent] = useState("");
   const [count, setCount] = useState(5);
   const [optionsCount, setOptionsCount] = useState(4);
-  const [qType, setQType] = useState<"multiple_choice" | "short_answer" | "mixed">(
-    "multiple_choice",
-  );
+  const [qType, setQType] = useState<
+    "multiple_choice" | "short_answer" | "essay" | "mixed"
+  >("multiple_choice");
   const [difficulty, setDifficulty] = useState("ปานกลาง");
   const [loading, setLoading] = useState(false);
 
