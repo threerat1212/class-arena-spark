@@ -38,6 +38,9 @@ export function useExamProctoring({
       if (now - last < 500) return;
       lastEventRef.current[eventType] = now;
 
+      // Optimistic UI bump so the student sees the count even if RPC is slow/failing
+      setViolationCount((c) => c + 1);
+
       try {
         const result = await rpcRecordViolation({ exam_id: examId, event_type: eventType });
         setViolationCount(result.violation_count);
@@ -60,6 +63,7 @@ export function useExamProctoring({
     },
     [examId, threshold],
   );
+
 
   useEffect(() => {
     if (!enabled) return;
@@ -137,6 +141,24 @@ export function useExamProctoring({
       window.removeEventListener("keydown", onKeyDown, { capture: true } as EventListenerOptions);
     };
   }, [enabled, recordViolation]);
+
+  // Safety net: poll fullscreen state — some browsers/OS combos skip fullscreenchange
+  // when leaving fullscreen (e.g. via ESC held, window resize, taskbar). If we detect
+  // the transition from active→inactive here, record it explicitly.
+  const wasActiveRef = useRef(false);
+  useEffect(() => {
+    if (!enabled) return;
+    const id = setInterval(() => {
+      const active = !!document.fullscreenElement;
+      if (wasActiveRef.current && !active) {
+        setIsFullscreenActive(false);
+        recordViolation("fullscreen_exit");
+      }
+      wasActiveRef.current = active;
+    }, 750);
+    return () => clearInterval(id);
+  }, [enabled, recordViolation]);
+
 
 
   const requestFullscreen = useCallback(async () => {
