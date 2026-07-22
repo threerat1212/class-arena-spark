@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { TestimonialsMarquee } from "@/components/testimonials-marquee";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
+import { AnimatedBackground } from "@/components/motion/animated-background";
 
 import { tr } from "@/i18n";
 
@@ -80,17 +82,18 @@ function Landing() {
 
       <main>
         <section className="relative overflow-hidden border-b border-border/70">
+          <AnimatedBackground />
           <div
             className="pointer-events-none absolute inset-x-0 top-0 h-px bg-primary/25"
             aria-hidden
           />
           <div className="mx-auto grid max-w-6xl gap-8 px-5 py-10 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:py-14">
             <div className="scholar-entrance max-w-2xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-sm font-medium text-primary float-slow">
                 <MonitorPlay className="size-4" />
                 {tr("Connected classroom สำหรับโรงเรียน")}
               </div>
-              <h1 className="mt-6 text-5xl font-semibold leading-[1.05] text-balance sm:text-6xl">
+              <h1 className="mt-6 text-5xl font-semibold leading-[1.05] text-balance sm:text-6xl gradient-text">
                 โรงเรียนศึกษาสงเคราะห์จิตต์อารีฯ
               </h1>
               <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground text-pretty">
@@ -118,7 +121,7 @@ function Landing() {
           <ProductPreview />
         </section>
 
-        <section className="border-y border-border/70 bg-secondary/55">
+        <ScrollReveal as="section" direction="up" className="border-y border-border/70 bg-secondary/55">
           <div className="mx-auto grid max-w-6xl gap-0 px-5 py-8 sm:px-6 md:grid-cols-4">
             <ProofPoint
               icon={<Calendar className="size-5" />}
@@ -141,9 +144,9 @@ function Landing() {
               value={tr("อนุมัติและดูแลระบบ")}
             />
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section className="mx-auto max-w-6xl px-5 py-12 sm:px-6 lg:py-16">
+        <ScrollReveal as="section" direction="up" className="mx-auto max-w-6xl px-5 py-12 sm:px-6 lg:py-16">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
               <h2 className="text-3xl font-semibold leading-tight text-balance">
@@ -178,7 +181,7 @@ function Landing() {
               />
             </div>
           </div>
-        </section>
+        </ScrollReveal>
 
         <TestimonialsMarquee />
       </main>
@@ -205,7 +208,7 @@ function EntryGateway({ isSignedIn }: { isSignedIn: boolean }) {
         </span>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <article className="scholar-spotlight-card scholar-sheen rounded-lg border bg-card p-5 shadow-sm">
+        <article className="scholar-spotlight-card scholar-sheen hover-lift press-scale rounded-lg border bg-card p-5 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <span className="inline-flex size-11 items-center justify-center rounded-md bg-primary/10 text-primary">
               <Building2 className="size-5" />
@@ -226,7 +229,7 @@ function EntryGateway({ isSignedIn }: { isSignedIn: boolean }) {
           </Button>
         </article>
 
-        <article className="scholar-spotlight-card scholar-sheen rounded-lg border bg-card p-5 shadow-sm">
+        <article className="scholar-spotlight-card scholar-sheen hover-lift press-scale rounded-lg border bg-card p-5 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <span className="inline-flex size-11 items-center justify-center rounded-md bg-gold/15 text-gold">
               <GraduationCap className="size-5" />
@@ -257,7 +260,7 @@ function EntryGateway({ isSignedIn }: { isSignedIn: boolean }) {
           </div>
         </article>
 
-        <article className="scholar-spotlight-card scholar-sheen rounded-lg border bg-card p-5 shadow-sm">
+        <article className="scholar-spotlight-card scholar-sheen hover-lift press-scale rounded-lg border bg-card p-5 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <span className="inline-flex size-11 items-center justify-center rounded-md bg-primary/10 text-primary">
               <Calendar className="size-5" />
@@ -280,7 +283,7 @@ function EntryGateway({ isSignedIn }: { isSignedIn: boolean }) {
           </Button>
         </article>
 
-        <article className="scholar-spotlight-card scholar-sheen rounded-lg border bg-card p-5 shadow-sm">
+        <article className="scholar-spotlight-card scholar-sheen hover-lift press-scale rounded-lg border bg-card p-5 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <span className="inline-flex size-11 items-center justify-center rounded-md bg-gold/15 text-gold">
               <ClipboardCheck className="size-5" />
