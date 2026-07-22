@@ -17,6 +17,7 @@ import {
   UserCheck,
   UserPlus,
   ScrollText,
+  Store,
   type LucideIcon,
 } from "lucide-react";
 import {
