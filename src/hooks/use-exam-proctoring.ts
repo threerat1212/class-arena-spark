@@ -142,6 +142,24 @@ export function useExamProctoring({
     };
   }, [enabled, recordViolation]);
 
+  // Safety net: poll fullscreen state — some browsers/OS combos skip fullscreenchange
+  // when leaving fullscreen (e.g. via ESC held, window resize, taskbar). If we detect
+  // the transition from active→inactive here, record it explicitly.
+  const wasActiveRef = useRef(false);
+  useEffect(() => {
+    if (!enabled) return;
+    const id = setInterval(() => {
+      const active = !!document.fullscreenElement;
+      if (wasActiveRef.current && !active) {
+        setIsFullscreenActive(false);
+        recordViolation("fullscreen_exit");
+      }
+      wasActiveRef.current = active;
+    }, 750);
+    return () => clearInterval(id);
+  }, [enabled, recordViolation]);
+
+
 
   const requestFullscreen = useCallback(async () => {
     try {
