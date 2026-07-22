@@ -633,7 +633,7 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
   }, [existingAnswers, answersHydrated]);
 
   // proctoring hook — only when exam active and not ended
-  const { violationCount, isFullscreenActive, requestFullscreen } = useExamProctoring({
+  const { violationCount, isFullscreenActive, violationLog, requestFullscreen } = useExamProctoring({
     examId: exam.id,
     enabled: !endedReason,
     threshold,
