@@ -41,7 +41,6 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const topic: string = typeof body.topic === "string" ? body.topic : "";
     const content: string = typeof body.content === "string" ? body.content : "";
-    const count: number = Math.min(20, Math.max(1, Number(body.count) || 5));
     const optionsCount: number = Math.min(6, Math.max(2, Number(body.options_count) || 4));
     const questionType: "multiple_choice" | "short_answer" | "essay" | "mixed" =
       body.question_type === "short_answer" ||
@@ -51,6 +50,19 @@ Deno.serve(async (req) => {
         : "multiple_choice";
     const difficulty: string =
       typeof body.difficulty === "string" ? body.difficulty : "ปานกลาง";
+
+    // distribution: { easy, medium, hard } overrides count + difficulty when provided
+    const dist = body.distribution && typeof body.distribution === "object"
+      ? {
+          easy: Math.max(0, Math.min(30, Number(body.distribution.easy) || 0)),
+          medium: Math.max(0, Math.min(30, Number(body.distribution.medium) || 0)),
+          hard: Math.max(0, Math.min(30, Number(body.distribution.hard) || 0)),
+        }
+      : null;
+    const distTotal = dist ? dist.easy + dist.medium + dist.hard : 0;
+    const count: number = dist && distTotal > 0
+      ? Math.min(30, distTotal)
+      : Math.min(30, Math.max(1, Number(body.count) || 5));
 
     if (!content.trim() && !topic.trim()) {
       return new Response(JSON.stringify({ error: "topic or content required" }), {
@@ -83,9 +95,17 @@ Deno.serve(async (req) => {
             ? "ทุกข้อเป็นข้อเขียนตอบยาว (essay) ให้นักเรียนอธิบาย/วิเคราะห์ ไม่ต้องมีตัวเลือก"
             : `ผสม multiple_choice (มี ${optionsCount} ตัวเลือก), short_answer และ essay ตามความเหมาะสม`;
 
+    const difficultyInstruction = dist && distTotal > 0
+      ? `แบ่งความยากตามนี้เป๊ะๆ (รวม ${distTotal} ข้อ):
+  • ง่าย ${dist.easy} ข้อ (points 1)
+  • ปานกลาง ${dist.medium} ข้อ (points 2-3)
+  • ยาก ${dist.hard} ข้อ (points 4-5)
+สลับลำดับข้อผสมกันไป ไม่ต้องเรียงจากง่ายไปยาก`
+      : `ระดับความยากรวม: ${difficulty}`;
+
     const system = `คุณคือ AI ช่วยครูออกแบบข้อสอบภาษาไทยจากเนื้อหาที่กำหนด
 - ออกข้อสอบจำนวน ${count} ข้อ จากเนื้อหานี้เท่านั้น ห้ามออกนอกเรื่อง
-- ระดับความยากรวม: ${difficulty}
+- ${difficultyInstruction}
 - ${typeInstruction}
 - คำถามชัดเจน ไม่กำกวม เหมาะกับนักเรียน
 - ตัวเลือกในปรนัยต้องสมเหตุสมผลและใกล้เคียงกัน ไม่มีตัวเลือกตลกหรือชัดเจนเกินไป

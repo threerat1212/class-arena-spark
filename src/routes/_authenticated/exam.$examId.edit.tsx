@@ -278,8 +278,10 @@ function EditExamPage() {
         <AiQuestionGenerator
           onGenerated={applyAi}
           hasExisting={questions.some((q) => q.question.trim().length > 0)}
+          classroomId={exam.classroom_id}
         />
       </div>
+
 
       <div className="space-y-2">
         {questions.map((q, i) => (

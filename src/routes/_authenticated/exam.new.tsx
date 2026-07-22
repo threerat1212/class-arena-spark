@@ -188,8 +188,10 @@ function NewExamPage() {
         <AiQuestionGenerator
           onGenerated={applyAi}
           hasExisting={questions.some((q) => q.question.trim().length > 0)}
+          classroomId={classroomId || undefined}
         />
       </div>
+
 
       <div className="space-y-2">
         {questions.map((q, i) => (

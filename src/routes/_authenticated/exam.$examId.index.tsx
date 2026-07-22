@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,37 @@ import {
 } from "@/lib/exam.functions";
 import type { ExamSessionRow, ExamParticipantRow } from "@/lib/exam.functions";
 import { useExamProctoring } from "@/hooks/use-exam-proctoring";
+
+// Deterministic per-student shuffle so refreshing keeps the same order,
+// but different students get different question / option order (prevents copying).
+function seedHash(s: string): number {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h >>> 0;
+}
+function mulberry32(seed: number) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function shuffleWithSeed<T>(arr: T[], seed: number): T[] {
+  const rng = mulberry32(seed);
+  const out = arr.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
 
 export const Route = createFileRoute("/_authenticated/exam/$examId/")({
   component: ExamDetailPage,
@@ -327,6 +359,8 @@ function ReadyScreen({ exam }: { exam: ExamSessionRow }) {
 type AnswerDraft = { answer_idx?: number; answer_text?: string };
 
 function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: number }) {
+  const { user } = useAuth();
+
   const nav = useNavigate();
   const qc = useQueryClient();
   const [endedReason, setEndedReason] = useState<string | null>(null);
@@ -436,12 +470,35 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
     }
   }, [isFullscreenActive, requestFullscreen]);
 
+  // Per-student shuffle: question order + MC option order.
+  // Same student always sees the same order (refresh-safe); different students see different orders.
+  const shuffleSeed = user?.id ? `${exam.id}::${user.id}` : "";
+  const orderedQuestions = useMemo(() => {
+    if (!questions || !shuffleSeed) return questions ?? [];
+    return shuffleWithSeed(questions, seedHash(shuffleSeed));
+  }, [questions, shuffleSeed]);
+  const optionOrderMap = useMemo(() => {
+    const m: Record<string, number[]> = {};
+    if (!questions || !shuffleSeed) return m;
+    for (const qq of questions) {
+      if (!qq.id) continue;
+      const n = Array.isArray(qq.options) ? (qq.options as unknown[]).length : 0;
+      if (n <= 0) continue;
+      m[qq.id] = shuffleWithSeed(
+        Array.from({ length: n }, (_, i) => i),
+        seedHash(`${shuffleSeed}::${qq.id}`),
+      );
+    }
+    return m;
+  }, [questions, shuffleSeed]);
+
   if (!questions)
     return (
       <div className="grid place-items-center py-12">
         <Loader2 className="size-6 animate-spin" />
       </div>
     );
+
   if (endedReason) {
     return (
       <div className="container max-w-md py-12 text-center space-y-3">
@@ -459,7 +516,7 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
     );
   }
 
-  const q = questions[currentIdx];
+  const q = orderedQuestions[currentIdx];
   // view columns are nullable; bail out cleanly if the row is malformed
   if (!q.id || !q.question || !q.question_type) {
     return (
@@ -603,22 +660,29 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
             <p className="text-base">{q.question}</p>
             {q.question_type === "multiple_choice" ? (
               <div className="space-y-2">
-                {((q.options as string[] | null) ?? []).map((opt: string, oi: number) => (
+            {(() => {
+              const rawOpts = (q.options as string[] | null) ?? [];
+              const order = optionOrderMap[qId] ?? rawOpts.map((_, i) => i);
+              return order.map((origIdx, displayIdx) => {
+                const opt = rawOpts[origIdx] ?? "";
+                return (
                   <label
-                    key={oi}
-                    className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer hover:bg-muted/40 ${answers[qId]?.answer_idx === oi ? "border-primary bg-primary/5" : ""}`}
+                    key={displayIdx}
+                    className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer hover:bg-muted/40 ${answers[qId]?.answer_idx === origIdx ? "border-primary bg-primary/5" : ""}`}
                   >
                     <input
                       type="radio"
                       name={`q-${qId}`}
-                      checked={answers[qId]?.answer_idx === oi}
-                      onChange={() => saveAnswer(qId, { answer_idx: oi })}
+                      checked={answers[qId]?.answer_idx === origIdx}
+                      onChange={() => saveAnswer(qId, { answer_idx: origIdx })}
                     />
                     <span>
-                      {["ก", "ข", "ค", "ง", "จ"][oi]}. {opt}
+                      {["ก", "ข", "ค", "ง", "จ"][displayIdx]}. {opt}
                     </span>
                   </label>
-                ))}
+                );
+              });
+            })()}
               </div>
             ) : (
               <Textarea
