@@ -127,15 +127,24 @@ function NewExamPage() {
     }
   }
 
+  const totalPoints = questions.reduce((sum, q) => sum + (q.points || 0), 0);
+
   return (
-    <div className="container max-w-3xl py-6 space-y-4">
-      <h1 className="text-2xl font-semibold">{tr("📝 สร้างข้อสอบใหม่")}</h1>
+    <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-6 lg:py-10 space-y-6">
+      <header className="space-y-1">
+        <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">
+          {tr("📝 สร้างข้อสอบใหม่")}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          {tr("กรอกรายละเอียด แล้วเพิ่มคำถามเอง หรือให้ AI ช่วยออกจากบทเรียนในคลาส")}
+        </p>
+      </header>
 
       <Card>
         <CardHeader>
           <CardTitle className="text-base">{tr("รายละเอียดสอบ")}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-4">
           <div className="space-y-1.5">
             <Label>{tr("ชื่อข้อสอบ")}</Label>
             <Input
@@ -159,7 +168,7 @@ function NewExamPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>{tr("ระยะเวลา (นาที)")}</Label>
               <Input
@@ -184,31 +193,47 @@ function NewExamPage() {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        <AiQuestionGenerator
-          onGenerated={applyAi}
-          hasExisting={questions.some((q) => q.question.trim().length > 0)}
-          classroomId={classroomId || undefined}
-        />
+      <Card className="border-primary/30 bg-primary/5">
+        <CardContent className="py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="min-w-0">
+            <p className="font-medium">{tr("ให้ AI ช่วยออกข้อสอบ")}</p>
+            <p className="text-xs text-muted-foreground">
+              {tr("เลือกบทเรียนจากคลาส หรือวางเนื้อหา แล้วกำหนดจำนวนข้อ/ความยากได้เอง")}
+            </p>
+          </div>
+          <AiQuestionGenerator
+            onGenerated={applyAi}
+            hasExisting={questions.some((q) => q.question.trim().length > 0)}
+            classroomId={classroomId || undefined}
+          />
+        </CardContent>
+      </Card>
+
+      <div className="flex items-center justify-between">
+        <h2 className="font-display text-lg font-semibold">
+          {tr("คำถาม")} <span className="text-muted-foreground">({questions.length})</span>
+        </h2>
+        <p className="text-xs text-muted-foreground">
+          {tr("รวมคะแนน")}: <b className="text-foreground">{totalPoints}</b>
+        </p>
       </div>
 
-
-      <div className="space-y-2">
+      <div className="space-y-3">
         {questions.map((q, i) => (
           <Card key={i}>
             <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base">
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+                <CardTitle className="text-base truncate">
                   {tr("ข้อ")} {i + 1}
                 </CardTitle>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                   <Select
                     value={q.question_type}
                     onValueChange={(v) =>
                       updateQ(i, { question_type: v as DraftQuestion["question_type"] })
                     }
                   >
-                    <SelectTrigger className="w-40">
+                    <SelectTrigger className="w-36 sm:w-44">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -233,25 +258,33 @@ function NewExamPage() {
                 rows={2}
               />
               {q.question_type === "multiple_choice" ? (
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label className="text-xs">{tr("ตัวเลือก (เลือกคำตอบที่ถูก)")}</Label>
                   {q.options.map((opt, oi) => (
-                    <div key={oi} className="flex items-center gap-2">
+                    <label
+                      key={oi}
+                      className={`flex items-center gap-2 p-2 rounded-md border cursor-pointer transition-colors ${
+                        q.correct_idx === oi
+                          ? "border-primary bg-primary/10"
+                          : "border-input hover:bg-muted/40"
+                      }`}
+                    >
                       <input
                         type="radio"
                         name={`correct-${i}`}
                         checked={q.correct_idx === oi}
                         onChange={() => updateQ(i, { correct_idx: oi })}
                       />
-                      <span className="text-xs text-muted-foreground w-5">
+                      <span className="text-xs font-medium text-muted-foreground w-5 shrink-0">
                         {["ก", "ข", "ค", "ง", "จ"][oi]}
                       </span>
                       <Input
                         value={opt}
                         onChange={(e) => updateOption(i, oi, e.target.value)}
                         placeholder={tr(`ตัวเลือก ${oi + 1}`)}
+                        className="flex-1 border-0 shadow-none focus-visible:ring-0 p-0 h-7 bg-transparent"
                       />
-                    </div>
+                    </label>
                   ))}
                 </div>
               ) : q.question_type === "short_answer" ? (
@@ -271,7 +304,7 @@ function NewExamPage() {
                   {tr("นักเรียนจะพิมพ์คำตอบยาว ครูตรวจให้คะแนนเองหลังสอบเสร็จ")}
                 </p>
               )}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 pt-1">
                 <Label className="text-xs">{tr("คะแนน")}:</Label>
                 <Input
                   type="number"
@@ -290,11 +323,11 @@ function NewExamPage() {
         </Button>
       </div>
 
-      <div className="flex justify-end gap-2">
+      <div className="sticky bottom-4 z-10 flex justify-end gap-2 rounded-lg border bg-background/80 backdrop-blur p-3 shadow-sm">
         <Button variant="ghost" onClick={() => nav({ to: "/exam" })}>
           {tr("ยกเลิก")}
         </Button>
-        <Button onClick={save} disabled={saving}>
+        <Button onClick={save} disabled={saving} size="lg">
           {saving && <Loader2 className="size-4 mr-1 animate-spin" />}
           {tr("บันทึกเป็น draft")}
         </Button>
