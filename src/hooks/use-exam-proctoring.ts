@@ -82,6 +82,38 @@ export function useExamProctoring({
       recordViolation("copy_paste");
     };
     const onContext = (e: MouseEvent) => e.preventDefault();
+    // Warn on refresh / close / navigate-away — browsers show a native confirm dialog
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+      return "";
+    };
+    // Block back / forward — re-push current state and count as violation
+    const onPopState = () => {
+      window.history.pushState(null, "", window.location.href);
+      recordViolation("other");
+    };
+    // Block reload shortcuts (F5, Ctrl/Cmd+R, Ctrl+Shift+R) and DevTools shortcuts
+    const onKeyDown = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
+      const isReload = key === "f5" || ((e.ctrlKey || e.metaKey) && key === "r");
+      const isDevTools =
+        key === "f12" ||
+        ((e.ctrlKey || e.metaKey) && e.shiftKey && (key === "i" || key === "j" || key === "c")) ||
+        ((e.ctrlKey || e.metaKey) && key === "u"); // view-source
+      if (isReload) {
+        e.preventDefault();
+        e.stopPropagation();
+        recordViolation("other");
+      } else if (isDevTools) {
+        e.preventDefault();
+        e.stopPropagation();
+        recordViolation("dev_tools");
+      }
+    };
+
+    // Seed a history entry so popstate has something to catch
+    window.history.pushState(null, "", window.location.href);
 
     document.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("blur", onBlur);
@@ -89,6 +121,9 @@ export function useExamProctoring({
     document.addEventListener("copy", onCopy);
     document.addEventListener("paste", onPaste);
     document.addEventListener("contextmenu", onContext);
+    window.addEventListener("beforeunload", onBeforeUnload);
+    window.addEventListener("popstate", onPopState);
+    window.addEventListener("keydown", onKeyDown, { capture: true });
 
     return () => {
       document.removeEventListener("visibilitychange", onVisibility);
@@ -97,8 +132,12 @@ export function useExamProctoring({
       document.removeEventListener("copy", onCopy);
       document.removeEventListener("paste", onPaste);
       document.removeEventListener("contextmenu", onContext);
+      window.removeEventListener("beforeunload", onBeforeUnload);
+      window.removeEventListener("popstate", onPopState);
+      window.removeEventListener("keydown", onKeyDown, { capture: true } as EventListenerOptions);
     };
   }, [enabled, recordViolation]);
+
 
   const requestFullscreen = useCallback(async () => {
     try {
