@@ -119,10 +119,10 @@ function ShopTab() {
       const price = Number(form.gold_price);
       if (!Number.isFinite(price) || price < 0) throw new Error(tr("ราคาทองไม่ถูกต้อง"));
 
-      const meta: Record<string, unknown> = {};
+      const meta: Record<string, string | number | boolean | null> = {};
       if (form.kind !== "title") {
         meta.reward_kind = form.kind;
-        meta.reward_code = rewardCode.trim() || undefined;
+        meta.reward_code = rewardCode.trim() || null;
         meta.reward_amount = rewardAmount;
       }
 
