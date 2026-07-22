@@ -146,7 +146,7 @@ export function AiQuestionGenerator({
               {content.length}/15000 {tr("ตัวอักษร")}
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1.5">
               <Label className="text-xs">{tr("จำนวนข้อ")}</Label>
               <Input
@@ -156,6 +156,24 @@ export function AiQuestionGenerator({
                 value={count}
                 onChange={(e) => setCount(Number(e.target.value))}
               />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">{tr("จำนวนตัวเลือก")}</Label>
+              <Select
+                value={String(optionsCount)}
+                onValueChange={(v) => setOptionsCount(Number(v))}
+                disabled={qType === "short_answer"}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2">2 (ก, ข)</SelectItem>
+                  <SelectItem value="3">3 (ก, ข, ค)</SelectItem>
+                  <SelectItem value="4">4 (ก, ข, ค, ง)</SelectItem>
+                  <SelectItem value="5">5 (ก, ข, ค, ง, จ)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">{tr("ประเภท")}</Label>
@@ -184,6 +202,9 @@ export function AiQuestionGenerator({
               </Select>
             </div>
           </div>
+          <p className="text-xs text-muted-foreground">
+            {tr("AI จะไม่เฉลยให้ — ครูเลือกคำตอบที่ถูกเองในแต่ละข้อ")}
+          </p>
         </div>
         <DialogFooter className="gap-2 sm:gap-2">
           {hasExisting && (
