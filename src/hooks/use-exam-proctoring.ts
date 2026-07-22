@@ -108,9 +108,30 @@ export function useExamProctoring({
         { type: eventType, reason: reasonForEvent(eventType), at: now },
       ]);
 
+      // Fire-and-forget snapshot; attach path to the RPC payload when it lands in time.
+      let snapshotPath: string | null = null;
+      try {
+        const { data: sess } = await supabase.auth.getSession();
+        const uid = sess.session?.user?.id;
+        if (uid) {
+          // Only snapshot once per second per event type across all events (throttle)
+          snapshotPath = await captureAndUploadSnapshot(examId, uid, eventType);
+        }
+      } catch {
+        /* ignore */
+      }
 
       try {
-        const result = await rpcRecordViolation({ exam_id: examId, event_type: eventType });
+        const result = await rpcRecordViolation({
+          exam_id: examId,
+          event_type: eventType,
+          payload: {
+            at: now,
+            user_agent: navigator.userAgent,
+            reason: reasonForEvent(eventType),
+            ...(snapshotPath ? { snapshot_path: snapshotPath } : {}),
+          },
+        });
         setViolationCount(result.violation_count);
         if (result.violation_count < threshold) {
           toast.warning(
