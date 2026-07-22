@@ -168,7 +168,7 @@ export function AiQuestionGenerator({
               <Select
                 value={String(optionsCount)}
                 onValueChange={(v) => setOptionsCount(Number(v))}
-                disabled={qType === "short_answer"}
+                disabled={qType === "short_answer" || qType === "essay"}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -190,6 +190,7 @@ export function AiQuestionGenerator({
                 <SelectContent>
                   <SelectItem value="multiple_choice">{tr("ปรนัย")}</SelectItem>
                   <SelectItem value="short_answer">{tr("เติมคำ")}</SelectItem>
+                  <SelectItem value="essay">{tr("ข้อเขียน (ยาว)")}</SelectItem>
                   <SelectItem value="mixed">{tr("ผสม")}</SelectItem>
                 </SelectContent>
               </Select>
