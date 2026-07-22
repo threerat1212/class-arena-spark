@@ -900,49 +900,20 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
             const unanswered = total - answeredCount;
             const isLast = currentIdx === total - 1;
             return (
-              <Button
-                variant={isLast && unanswered === 0 ? "default" : "outline"}
-                size="sm"
-                disabled={submitting || submitted}
-                onClick={() => {
-                  if (submitting || submitted) return;
-                  const msg =
-                    unanswered > 0
-                      ? tr("ยังไม่ได้ทำ ") +
-                        `${unanswered}/${total} ` +
-                        tr("ข้อ — ยืนยันส่งข้อสอบเลย? ไม่สามารถแก้ไขได้หลังส่ง")
-                      : tr("ทำครบทุกข้อแล้ว — ยืนยันส่งข้อสอบ? ไม่สามารถแก้ไขได้หลังส่ง");
-                  if (confirm(msg)) {
-                    if (unanswered > 0) {
-                      if (
-                        !confirm(
-                          tr("ยืนยันอีกครั้ง: ยังไม่ได้ทำ ") +
-                            `${unanswered} ` +
-                            tr("ข้อ จะส่งจริงหรือไม่?"),
-                        )
-                      )
-                        return;
-                    }
-                    submitAll();
-                  }
-                }}
-              >
-                {submitting || submitted ? (
-                  <Loader2 className="size-4 mr-1 animate-spin" />
-                ) : (
-                  <Send className="size-4 mr-1" />
-                )}
-                {submitted
-                  ? tr("ส่งแล้ว")
-                  : submitting
-                    ? tr("กำลังส่ง...")
-                    : tr("ส่งข้อสอบ")}{" "}
-                ({answeredCount}/{total})
-              </Button>
+              <SubmitExamButton
+                total={total}
+                answered={answeredCount}
+                unanswered={unanswered}
+                highlight={isLast && unanswered === 0}
+                submitting={submitting}
+                submitted={submitted}
+                onConfirm={submitAll}
+              />
             );
           })()}
         </div>
       </div>
+
     </div>
   );
 }
