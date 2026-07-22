@@ -824,6 +824,23 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
                 {tr("ตอนนี้โกง")} <b className="text-red-500">{violationCount}/{threshold}</b>{" "}
                 {tr("ครั้ง — ครบจะส่งอัตโนมัติ")}
               </p>
+              {violationLog.length > 0 && (
+                <div className="text-left rounded-md border bg-muted/40 p-3 max-h-40 overflow-auto">
+                  <div className="text-xs font-semibold mb-1">
+                    {tr("เหตุที่ถูกนับ")}
+                  </div>
+                  <ol className="text-xs space-y-1 list-decimal list-inside text-muted-foreground">
+                    {violationLog.slice(-6).map((v, i) => (
+                      <li key={i}>
+                        <span className="font-mono text-[10px] mr-1">
+                          {new Date(v.at).toLocaleTimeString()}
+                        </span>
+                        {v.reason}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
               <Button onClick={requestFullscreen} size="lg" className="w-full">
                 <Maximize2 className="size-4 mr-2" />
                 {tr("กลับเข้าเต็มจอเพื่อทำต่อ")}
