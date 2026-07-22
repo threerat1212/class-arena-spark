@@ -84,12 +84,18 @@ export function AiQuestionGenerator({
         return;
       }
       const normalized: GeneratedQuestion[] = questions.map((q) => {
-        const isMC = q.question_type !== "short_answer";
+        const qt: "multiple_choice" | "short_answer" | "essay" =
+          q.question_type === "short_answer"
+            ? "short_answer"
+            : q.question_type === "essay"
+              ? "essay"
+              : "multiple_choice";
+        const isMC = qt === "multiple_choice";
         const opts = Array.isArray(q.options) ? q.options.map((o) => String(o ?? "")) : [];
         const targetLen = isMC ? optionsCount : 4;
         while (opts.length < targetLen) opts.push("");
         return {
-          question_type: isMC ? "multiple_choice" : "short_answer",
+          question_type: qt,
           question: String(q.question ?? "").trim(),
           options: opts.slice(0, targetLen),
           correct_idx: 0,
