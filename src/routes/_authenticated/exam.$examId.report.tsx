@@ -13,7 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, Download, ArrowLeft, Eye, Check, X } from "lucide-react";
+import { Loader2, Download, ArrowLeft, Eye, Check, X, ShieldAlert } from "lucide-react";
+import { ViolationsDialog } from "@/components/exam/violations-dialog";
 import { toast } from "sonner";
 import { tr } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
