@@ -1368,6 +1368,39 @@ export type Database = {
           },
         ]
       }
+      lucky_drop_weights: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          min_combo: number
+          reward_amount: number | null
+          reward_code: string | null
+          reward_kind: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          min_combo?: number
+          reward_amount?: number | null
+          reward_code?: string | null
+          reward_kind: string
+          weight?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          min_combo?: number
+          reward_amount?: number | null
+          reward_code?: string | null
+          reward_kind?: string
+          weight?: number
+        }
+        Relationships: []
+      }
       materials: {
         Row: {
           classroom_id: string
