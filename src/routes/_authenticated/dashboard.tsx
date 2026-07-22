@@ -31,6 +31,7 @@ import { DailyBonusCard } from "@/components/daily-bonus-card";
 import { GamificationStatusPanel } from "@/components/gamification-status-panel";
 import { RecentActivityCard } from "@/components/recent-activity-card";
 import { ClassroomHallOfFame, GradeLeaderboard } from "@/components/showcase-sections";
+import { DisplayNameEditor } from "@/components/display-name-editor";
 import type { Database } from "@/integrations/supabase/types";
 
 import { tr } from "@/i18n";
@@ -113,8 +114,12 @@ function Dashboard() {
         <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary capitalize">
           {primary} workspace
         </div>
-        <h1 className="mt-3 text-4xl font-semibold">
-          {tr("สวัสดี")}, {profile?.display_name ?? tr("ผู้ใช้")}
+        <h1 className="mt-3 text-4xl font-semibold flex flex-wrap items-center gap-2">
+          <span>{tr("สวัสดี")},</span>
+          <DisplayNameEditor
+            currentName={profile?.display_name ?? null}
+            headingClassName="text-4xl font-semibold"
+          />
         </h1>
         <p className="mt-2 text-muted-foreground">
           {primary === "student" && tr("ภาพรวมความก้าวหน้าและกิจกรรมของคุณ")}
