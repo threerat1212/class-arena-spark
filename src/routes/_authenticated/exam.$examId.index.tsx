@@ -8,6 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 import { toast } from "sonner";
 import { announceLuckyDrop } from "@/components/gamification/lucky-drop-toast";
 import { Loader2, Play, Square, Send, AlertTriangle, Clock, Maximize2, Pencil, Palette, Trash2, ExternalLink, TimerReset } from "lucide-react";
