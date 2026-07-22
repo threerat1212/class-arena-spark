@@ -211,5 +211,5 @@ export function useExamProctoring({
     }
   }, []);
 
-  return { violationCount, isFullscreenActive, requestFullscreen, exitFullscreen };
+  return { violationCount, isFullscreenActive, violationLog, requestFullscreen, exitFullscreen };
 }
