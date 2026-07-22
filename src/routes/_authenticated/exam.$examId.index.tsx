@@ -122,63 +122,193 @@ function HostView({ exam }: { exam: ExamSessionRow }) {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const statusMeta: Record<
+    string,
+    { label: string; className: string; dot: string }
+  > = {
+    draft: {
+      label: tr("ฉบับร่าง"),
+      className: "bg-muted text-muted-foreground border-border",
+      dot: "bg-muted-foreground",
+    },
+    scheduled: {
+      label: tr("รอเปิดสอบ"),
+      className: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30",
+      dot: "bg-amber-500",
+    },
+    active: {
+      label: tr("กำลังสอบ"),
+      className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
+      dot: "bg-emerald-500 animate-pulse",
+    },
+    closed: {
+      label: tr("ปิดแล้ว"),
+      className: "bg-destructive/10 text-destructive border-destructive/30",
+      dot: "bg-destructive",
+    },
+  };
+  const sm = statusMeta[exam.status] ?? statusMeta.draft;
+
+  const submittedCount = participants?.filter((p) => p.submitted_at).length ?? 0;
+  const activeCount = participants?.filter((p) => p.started_at && !p.submitted_at).length ?? 0;
+  const totalP = participants?.length ?? 0;
+  const submitPct = totalP > 0 ? Math.round((submittedCount / totalP) * 100) : 0;
+
+  function copyCode() {
+    navigator.clipboard?.writeText(exam.join_code).then(
+      () => toast.success(tr("คัดลอกรหัสแล้ว")),
+      () => toast.error(tr("คัดลอกไม่สำเร็จ")),
+    );
+  }
+
+  // datetime-local helper: local ISO minus seconds
+  function toLocalInput(d: Date) {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+  function quickSet(mins: number) {
+    const now = new Date();
+    const end = new Date(now.getTime() + mins * 60_000);
+    setStartAt(toLocalInput(now));
+    setEndAt(toLocalInput(end));
+  }
+
   return (
-    <div className="container max-w-3xl py-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{exam.title}</h1>
-        <Badge>{exam.status}</Badge>
-      </div>
-
-      <Card>
-        <CardContent className="pt-6 space-y-2 text-sm">
-          <div>
-            {tr("รหัสเข้าร่วม")}: <code className="font-mono text-lg">{exam.join_code}</code>
-          </div>
-          <div>
-            {tr("ระยะเวลา")} {exam.duration_minutes} {tr("นาที")} · {tr("โกงสูงสุด")}{" "}
-            {exam.violation_threshold} {tr("ครั้ง")}
-          </div>
-          {exam.starts_at && (
-            <div>
-              {tr("เวลาเปิด")}: {new Date(exam.starts_at).toLocaleString("th-TH")}
+    <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-6 lg:py-10 space-y-6">
+      {/* ── Hero header ── */}
+      <header className="rounded-2xl border bg-gradient-to-br from-primary/10 via-background to-background p-5 sm:p-6 shadow-sm">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+          <div className="min-w-0 space-y-2">
+            <div
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${sm.className}`}
+            >
+              <span className={`size-1.5 rounded-full ${sm.dot}`} />
+              {sm.label}
             </div>
+            <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight truncate">
+              {exam.title}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {tr("จัดการข้อสอบ กำหนดเวลา และติดตามผู้เข้าสอบแบบเรียลไทม์")}
+            </p>
+          </div>
+          {exam.status !== "active" && (
+            <Button asChild variant="outline" size="sm" className="shrink-0">
+              <Link to="/exam/$examId/edit" params={{ examId: exam.id }}>
+                <Pencil className="size-4 mr-1" />
+                {tr("แก้ไขข้อสอบ")}
+              </Link>
+            </Button>
           )}
-          {exam.ends_at && (
-            <div>
-              {tr("เวลาปิด")}: {new Date(exam.ends_at).toLocaleString("th-TH")}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {exam.status !== "active" && (
-        <div className="flex justify-end">
-          <Button asChild variant="outline" size="sm">
-            <Link to="/exam/$examId/edit" params={{ examId: exam.id }}>
-              <Pencil className="size-4 mr-1" />
-              {tr("แก้ไขข้อสอบ")}
-            </Link>
-          </Button>
         </div>
-      )}
 
+        {/* stat grid */}
+        <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <button
+            onClick={copyCode}
+            className="group text-left rounded-xl border bg-card p-3 hover:border-primary/60 hover:bg-primary/5 transition-colors"
+          >
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              {tr("รหัสเข้าร่วม")}
+            </div>
+            <div className="mt-1 font-mono text-lg font-bold tracking-widest text-primary group-hover:underline">
+              {exam.join_code}
+            </div>
+            <div className="text-[10px] text-muted-foreground mt-0.5">{tr("คลิกเพื่อคัดลอก")}</div>
+          </button>
+          <div className="rounded-xl border bg-card p-3">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              {tr("ระยะเวลา")}
+            </div>
+            <div className="mt-1 text-lg font-bold">
+              {exam.duration_minutes}
+              <span className="ml-1 text-xs font-normal text-muted-foreground">{tr("นาที")}</span>
+            </div>
+          </div>
+          <div className="rounded-xl border bg-card p-3">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              {tr("โกงสูงสุด")}
+            </div>
+            <div className="mt-1 text-lg font-bold">
+              {exam.violation_threshold}
+              <span className="ml-1 text-xs font-normal text-muted-foreground">{tr("ครั้ง")}</span>
+            </div>
+          </div>
+          <div className="rounded-xl border bg-card p-3">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              {tr("ผู้เข้าสอบ")}
+            </div>
+            <div className="mt-1 text-lg font-bold">
+              {totalP}
+              <span className="ml-1 text-xs font-normal text-muted-foreground">
+                · {submittedCount} {tr("ส่ง")}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {(exam.starts_at || exam.ends_at) && (
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+            {exam.starts_at && (
+              <span>
+                🟢 {tr("เปิด")}: {new Date(exam.starts_at).toLocaleString("th-TH")}
+              </span>
+            )}
+            {exam.ends_at && (
+              <span>
+                🔴 {tr("ปิด")}: {new Date(exam.ends_at).toLocaleString("th-TH")}
+              </span>
+            )}
+          </div>
+        )}
+      </header>
+
+      {/* ── Draft: schedule card ── */}
       {exam.status === "draft" && (
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">{tr("กำหนดเวลาและเปิดสอบ")}</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Clock className="size-4 text-primary" />
+              {tr("กำหนดเวลาและเปิดสอบ")}
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              {tr("เลือกด่วน หรือกำหนดเองก็ได้")}
+            </p>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs">{tr("เปิดสอบเมื่อ")}</label>
+          <CardContent className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              {[
+                { m: exam.duration_minutes, label: tr("เริ่มตอนนี้") },
+                { m: 30, label: "+30m" },
+                { m: 60, label: "+1h" },
+                { m: 60 * 24, label: tr("พรุ่งนี้") },
+              ].map((q, i) => (
+                <Button
+                  key={i}
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => quickSet(q.m)}
+                >
+                  {q.label}
+                </Button>
+              ))}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">
+                  {tr("เปิดสอบเมื่อ")}
+                </label>
                 <Input
                   type="datetime-local"
                   value={startAt}
                   onChange={(e) => setStartAt(e.target.value)}
                 />
               </div>
-              <div>
-                <label className="text-xs">{tr("ปิดสอบเมื่อ")}</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">
+                  {tr("ปิดสอบเมื่อ")}
+                </label>
                 <Input
                   type="datetime-local"
                   value={endAt}
@@ -189,84 +319,146 @@ function HostView({ exam }: { exam: ExamSessionRow }) {
             <Button
               onClick={() => publishMut.mutate()}
               disabled={publishMut.isPending || !startAt || !endAt}
+              size="lg"
+              className="w-full sm:w-auto"
             >
-              {publishMut.isPending && <Loader2 className="size-4 mr-1 animate-spin" />}
-              {tr("กำหนดเวลา")}
+              {publishMut.isPending ? (
+                <Loader2 className="size-4 mr-1 animate-spin" />
+              ) : (
+                <Play className="size-4 mr-1" />
+              )}
+              {tr("กำหนดเวลา & เผยแพร่")}
             </Button>
           </CardContent>
         </Card>
       )}
 
+      {/* ── Action strips for scheduled / active ── */}
       {exam.status === "scheduled" && (
-        <Button onClick={() => openMut.mutate()} disabled={openMut.isPending} size="lg">
-          {openMut.isPending ? (
-            <Loader2 className="size-4 mr-1 animate-spin" />
-          ) : (
-            <Play className="size-4 mr-1" />
-          )}
-          {tr("เปิดสอบเลย")}
-        </Button>
+        <div className="rounded-xl border bg-amber-500/5 border-amber-500/30 p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
+          <div>
+            <p className="font-medium">{tr("รอเปิดสอบ")}</p>
+            <p className="text-xs text-muted-foreground">
+              {tr("กด 'เปิดสอบเลย' เพื่อให้เด็กเข้าได้ทันที")}
+            </p>
+          </div>
+          <Button
+            onClick={() => openMut.mutate()}
+            disabled={openMut.isPending}
+            size="lg"
+          >
+            {openMut.isPending ? (
+              <Loader2 className="size-4 mr-1 animate-spin" />
+            ) : (
+              <Play className="size-4 mr-1" />
+            )}
+            {tr("เปิดสอบเลย")}
+          </Button>
+        </div>
       )}
 
       {exam.status === "active" && (
-        <Button
-          onClick={() => closeMut.mutate()}
-          disabled={closeMut.isPending}
-          variant="destructive"
-          size="lg"
-        >
-          {closeMut.isPending ? (
-            <Loader2 className="size-4 mr-1 animate-spin" />
-          ) : (
-            <Square className="size-4 mr-1" />
-          )}
-          {tr("ปิดสอบ (force-submit คนที่ยังไม่ส่ง)")}
-        </Button>
+        <div className="rounded-xl border bg-emerald-500/5 border-emerald-500/30 p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
+          <div className="flex items-center gap-3">
+            <span className="size-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <div>
+              <p className="font-medium">{tr("กำลังสอบอยู่")}</p>
+              <p className="text-xs text-muted-foreground">
+                {activeCount} {tr("คนกำลังทำ")} · {submittedCount}/{totalP} {tr("ส่งแล้ว")}
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={() => closeMut.mutate()}
+            disabled={closeMut.isPending}
+            variant="destructive"
+            size="lg"
+          >
+            {closeMut.isPending ? (
+              <Loader2 className="size-4 mr-1 animate-spin" />
+            ) : (
+              <Square className="size-4 mr-1" />
+            )}
+            {tr("ปิดสอบ")}
+          </Button>
+        </div>
       )}
+
       <CanvaPoolCard examId={exam.id} />
 
-
+      {/* ── Participants ── */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">
-            {tr("ผู้เข้าสอบ")} ({participants?.length ?? 0})
-          </CardTitle>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between gap-2">
+            <CardTitle className="text-base">
+              {tr("ผู้เข้าสอบ")}{" "}
+              <span className="text-muted-foreground font-normal">({totalP})</span>
+            </CardTitle>
+            {totalP > 0 && (
+              <span className="text-xs text-muted-foreground">
+                {submittedCount}/{totalP} {tr("ส่งแล้ว")}
+              </span>
+            )}
+          </div>
+          {totalP > 0 && (
+            <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden mt-2">
+              <div
+                className="h-full bg-primary transition-all"
+                style={{ width: `${submitPct}%` }}
+              />
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           {!participants || participants.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              {tr("ยังไม่มีคนเข้าร่วม — แชร์รหัส ")}
-              <code className="font-mono">{exam.join_code}</code>
-            </p>
+            <div className="py-8 text-center space-y-2">
+              <div className="mx-auto size-12 rounded-full bg-muted grid place-items-center">
+                <AlertTriangle className="size-5 text-muted-foreground" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {tr("ยังไม่มีคนเข้าร่วม")}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {tr("แชร์รหัส")}{" "}
+                <code className="font-mono font-bold text-foreground">{exam.join_code}</code>{" "}
+                {tr("ให้นักเรียน")}
+              </p>
+            </div>
           ) : (
-            <div className="space-y-1">
-              {participants.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex items-center justify-between text-sm py-1.5 border-b border-border/40 last:border-0"
-                >
-                  <span className="truncate">{p.user_id.slice(0, 8)}...</span>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    {p.submitted_at ? (
-                      <span>
-                        ✓ {tr("ส่งแล้ว")}{" "}
-                        {p.auto_submitted && (
-                          <Badge variant="destructive" className="ml-1">
-                            {tr("อัตโนมัติ")}
-                          </Badge>
-                        )}
-                      </span>
-                    ) : p.started_at ? (
-                      <span>{tr("กำลังทำ")}</span>
-                    ) : (
-                      <span>{tr("รอเริ่ม")}</span>
+            <div className="divide-y divide-border/60">
+              {participants.map((p, i) => {
+                const state = p.submitted_at
+                  ? { label: tr("ส่งแล้ว"), dot: "bg-emerald-500", tone: "text-emerald-600" }
+                  : p.started_at
+                    ? { label: tr("กำลังทำ"), dot: "bg-blue-500 animate-pulse", tone: "text-blue-600" }
+                    : { label: tr("รอเริ่ม"), dot: "bg-muted-foreground/60", tone: "text-muted-foreground" };
+                return (
+                  <div key={p.id} className="flex items-center gap-3 py-2.5 text-sm">
+                    <div className="size-7 shrink-0 rounded-full bg-muted grid place-items-center text-[10px] font-medium text-muted-foreground">
+                      {i + 1}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate font-mono text-xs text-muted-foreground">
+                        {p.user_id.slice(0, 8)}
+                      </div>
+                    </div>
+                    <span className={`inline-flex items-center gap-1.5 text-xs ${state.tone}`}>
+                      <span className={`size-1.5 rounded-full ${state.dot}`} />
+                      {state.label}
+                    </span>
+                    {p.auto_submitted && (
+                      <Badge variant="destructive" className="text-[10px]">
+                        {tr("อัตโนมัติ")}
+                      </Badge>
                     )}
                     {p.violation_count > 0 && (
-                      <Badge variant="outline">⚠ {p.violation_count}</Badge>
+                      <Badge variant="outline" className="text-[10px]">
+                        ⚠ {p.violation_count}
+                      </Badge>
                     )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>
