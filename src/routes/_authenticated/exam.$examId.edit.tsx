@@ -229,27 +229,46 @@ function EditExamPage() {
   }
 
   return (
-    <div className="container max-w-3xl py-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{tr("✏️ แก้ไขข้อสอบ")}</h1>
-        <Button asChild variant="ghost" size="sm">
-          <Link to="/exam/$examId" params={{ examId }}>
-            <ArrowLeft className="size-4 mr-1" />
-            {tr("กลับ")}
-          </Link>
-        </Button>
+    <div className="container max-w-4xl py-6 space-y-6">
+      {/* Hero header */}
+      <div className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-primary/10 via-background to-accent/20 p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center rounded-full bg-background/80 backdrop-blur px-2.5 py-0.5 text-xs font-medium border">
+                {tr("โหมดแก้ไข")}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {exam.status === "draft" ? tr("ฉบับร่าง") : exam.status === "scheduled" ? tr("ตั้งเวลาไว้") : tr("ปิดแล้ว")}
+              </span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-semibold font-display">
+              ✏️ {tr("แก้ไขข้อสอบ")}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {tr("ปรับรายละเอียด คำถาม และตัวเลือก แล้วบันทึกเพื่ออัปเดตข้อสอบ")}
+            </p>
+          </div>
+          <Button asChild variant="ghost" size="sm">
+            <Link to="/exam/$examId" params={{ examId }}>
+              <ArrowLeft className="size-4 mr-1" />
+              {tr("กลับ")}
+            </Link>
+          </Button>
+        </div>
       </div>
 
+      {/* Exam details */}
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-3">
           <CardTitle className="text-base">{tr("รายละเอียดสอบ")}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-4">
           <div className="space-y-1.5">
             <Label>{tr("ชื่อข้อสอบ")}</Label>
             <Input value={title} onChange={(e) => setTitle(e.target.value)} />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label>{tr("ระยะเวลา (นาที)")}</Label>
               <Input
@@ -274,7 +293,19 @@ function EditExamPage() {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
+      {/* Questions header + AI */}
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div>
+          <h2 className="text-lg font-semibold font-display">
+            {tr("คำถาม")}{" "}
+            <span className="text-sm text-muted-foreground font-normal">
+              ({questions.length} {tr("ข้อ")})
+            </span>
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            {tr("รวมคะแนน")}: {questions.reduce((s, q) => s + (q.points || 0), 0)}
+          </p>
+        </div>
         <AiQuestionGenerator
           onGenerated={applyAi}
           hasExisting={questions.some((q) => q.question.trim().length > 0)}
@@ -282,15 +313,19 @@ function EditExamPage() {
         />
       </div>
 
-
-      <div className="space-y-2">
+      <div className="space-y-3">
         {questions.map((q, i) => (
-          <Card key={i}>
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base">
-                  {tr("ข้อ")} {i + 1}
-                </CardTitle>
+          <Card key={i} className="overflow-hidden">
+            <CardHeader className="pb-3 bg-muted/30 border-b">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center size-7 rounded-full bg-primary/10 text-primary text-sm font-semibold">
+                    {i + 1}
+                  </span>
+                  <CardTitle className="text-base">
+                    {tr("ข้อ")} {i + 1}
+                  </CardTitle>
+                </div>
                 <div className="flex items-center gap-2">
                   <Select
                     value={q.question_type}
@@ -298,7 +333,7 @@ function EditExamPage() {
                       updateQ(i, { question_type: v as DraftQuestion["question_type"] })
                     }
                   >
-                    <SelectTrigger className="w-40">
+                    <SelectTrigger className="w-44">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -308,41 +343,69 @@ function EditExamPage() {
                     </SelectContent>
                   </Select>
                   {questions.length > 1 && (
-                    <Button size="sm" variant="ghost" onClick={() => removeQ(i)}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => removeQ(i)}
+                      className="text-destructive hover:text-destructive"
+                    >
                       <Trash2 className="size-4" />
                     </Button>
                   )}
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <Textarea
-                value={q.question}
-                onChange={(e) => updateQ(i, { question: e.target.value })}
-                placeholder={tr("พิมพ์คำถาม...")}
-                rows={2}
-              />
+            <CardContent className="space-y-4 pt-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs">{tr("คำถาม")}</Label>
+                <Textarea
+                  value={q.question}
+                  onChange={(e) => updateQ(i, { question: e.target.value })}
+                  placeholder={tr("พิมพ์คำถาม...")}
+                  rows={2}
+                />
+              </div>
               {q.question_type === "multiple_choice" ? (
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label className="text-xs">{tr("ตัวเลือก (เลือกคำตอบที่ถูก)")}</Label>
-                  {q.options.map((opt, oi) => (
-                    <div key={oi} className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name={`correct-${i}`}
-                        checked={q.correct_idx === oi}
-                        onChange={() => updateQ(i, { correct_idx: oi })}
-                      />
-                      <span className="text-xs text-muted-foreground w-5">
-                        {["ก", "ข", "ค", "ง", "จ"][oi]}
-                      </span>
-                      <Input
-                        value={opt}
-                        onChange={(e) => updateOption(i, oi, e.target.value)}
-                        placeholder={tr(`ตัวเลือก ${oi + 1}`)}
-                      />
-                    </div>
-                  ))}
+                  <div className="space-y-2">
+                    {q.options.map((opt, oi) => {
+                      const isCorrect = q.correct_idx === oi;
+                      return (
+                        <label
+                          key={oi}
+                          className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition ${
+                            isCorrect
+                              ? "border-primary/60 bg-primary/5"
+                              : "border-border hover:bg-muted/40"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name={`correct-${i}`}
+                            checked={isCorrect}
+                            onChange={() => updateQ(i, { correct_idx: oi })}
+                            className="accent-primary"
+                          />
+                          <span
+                            className={`inline-flex items-center justify-center size-6 rounded-full text-xs font-semibold ${
+                              isCorrect
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {["ก", "ข", "ค", "ง", "จ"][oi]}
+                          </span>
+                          <Input
+                            value={opt}
+                            onChange={(e) => updateOption(i, oi, e.target.value)}
+                            placeholder={tr(`ตัวเลือก ${oi + 1}`)}
+                            className="flex-1 border-0 bg-transparent shadow-none px-1 focus-visible:ring-0"
+                          />
+                        </label>
+                      );
+                    })}
+                  </div>
                 </div>
               ) : q.question_type === "short_answer" ? (
                 <div className="space-y-1.5">
@@ -353,11 +416,13 @@ function EditExamPage() {
                   />
                 </div>
               ) : (
-                <p className="text-xs text-muted-foreground">
-                  {tr("นักเรียนจะพิมพ์คำตอบยาว ครูตรวจให้คะแนนเองหลังสอบเสร็จ")}
-                </p>
+                <div className="rounded-lg bg-muted/40 border border-dashed p-3">
+                  <p className="text-xs text-muted-foreground">
+                    {tr("นักเรียนจะพิมพ์คำตอบยาว ครูตรวจให้คะแนนเองหลังสอบเสร็จ")}
+                  </p>
+                </div>
               )}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 pt-2 border-t">
                 <Label className="text-xs">{tr("คะแนน")}:</Label>
                 <Input
                   type="number"
@@ -365,28 +430,31 @@ function EditExamPage() {
                   max={100}
                   value={q.points}
                   onChange={(e) => updateQ(i, { points: Number(e.target.value) })}
-                  className="w-20"
+                  className="w-24"
                 />
               </div>
             </CardContent>
           </Card>
         ))}
-        <Button variant="outline" onClick={addQ} className="w-full">
+        <Button variant="outline" onClick={addQ} className="w-full border-dashed">
           <Plus className="size-4 mr-1" /> {tr("เพิ่มข้อ")}
         </Button>
       </div>
 
-      <div className="flex justify-end gap-2">
-        <Button
-          variant="ghost"
-          onClick={() => nav({ to: "/exam/$examId", params: { examId } })}
-        >
-          {tr("ยกเลิก")}
-        </Button>
-        <Button onClick={save} disabled={saving}>
-          {saving && <Loader2 className="size-4 mr-1 animate-spin" />}
-          {tr("บันทึกการแก้ไข")}
-        </Button>
+      {/* Sticky footer actions */}
+      <div className="sticky bottom-0 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 bg-gradient-to-t from-background via-background to-background/80 backdrop-blur border-t">
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="ghost"
+            onClick={() => nav({ to: "/exam/$examId", params: { examId } })}
+          >
+            {tr("ยกเลิก")}
+          </Button>
+          <Button onClick={save} disabled={saving} size="lg">
+            {saving && <Loader2 className="size-4 mr-1 animate-spin" />}
+            {tr("บันทึกการแก้ไข")}
+          </Button>
+        </div>
       </div>
     </div>
   );
