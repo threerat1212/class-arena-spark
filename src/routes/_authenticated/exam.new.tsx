@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { tr } from "@/i18n";
 import { rpcCreateExam, rpcUpdateExamQuestions } from "@/lib/exam.functions";
+import { AiQuestionGenerator, type GeneratedQuestion } from "@/components/exam/ai-question-generator";
 
 export const Route = createFileRoute("/_authenticated/exam/new")({
   validateSearch: (s: Record<string, unknown>) => ({
