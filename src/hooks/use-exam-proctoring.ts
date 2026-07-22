@@ -38,6 +38,9 @@ export function useExamProctoring({
       if (now - last < 500) return;
       lastEventRef.current[eventType] = now;
 
+      // Optimistic UI bump so the student sees the count even if RPC is slow/failing
+      setViolationCount((c) => c + 1);
+
       try {
         const result = await rpcRecordViolation({ exam_id: examId, event_type: eventType });
         setViolationCount(result.violation_count);
@@ -60,6 +63,7 @@ export function useExamProctoring({
     },
     [examId, threshold],
   );
+
 
   useEffect(() => {
     if (!enabled) return;
