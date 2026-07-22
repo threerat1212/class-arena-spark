@@ -1,5 +1,6 @@
 // Generate exam questions from a topic/content — teacher/admin only.
-// Returns { questions: [{ question_type, question, options?, correct_idx?, expected_answer?, points }] }
+// AI writes questions + options only. Teacher fills in the correct answer.
+// Returns { questions: [{ question_type, question, options?, points }] }
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const cors = {
@@ -41,6 +42,7 @@ Deno.serve(async (req) => {
     const topic: string = typeof body.topic === "string" ? body.topic : "";
     const content: string = typeof body.content === "string" ? body.content : "";
     const count: number = Math.min(20, Math.max(1, Number(body.count) || 5));
+    const optionsCount: number = Math.min(6, Math.max(2, Number(body.options_count) || 4));
     const questionType: "multiple_choice" | "short_answer" | "mixed" =
       body.question_type === "short_answer" || body.question_type === "mixed"
         ? body.question_type
@@ -72,21 +74,21 @@ Deno.serve(async (req) => {
 
     const typeInstruction =
       questionType === "multiple_choice"
-        ? "ทุกข้อเป็นปรนัย (multiple_choice) มีตัวเลือก 4 ตัว และระบุ correct_idx (0-3)"
+        ? `ทุกข้อเป็นปรนัย (multiple_choice) มีตัวเลือก ${optionsCount} ตัว (ก, ข, ค, ง...)`
         : questionType === "short_answer"
-          ? "ทุกข้อเป็นเติมคำสั้น (short_answer) มี expected_answer เป็นคำตอบหรือคำสำคัญ"
-          : "ผสมกันระหว่าง multiple_choice และ short_answer ตามความเหมาะสม";
+          ? "ทุกข้อเป็นเติมคำสั้น (short_answer) ไม่ต้องมีตัวเลือก"
+          : `ผสม multiple_choice (มี ${optionsCount} ตัวเลือก) และ short_answer ตามความเหมาะสม`;
 
     const system = `คุณคือ AI ช่วยครูออกแบบข้อสอบภาษาไทยจากเนื้อหาที่กำหนด
 - ออกข้อสอบจำนวน ${count} ข้อ จากเนื้อหานี้เท่านั้น ห้ามออกนอกเรื่อง
 - ระดับความยากรวม: ${difficulty}
 - ${typeInstruction}
 - คำถามชัดเจน ไม่กำกวม เหมาะกับนักเรียน
-- ตัวเลือกในปรนัยต้องสมเหตุสมผล ไม่มีตัวเลือกตลกหรือชัดเจนเกินไป
-- expected_answer สำหรับ short_answer ให้เป็นคำตอบหลักหรือคำสำคัญที่นักเรียนต้องตอบ
+- ตัวเลือกในปรนัยต้องสมเหตุสมผลและใกล้เคียงกัน ไม่มีตัวเลือกตลกหรือชัดเจนเกินไป
+- **ห้ามเฉลยหรือระบุคำตอบที่ถูก** ครูจะเลือกคำตอบเอง
 - points ต่อข้อระหว่าง 1-5 ตามความยาก`;
 
-    const userPrompt = `หัวข้อ: ${topic || "-"}\n\nเนื้อหา:\n${content || "(ใช้เฉพาะหัวข้อ)"}\n\nออกข้อสอบ ${count} ข้อ`;
+    const userPrompt = `หัวข้อ: ${topic || "-"}\n\nเนื้อหา:\n${content || "(ใช้เฉพาะหัวข้อ)"}\n\nออกข้อสอบ ${count} ข้อ (ไม่ต้องเฉลย)`;
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -102,7 +104,7 @@ Deno.serve(async (req) => {
             type: "function",
             function: {
               name: "design_exam",
-              description: "Design exam questions from content",
+              description: "Design exam questions from content (no answer key)",
               parameters: {
                 type: "object",
                 properties: {
@@ -119,26 +121,12 @@ Deno.serve(async (req) => {
                         options: {
                           type: "array",
                           items: { type: "string" },
-                          description: "4 options for multiple_choice, empty for short_answer",
-                        },
-                        correct_idx: {
-                          type: "number",
-                          description: "0-3 for multiple_choice, ignored otherwise",
-                        },
-                        expected_answer: {
-                          type: "string",
-                          description: "correct answer or keyword for short_answer",
+                          description:
+                            "options for multiple_choice; empty array for short_answer",
                         },
                         points: { type: "number" },
                       },
-                      required: [
-                        "question_type",
-                        "question",
-                        "options",
-                        "correct_idx",
-                        "expected_answer",
-                        "points",
-                      ],
+                      required: ["question_type", "question", "options", "points"],
                       additionalProperties: false,
                     },
                   },
