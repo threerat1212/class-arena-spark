@@ -69,10 +69,9 @@ export function ScrollReveal({
     willChange: "opacity, transform",
   };
 
-  const Component = Tag as keyof JSX.IntrinsicElements;
+  const Component = Tag as React.ElementType;
   return (
-    // @ts-expect-error dynamic tag
-    <Component ref={ref} style={style} className={cn(className)}>
+    <Component ref={ref as React.Ref<HTMLElement>} style={style} className={cn(className)}>
       {children}
     </Component>
   );
