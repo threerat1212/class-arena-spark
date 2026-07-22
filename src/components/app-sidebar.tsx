@@ -128,6 +128,7 @@ const groups: Group[] = [
       { label: "เพิ่มนักเรียน", url: "/admin/students", icon: UserPlus, roles: ["admin"] },
       { label: "กิจกรรม XP ×", url: "/admin/multiplier-events", icon: Sparkles, roles: ["admin"] },
       { label: "XP Ledger", url: "/admin/xp-ledger", icon: Sparkles, roles: ["admin"] },
+      { label: "รางวัล & ร้านค้า", url: "/admin/rewards-catalog", icon: Store, roles: ["admin"] },
     ],
   },
 ];
