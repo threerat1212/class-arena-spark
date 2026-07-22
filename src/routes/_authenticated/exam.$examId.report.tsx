@@ -13,7 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, Download, ArrowLeft, Eye, Check, X } from "lucide-react";
+import { Loader2, Download, ArrowLeft, Eye, Check, X, ShieldAlert } from "lucide-react";
+import { ViolationsDialog } from "@/components/exam/violations-dialog";
 import { toast } from "sonner";
 import { tr } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
@@ -62,6 +63,7 @@ function ExamReportPage() {
   });
 
   const [detailUserId, setDetailUserId] = useState<string | null>(null);
+  const [violationsUserId, setViolationsUserId] = useState<string | null>(null);
 
 
 
@@ -192,7 +194,14 @@ function ExamReportPage() {
                   </TableCell>
                   <TableCell className="text-center">
                     {p.violation_count > 0 ? (
-                      <Badge variant="outline">⚠ {p.violation_count}</Badge>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 gap-1 text-amber-700 border-amber-300"
+                        onClick={() => setViolationsUserId(p.user_id)}
+                      >
+                        <ShieldAlert className="size-3.5" />⚠ {p.violation_count}
+                      </Button>
                     ) : (
                       "—"
                     )}
@@ -269,6 +278,12 @@ function ExamReportPage() {
         displayName={detailUserId ? (nameById.get(detailUserId) ?? detailUserId.slice(0, 8)) : ""}
         questions={questions ?? []}
         onClose={() => setDetailUserId(null)}
+      />
+      <ViolationsDialog
+        examId={examId}
+        userId={violationsUserId}
+        displayName={violationsUserId ? (nameById.get(violationsUserId) ?? violationsUserId.slice(0, 8)) : ""}
+        onOpenChange={(open) => !open && setViolationsUserId(null)}
       />
     </div>
   );

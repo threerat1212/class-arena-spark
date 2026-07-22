@@ -314,3 +314,27 @@ export async function rpcGradeShortAnswer(args: {
   });
   if (error) throw error;
 }
+
+// ===== Proctoring events (teacher review) =====
+
+export async function fetchProctoringEventsForUser(
+  examId: string,
+  userId: string,
+): Promise<ExamProctoringEventRow[]> {
+  const { data, error } = await supabase
+    .from("exam_proctoring_events")
+    .select("*")
+    .eq("session_id", examId)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createSnapshotSignedUrl(path: string): Promise<string | null> {
+  const { data, error } = await supabase.storage
+    .from("exam-violations")
+    .createSignedUrl(path, 60 * 30);
+  if (error) return null;
+  return data?.signedUrl ?? null;
+}
