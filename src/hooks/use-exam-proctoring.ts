@@ -1,8 +1,44 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { rpcRecordViolation } from "@/lib/exam.functions";
 import type { ViolationEventType } from "@/lib/exam.functions";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { tr } from "@/i18n";
+
+// Best-effort DOM snapshot; fire-and-forget so it never blocks the exam UI.
+async function captureAndUploadSnapshot(
+  examId: string,
+  userId: string,
+  eventType: string,
+): Promise<string | null> {
+  try {
+    const { default: html2canvas } = await import("html2canvas-pro");
+    const canvas = await html2canvas(document.body, {
+      logging: false,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      // downscale for smaller uploads
+      scale: Math.min(1, 1280 / Math.max(1, window.innerWidth)),
+      ignoreElements: (el) => el.tagName === "VIDEO" || el.tagName === "IFRAME",
+    });
+    const blob: Blob | null = await new Promise((resolve) =>
+      canvas.toBlob((b) => resolve(b), "image/jpeg", 0.6),
+    );
+    if (!blob) return null;
+    const path = `${examId}/${userId}/${Date.now()}_${eventType}.jpg`;
+    const { error } = await supabase.storage
+      .from("exam-violations")
+      .upload(path, blob, { contentType: "image/jpeg", upsert: false });
+    if (error) {
+      console.warn("snapshot upload failed", error);
+      return null;
+    }
+    return path;
+  } catch (e) {
+    console.warn("snapshot capture failed", e);
+    return null;
+  }
+}
 
 interface UseExamProctoringArgs {
   examId: string;
