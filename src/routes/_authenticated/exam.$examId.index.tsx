@@ -829,13 +829,28 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
   const qId = q.id;
 
   async function saveAnswer(questionId: string, value: AnswerDraft) {
-    setAnswers((a) => ({ ...a, [questionId]: value }));
+    setAnswers((a) => {
+      const next = { ...a, [questionId]: value };
+      // mirror to localStorage IMMEDIATELY so a refresh / crash never loses the answer
+      writeDraftBackup(exam.id, user?.id, next);
+      return next;
+    });
     try {
       await rpcSubmitExamAnswer({ question_id: questionId, ...value });
+      // server accepted — drop from retry queue if it was there
+      setPendingSaves((prev) => {
+        if (!(questionId in prev)) return prev;
+        const next = { ...prev };
+        delete next[questionId];
+        return next;
+      });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : tr("บันทึกคำตอบล้มเหลว"));
+      // network / RLS failure — queue for background retry, don't scare the user
+      setPendingSaves((prev) => ({ ...prev, [questionId]: value }));
+      console.warn("[exam] saveAnswer failed, queued for retry", e);
     }
   }
+
 
   async function submitAll() {
     if (submitting || submitted) return;
