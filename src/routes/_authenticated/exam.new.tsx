@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/exam/new")({
 
 type DraftQuestion = {
   idx: number;
-  question_type: "multiple_choice" | "short_answer";
+  question_type: "multiple_choice" | "short_answer" | "essay";
   question: string;
   options: string[];
   correct_idx: number;
