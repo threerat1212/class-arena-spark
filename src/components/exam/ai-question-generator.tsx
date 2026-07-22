@@ -63,9 +63,10 @@ export function AiQuestionGenerator({
   // difficulty mode: single vs mix
   const [diffMode, setDiffMode] = useState<"single" | "mix">("single");
   const [difficulty, setDifficulty] = useState("ปานกลาง");
-  const [easyCount, setEasyCount] = useState(2);
-  const [mediumCount, setMediumCount] = useState(3);
-  const [hardCount, setHardCount] = useState(1);
+  // mix mode: total + percentages (hard = 100 - easy - medium)
+  const [mixTotal, setMixTotal] = useState(6);
+  const [easyPct, setEasyPct] = useState(35);
+  const [mediumPct, setMediumPct] = useState(45);
   const [singleCount, setSingleCount] = useState(5);
   const [loading, setLoading] = useState(false);
 
