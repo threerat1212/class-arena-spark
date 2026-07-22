@@ -470,12 +470,35 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
     }
   }, [isFullscreenActive, requestFullscreen]);
 
+  // Per-student shuffle: question order + MC option order.
+  // Same student always sees the same order (refresh-safe); different students see different orders.
+  const shuffleSeed = user?.id ? `${exam.id}::${user.id}` : "";
+  const orderedQuestions = useMemo(() => {
+    if (!questions || !shuffleSeed) return questions ?? [];
+    return shuffleWithSeed(questions, seedHash(shuffleSeed));
+  }, [questions, shuffleSeed]);
+  const optionOrderMap = useMemo(() => {
+    const m: Record<string, number[]> = {};
+    if (!questions || !shuffleSeed) return m;
+    for (const qq of questions) {
+      if (!qq.id) continue;
+      const n = Array.isArray(qq.options) ? (qq.options as unknown[]).length : 0;
+      if (n <= 0) continue;
+      m[qq.id] = shuffleWithSeed(
+        Array.from({ length: n }, (_, i) => i),
+        seedHash(`${shuffleSeed}::${qq.id}`),
+      );
+    }
+    return m;
+  }, [questions, shuffleSeed]);
+
   if (!questions)
     return (
       <div className="grid place-items-center py-12">
         <Loader2 className="size-6 animate-spin" />
       </div>
     );
+
   if (endedReason) {
     return (
       <div className="container max-w-md py-12 text-center space-y-3">
