@@ -180,6 +180,7 @@ function ExamReportPage() {
                 <TableHead className="text-right">{tr("คะแนน")}</TableHead>
                 <TableHead className="text-center">{tr("โกง")}</TableHead>
                 <TableHead className="text-center">{tr("สถานะ")}</TableHead>
+                <TableHead className="text-right">{tr("รายละเอียด")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -205,8 +206,20 @@ function ExamReportPage() {
                       <Badge variant="outline">{tr("ยังไม่ส่ง")}</Badge>
                     )}
                   </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setDetailUserId(p.user_id)}
+                      disabled={!p.submitted_at}
+                    >
+                      <Eye className="size-4 mr-1" />
+                      {tr("ดูคำตอบ")}
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
+
             </TableBody>
           </Table>
         </CardContent>
