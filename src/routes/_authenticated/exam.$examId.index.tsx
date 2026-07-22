@@ -1176,3 +1176,136 @@ function CanvaStudentButton({
     </Button>
   );
 }
+
+// Anti-misclick submit: AlertDialog with countdown + typed confirmation when
+// too many questions are unanswered. Replaces browser confirm() which students
+// were dismissing without reading.
+function SubmitExamButton({
+  total,
+  answered,
+  unanswered,
+  highlight,
+  submitting,
+  submitted,
+  onConfirm,
+}: {
+  total: number;
+  answered: number;
+  unanswered: number;
+  highlight: boolean;
+  submitting: boolean;
+  submitted: boolean;
+  onConfirm: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [typed, setTyped] = useState("");
+
+  // Severity levels for how risky this submission is:
+  // - "safe": everything answered → simple confirm
+  // - "warn": some unanswered → 5s countdown
+  // - "danger": <50% answered → 8s countdown + must type the Thai word "ยืนยัน"
+  const ratio = total > 0 ? answered / total : 1;
+  const severity: "safe" | "warn" | "danger" =
+    unanswered === 0 ? "safe" : ratio < 0.5 ? "danger" : "warn";
+  const requiredWait = severity === "danger" ? 8 : severity === "warn" ? 5 : 0;
+  const requireType = severity === "danger";
+
+  useEffect(() => {
+    if (!open) return;
+    setCountdown(requiredWait);
+    setTyped("");
+    if (requiredWait === 0) return;
+    const id = window.setInterval(() => {
+      setCountdown((c) => (c > 0 ? c - 1 : 0));
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [open, requiredWait]);
+
+  const canConfirm =
+    countdown === 0 && (!requireType || typed.trim() === "ยืนยัน") && !submitting && !submitted;
+
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <Button
+          variant={highlight ? "default" : "outline"}
+          size="sm"
+          disabled={submitting || submitted}
+        >
+          {submitting || submitted ? (
+            <Loader2 className="size-4 mr-1 animate-spin" />
+          ) : (
+            <Send className="size-4 mr-1" />
+          )}
+          {submitted ? tr("ส่งแล้ว") : submitting ? tr("กำลังส่ง...") : tr("ส่งข้อสอบ")}{" "}
+          ({answered}/{total})
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            {severity === "safe"
+              ? tr("ยืนยันส่งข้อสอบ")
+              : tr("⚠ ยังทำไม่ครบ — ยืนยันส่งข้อสอบ?")}
+          </AlertDialogTitle>
+          <AlertDialogDescription asChild>
+            <div className="space-y-2">
+              <div>
+                {tr("ทำแล้ว ")}
+                <b>{answered}</b>
+                {tr(" จาก ")}
+                <b>{total}</b>
+                {tr(" ข้อ")}
+                {unanswered > 0 && (
+                  <>
+                    {tr(" — ยังไม่ได้ทำอีก ")}
+                    <b className="text-destructive">{unanswered}</b>
+                    {tr(" ข้อ")}
+                  </>
+                )}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {tr("ส่งแล้วไม่สามารถแก้ไขได้ ตรวจสอบให้แน่ใจก่อนกดยืนยัน")}
+              </div>
+              {requireType && (
+                <div className="pt-2">
+                  <div className="text-sm mb-1">
+                    {tr("พิมพ์คำว่า ")}
+                    <b>ยืนยัน</b>
+                    {tr(" เพื่อยืนยันการส่ง")}
+                  </div>
+                  <Input
+                    value={typed}
+                    onChange={(e) => setTyped(e.target.value)}
+                    placeholder="ยืนยัน"
+                    autoFocus
+                  />
+                </div>
+              )}
+            </div>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{tr("ยกเลิก — กลับไปทำต่อ")}</AlertDialogCancel>
+          <AlertDialogAction
+            disabled={!canConfirm}
+            onClick={(e) => {
+              if (!canConfirm) {
+                e.preventDefault();
+                return;
+              }
+              onConfirm();
+            }}
+            className={severity === "danger" ? "bg-destructive hover:bg-destructive/90" : ""}
+          >
+            {countdown > 0
+              ? tr("รอ ") + `${countdown}` + tr(" วินาที...")
+              : tr("ยืนยันส่งข้อสอบ")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
