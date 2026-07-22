@@ -706,7 +706,7 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
 
   if (endedReason) {
     return (
-      <div className="container max-w-md py-12 text-center space-y-3">
+      <div className="mx-auto w-full max-w-md px-4 sm:px-6 lg:px-8 py-12 text-center space-y-3">
         <AlertTriangle className="size-12 mx-auto text-amber-500" />
         <h2 className="text-xl font-semibold">{tr("ส่งข้อสอบอัตโนมัติ")}</h2>
         <p className="text-muted-foreground">
