@@ -22,6 +22,7 @@ import {
   fetchExamQuestionsRaw,
   rpcUpdateExamQuestions,
 } from "@/lib/exam.functions";
+import { AiQuestionGenerator, type GeneratedQuestion } from "@/components/exam/ai-question-generator";
 
 export const Route = createFileRoute("/_authenticated/exam/$examId/edit")({
   component: EditExamPage,
