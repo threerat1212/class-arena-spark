@@ -43,8 +43,10 @@ Deno.serve(async (req) => {
     const content: string = typeof body.content === "string" ? body.content : "";
     const count: number = Math.min(20, Math.max(1, Number(body.count) || 5));
     const optionsCount: number = Math.min(6, Math.max(2, Number(body.options_count) || 4));
-    const questionType: "multiple_choice" | "short_answer" | "mixed" =
-      body.question_type === "short_answer" || body.question_type === "mixed"
+    const questionType: "multiple_choice" | "short_answer" | "essay" | "mixed" =
+      body.question_type === "short_answer" ||
+      body.question_type === "essay" ||
+      body.question_type === "mixed"
         ? body.question_type
         : "multiple_choice";
     const difficulty: string =
@@ -77,7 +79,9 @@ Deno.serve(async (req) => {
         ? `ทุกข้อเป็นปรนัย (multiple_choice) มีตัวเลือก ${optionsCount} ตัว (ก, ข, ค, ง...)`
         : questionType === "short_answer"
           ? "ทุกข้อเป็นเติมคำสั้น (short_answer) ไม่ต้องมีตัวเลือก"
-          : `ผสม multiple_choice (มี ${optionsCount} ตัวเลือก) และ short_answer ตามความเหมาะสม`;
+          : questionType === "essay"
+            ? "ทุกข้อเป็นข้อเขียนตอบยาว (essay) ให้นักเรียนอธิบาย/วิเคราะห์ ไม่ต้องมีตัวเลือก"
+            : `ผสม multiple_choice (มี ${optionsCount} ตัวเลือก), short_answer และ essay ตามความเหมาะสม`;
 
     const system = `คุณคือ AI ช่วยครูออกแบบข้อสอบภาษาไทยจากเนื้อหาที่กำหนด
 - ออกข้อสอบจำนวน ${count} ข้อ จากเนื้อหานี้เท่านั้น ห้ามออกนอกเรื่อง
@@ -115,7 +119,7 @@ Deno.serve(async (req) => {
                       properties: {
                         question_type: {
                           type: "string",
-                          enum: ["multiple_choice", "short_answer"],
+                          enum: ["multiple_choice", "short_answer", "essay"],
                         },
                         question: { type: "string" },
                         options: {
