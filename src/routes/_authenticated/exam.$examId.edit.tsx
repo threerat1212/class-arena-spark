@@ -229,7 +229,7 @@ function EditExamPage() {
   }
 
   return (
-    <div className="container max-w-4xl py-6 pb-32 space-y-6">
+    <div className="container mx-auto max-w-4xl px-4 sm:px-6 py-6 pb-32 space-y-6">
       {/* Hero header */}
       <div className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-primary/10 via-background to-accent/20 p-6">
         <div className="flex items-start justify-between gap-4">
