@@ -882,17 +882,15 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
             })()}
               </div>
             ) : (
-              <Textarea
-                value={answers[qId]?.answer_text ?? ""}
-                onChange={(e) => saveAnswer(qId, { answer_text: e.target.value })}
-                placeholder={tr("พิมพ์คำตอบ...")}
-                rows={8}
-              />
-            )}
-          </CardContent>
-        </Card>
-
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between gap-2 pt-2">
+          <Button
+            variant="outline"
+            size="lg"
+            disabled={currentIdx === 0}
+            onClick={() => setCurrentIdx((i) => i - 1)}
+          >
+            ◀ {tr("ก่อนหน้า")}
+          </Button>
           {(() => {
             const answeredCount = questions.filter((qq) => {
               if (!qq.id) return false;
@@ -904,12 +902,30 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
             const total = questions.length;
             const unanswered = total - answeredCount;
             const isLast = currentIdx === total - 1;
+            if (!isLast) {
+              return (
+                <Button
+                  size="lg"
+                  className="min-w-[180px] bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all"
+                  onClick={() => setCurrentIdx((i) => Math.min(total - 1, i + 1))}
+                >
+                  {tr("ข้อถัดไป")} ▶
+                </Button>
+              );
+            }
             return (
               <SubmitExamButton
                 total={total}
                 answered={answeredCount}
                 unanswered={unanswered}
-                highlight={isLast && unanswered === 0}
+                highlight={unanswered === 0}
+                submitting={submitting}
+                submitted={submitted}
+                onConfirm={submitAll}
+              />
+            );
+          })()}
+        </div>
                 submitting={submitting}
                 submitted={submitted}
                 onConfirm={submitAll}
