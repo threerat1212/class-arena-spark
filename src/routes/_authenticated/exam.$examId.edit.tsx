@@ -302,6 +302,7 @@ function EditExamPage() {
                     <SelectContent>
                       <SelectItem value="multiple_choice">{tr("ปรนัย (ก/ข/ค/ง)")}</SelectItem>
                       <SelectItem value="short_answer">{tr("เติมคำสั้น")}</SelectItem>
+                      <SelectItem value="essay">{tr("ข้อเขียน (ยาว)")}</SelectItem>
                     </SelectContent>
                   </Select>
                   {questions.length > 1 && (
@@ -341,7 +342,7 @@ function EditExamPage() {
                     </div>
                   ))}
                 </div>
-              ) : (
+              ) : q.question_type === "short_answer" ? (
                 <div className="space-y-1.5">
                   <Label className="text-xs">{tr("คำตอบที่ถูก (หรือคำสำคัญ)")}</Label>
                   <Input
@@ -349,6 +350,10 @@ function EditExamPage() {
                     onChange={(e) => updateQ(i, { expected_answer: e.target.value })}
                   />
                 </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  {tr("นักเรียนจะพิมพ์คำตอบยาว ครูตรวจให้คะแนนเองหลังสอบเสร็จ")}
+                </p>
               )}
               <div className="flex items-center gap-2">
                 <Label className="text-xs">{tr("คะแนน")}:</Label>
