@@ -109,10 +109,13 @@ Deno.serve(async (req) => {
 - ${typeInstruction}
 - คำถามชัดเจน ไม่กำกวม เหมาะกับนักเรียน
 - ตัวเลือกในปรนัยต้องสมเหตุสมผลและใกล้เคียงกัน ไม่มีตัวเลือกตลกหรือชัดเจนเกินไป
-- **ห้ามเฉลยหรือระบุคำตอบที่ถูก** ครูจะเลือกคำตอบเอง
+- **ต้องเฉลยคำตอบที่ถูกด้วย**:
+  • ปรนัย (multiple_choice): ระบุ correct_idx เป็น index (0-based) ของตัวเลือกที่ถูกต้อง
+  • เติมคำสั้น (short_answer): ระบุ expected_answer เป็นคำตอบที่ถูก (หรือคำสำคัญ)
+  • ข้อเขียน (essay): ปล่อย expected_answer เป็น "" (ครูตรวจเอง)
 - points ต่อข้อระหว่าง 1-5 ตามความยาก`;
 
-    const userPrompt = `หัวข้อ: ${topic || "-"}\n\nเนื้อหา:\n${content || "(ใช้เฉพาะหัวข้อ)"}\n\nออกข้อสอบ ${count} ข้อ (ไม่ต้องเฉลย)`;
+    const userPrompt = `หัวข้อ: ${topic || "-"}\n\nเนื้อหา:\n${content || "(ใช้เฉพาะหัวข้อ)"}\n\nออกข้อสอบ ${count} ข้อ พร้อมเฉลย`;
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -128,7 +131,7 @@ Deno.serve(async (req) => {
             type: "function",
             function: {
               name: "design_exam",
-              description: "Design exam questions from content (no answer key)",
+              description: "Design exam questions from content with answer key",
               parameters: {
                 type: "object",
                 properties: {
@@ -146,11 +149,28 @@ Deno.serve(async (req) => {
                           type: "array",
                           items: { type: "string" },
                           description:
-                            "options for multiple_choice; empty array for short_answer",
+                            "options for multiple_choice; empty array for short_answer/essay",
+                        },
+                        correct_idx: {
+                          type: "number",
+                          description:
+                            "0-based index of correct option for multiple_choice; 0 for other types",
+                        },
+                        expected_answer: {
+                          type: "string",
+                          description:
+                            "correct answer/keyword for short_answer; empty string for others",
                         },
                         points: { type: "number" },
                       },
-                      required: ["question_type", "question", "options", "points"],
+                      required: [
+                        "question_type",
+                        "question",
+                        "options",
+                        "correct_idx",
+                        "expected_answer",
+                        "points",
+                      ],
                       additionalProperties: false,
                     },
                   },
