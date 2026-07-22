@@ -146,6 +146,9 @@ export async function rpcDeleteExam(examId: string): Promise<void> {
     ) => Promise<{ error: unknown }>
   )("delete_exam", { _exam_id: examId });
   if (error) throw error;
+}
+
+
 
 
 export async function rpcJoinExamByCode(code: string): Promise<{ exam_id: string; title: string }> {
