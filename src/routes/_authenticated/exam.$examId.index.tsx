@@ -835,7 +835,7 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
         </div>
       </div>
 
-      <div className="flex-1 container max-w-2xl py-6 space-y-4">
+      <div className="flex-1 mx-auto w-full max-w-2xl px-4 sm:px-6 lg:px-8 py-6 space-y-4">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">
             {tr("ข้อ")} {currentIdx + 1}/{questions.length}
