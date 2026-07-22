@@ -193,7 +193,7 @@ function ShopTab() {
             <Label>{tr("ประเภท")}</Label>
             <select
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              value={form.kind}
+              value={form.kind || ""}
               onChange={(e) => {
                 setForm((f) => ({ ...f, kind: e.target.value }));
                 setRewardCode("");
