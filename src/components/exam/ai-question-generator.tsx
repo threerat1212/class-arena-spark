@@ -151,6 +151,8 @@ export function AiQuestionGenerator({
         question_type?: string;
         question?: string;
         options?: unknown;
+        correct_idx?: number;
+        expected_answer?: string;
         points?: number;
       }>;
       if (questions.length === 0) {
@@ -168,12 +170,18 @@ export function AiQuestionGenerator({
         const opts = Array.isArray(q.options) ? q.options.map((o) => String(o ?? "")) : [];
         const targetLen = isMC ? optionsCount : 4;
         while (opts.length < targetLen) opts.push("");
+        const rawIdx = Number(q.correct_idx);
+        const correctIdx =
+          isMC && Number.isFinite(rawIdx) && rawIdx >= 0 && rawIdx < targetLen
+            ? Math.floor(rawIdx)
+            : 0;
         return {
           question_type: qt,
           question: String(q.question ?? "").trim(),
           options: opts.slice(0, targetLen),
-          correct_idx: 0,
-          expected_answer: "",
+          correct_idx: correctIdx,
+          expected_answer:
+            qt === "short_answer" ? String(q.expected_answer ?? "").trim() : "",
           points: Math.max(1, Math.min(100, Number(q.points) || 1)),
         };
       });
