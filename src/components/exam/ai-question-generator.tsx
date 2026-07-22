@@ -47,6 +47,7 @@ export function AiQuestionGenerator({
   const [topic, setTopic] = useState("");
   const [content, setContent] = useState("");
   const [count, setCount] = useState(5);
+  const [optionsCount, setOptionsCount] = useState(4);
   const [qType, setQType] = useState<"multiple_choice" | "short_answer" | "mixed">(
     "multiple_choice",
   );
@@ -65,26 +66,34 @@ export function AiQuestionGenerator({
           topic: topic.trim(),
           content: content.trim(),
           count,
+          options_count: optionsCount,
           question_type: qType,
           difficulty,
         },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      const questions = (data?.questions ?? []) as GeneratedQuestion[];
+      const questions = (data?.questions ?? []) as Array<{
+        question_type?: string;
+        question?: string;
+        options?: unknown;
+        points?: number;
+      }>;
       if (questions.length === 0) {
         toast.error(tr("AI สร้างข้อสอบไม่ได้ ลองใหม่"));
         return;
       }
       const normalized: GeneratedQuestion[] = questions.map((q) => {
+        const isMC = q.question_type !== "short_answer";
         const opts = Array.isArray(q.options) ? q.options.map((o) => String(o ?? "")) : [];
-        while (opts.length < 4) opts.push("");
+        const targetLen = isMC ? optionsCount : 4;
+        while (opts.length < targetLen) opts.push("");
         return {
-          question_type: q.question_type === "short_answer" ? "short_answer" : "multiple_choice",
+          question_type: isMC ? "multiple_choice" : "short_answer",
           question: String(q.question ?? "").trim(),
-          options: opts.slice(0, 4),
-          correct_idx: Math.max(0, Math.min(3, Number(q.correct_idx) || 0)),
-          expected_answer: String(q.expected_answer ?? "").trim(),
+          options: opts.slice(0, targetLen),
+          correct_idx: 0,
+          expected_answer: "",
           points: Math.max(1, Math.min(100, Number(q.points) || 1)),
         };
       });
@@ -113,7 +122,7 @@ export function AiQuestionGenerator({
         <DialogHeader>
           <DialogTitle>{tr("AI ออกแบบข้อสอบ")}</DialogTitle>
           <DialogDescription>
-            {tr("วางเนื้อหา แล้ว AI จะออกคำถามพร้อมเฉลยให้")}
+            {tr("วางเนื้อหา แล้ว AI จะออกคำถาม+ตัวเลือกให้ (ครูเลือกเฉลยเอง)")}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
@@ -137,7 +146,7 @@ export function AiQuestionGenerator({
               {content.length}/15000 {tr("ตัวอักษร")}
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1.5">
               <Label className="text-xs">{tr("จำนวนข้อ")}</Label>
               <Input
@@ -147,6 +156,24 @@ export function AiQuestionGenerator({
                 value={count}
                 onChange={(e) => setCount(Number(e.target.value))}
               />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">{tr("จำนวนตัวเลือก")}</Label>
+              <Select
+                value={String(optionsCount)}
+                onValueChange={(v) => setOptionsCount(Number(v))}
+                disabled={qType === "short_answer"}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2">2 (ก, ข)</SelectItem>
+                  <SelectItem value="3">3 (ก, ข, ค)</SelectItem>
+                  <SelectItem value="4">4 (ก, ข, ค, ง)</SelectItem>
+                  <SelectItem value="5">5 (ก, ข, ค, ง, จ)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">{tr("ประเภท")}</Label>
@@ -175,6 +202,9 @@ export function AiQuestionGenerator({
               </Select>
             </div>
           </div>
+          <p className="text-xs text-muted-foreground">
+            {tr("AI จะไม่เฉลยให้ — ครูเลือกคำตอบที่ถูกเองในแต่ละข้อ")}
+          </p>
         </div>
         <DialogFooter className="gap-2 sm:gap-2">
           {hasExisting && (
