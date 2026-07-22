@@ -427,15 +427,15 @@ function LevelUnlocksTab() {
           </div>
           <div className="space-y-1">
             <Label>{tr("จำนวน")}</Label>
-            <Input type="number" min={1} value={form.reward_amount} onChange={(e) => setForm((f) => ({ ...f, reward_amount: Math.max(1, parseInt(e.target.value) || 1) }))} />
+            <Input type="number" min={1} value={form.reward_amount ?? 1} onChange={(e) => setForm((f) => ({ ...f, reward_amount: Math.max(1, parseInt(e.target.value) || 1) }))} />
           </div>
           <div className="space-y-1">
             <Label>{tr("ชื่อที่แสดง")}</Label>
-            <Input value={form.label} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} />
+            <Input value={form.label ?? ""} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} />
           </div>
           <div className="space-y-1">
             <Label>{tr("คำอธิบาย")}</Label>
-            <Textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
+            <Textarea value={form.description ?? ""} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
           </div>
           <Button onClick={() => createMutation.mutate()} disabled={createMutation.isPending} className="w-full gap-1">
             <Save className="size-4" /> {tr("บันทึก")}
