@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { tr } from "@/i18n";
 import { rpcCreateExam, rpcUpdateExamQuestions } from "@/lib/exam.functions";
+import { AiQuestionGenerator, type GeneratedQuestion } from "@/components/exam/ai-question-generator";
 
 export const Route = createFileRoute("/_authenticated/exam/new")({
   validateSearch: (s: Record<string, unknown>) => ({
@@ -77,6 +78,13 @@ function NewExamPage() {
   }
   function removeQ(i: number) {
     setQuestions((qs) => qs.filter((_, idx) => idx !== i).map((q, idx) => ({ ...q, idx })));
+  }
+  function applyAi(generated: GeneratedQuestion[], mode: "replace" | "append") {
+    setQuestions((qs) => {
+      const base = mode === "replace" ? [] : qs.filter((q) => q.question.trim());
+      const merged = [...base, ...generated.map((g) => ({ ...g, idx: 0 }))];
+      return merged.map((q, idx) => ({ ...q, idx }));
+    });
   }
 
   async function save() {
@@ -175,6 +183,13 @@ function NewExamPage() {
           </div>
         </CardContent>
       </Card>
+
+      <div className="flex justify-end">
+        <AiQuestionGenerator
+          onGenerated={applyAi}
+          hasExisting={questions.some((q) => q.question.trim().length > 0)}
+        />
+      </div>
 
       <div className="space-y-2">
         {questions.map((q, i) => (
