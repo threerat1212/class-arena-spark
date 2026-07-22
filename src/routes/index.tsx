@@ -121,7 +121,7 @@ function Landing() {
           <ProductPreview />
         </section>
 
-        <section className="border-y border-border/70 bg-secondary/55">
+        <ScrollReveal as="section" direction="up" className="border-y border-border/70 bg-secondary/55">
           <div className="mx-auto grid max-w-6xl gap-0 px-5 py-8 sm:px-6 md:grid-cols-4">
             <ProofPoint
               icon={<Calendar className="size-5" />}
@@ -144,9 +144,9 @@ function Landing() {
               value={tr("อนุมัติและดูแลระบบ")}
             />
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section className="mx-auto max-w-6xl px-5 py-12 sm:px-6 lg:py-16">
+        <ScrollReveal as="section" direction="up" className="mx-auto max-w-6xl px-5 py-12 sm:px-6 lg:py-16">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
               <h2 className="text-3xl font-semibold leading-tight text-balance">
@@ -181,7 +181,7 @@ function Landing() {
               />
             </div>
           </div>
-        </section>
+        </ScrollReveal>
 
         <TestimonialsMarquee />
       </main>
