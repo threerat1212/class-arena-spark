@@ -11,9 +11,16 @@ interface UseExamProctoringArgs {
   onAutoSubmit: (reason: string) => void;
 }
 
+export interface ViolationLogEntry {
+  type: ViolationEventType;
+  reason: string;
+  at: number;
+}
+
 interface UseExamProctoringReturn {
   violationCount: number;
   isFullscreenActive: boolean;
+  violationLog: ViolationLogEntry[];
   requestFullscreen: () => Promise<void>;
   exitFullscreen: () => Promise<void>;
 }
