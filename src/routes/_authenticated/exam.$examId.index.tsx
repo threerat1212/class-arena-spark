@@ -720,7 +720,7 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
 
   if (endedReason) {
     return (
-      <div className="mx-auto w-full max-w-md px-4 sm:px-6 lg:px-8 py-12 text-center space-y-3">
+      <div className="mx-auto w-full max-w-lg px-4 sm:px-6 lg:px-8 py-12 text-center space-y-4">
         <AlertTriangle className="size-12 mx-auto text-amber-500" />
         <h2 className="text-xl font-semibold">{tr("ส่งข้อสอบอัตโนมัติ")}</h2>
         <p className="text-muted-foreground">
@@ -728,6 +728,23 @@ function ExamScreen({ exam, threshold }: { exam: ExamSessionRow; threshold: numb
             ? tr("ออกจากหน้าสอบครบ ") + `${threshold} ` + tr("ครั้ง")
             : tr("หมดเวลาแล้ว")}
         </p>
+        {endedReason === "violation_threshold" && violationLog.length > 0 && (
+          <Card className="text-left">
+            <CardContent className="pt-4 space-y-2">
+              <div className="text-sm font-semibold">{tr("รายละเอียดการนับโกง")}</div>
+              <ol className="text-xs space-y-1 list-decimal list-inside text-muted-foreground max-h-56 overflow-auto">
+                {violationLog.map((v, i) => (
+                  <li key={i}>
+                    <span className="font-mono text-[10px] mr-1">
+                      {new Date(v.at).toLocaleTimeString()}
+                    </span>
+                    {v.reason}
+                  </li>
+                ))}
+              </ol>
+            </CardContent>
+          </Card>
+        )}
         <Button onClick={() => nav({ to: "/exam/$examId", params: { examId: exam.id } })}>
           {tr("ดูผล")}
         </Button>
