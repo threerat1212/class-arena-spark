@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { Sparkles, Loader2, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { tr } from "@/i18n";
@@ -62,9 +63,10 @@ export function AiQuestionGenerator({
   // difficulty mode: single vs mix
   const [diffMode, setDiffMode] = useState<"single" | "mix">("single");
   const [difficulty, setDifficulty] = useState("ปานกลาง");
-  const [easyCount, setEasyCount] = useState(2);
-  const [mediumCount, setMediumCount] = useState(3);
-  const [hardCount, setHardCount] = useState(1);
+  // mix mode: total + percentages (hard = 100 - easy - medium)
+  const [mixTotal, setMixTotal] = useState(6);
+  const [easyPct, setEasyPct] = useState(35);
+  const [mediumPct, setMediumPct] = useState(45);
   const [singleCount, setSingleCount] = useState(5);
   const [loading, setLoading] = useState(false);
 
@@ -86,9 +88,20 @@ export function AiQuestionGenerator({
     },
   });
 
+  // Clamp so easy + medium <= 100
+  const clampedMediumPct = Math.min(mediumPct, Math.max(0, 100 - easyPct));
+  const hardPct = Math.max(0, 100 - easyPct - clampedMediumPct);
+
+  const { easyCount, mediumCount, hardCount } = useMemo(() => {
+    const e = Math.round((mixTotal * easyPct) / 100);
+    const m = Math.round((mixTotal * clampedMediumPct) / 100);
+    const h = Math.max(0, mixTotal - e - m);
+    return { easyCount: e, mediumCount: m, hardCount: h };
+  }, [mixTotal, easyPct, clampedMediumPct]);
+
   const totalCount = useMemo(
-    () => (diffMode === "mix" ? easyCount + mediumCount + hardCount : singleCount),
-    [diffMode, easyCount, mediumCount, hardCount, singleCount],
+    () => (diffMode === "mix" ? mixTotal : singleCount),
+    [diffMode, mixTotal, singleCount],
   );
 
   function insertSelectedLessons(mode: "append" | "replace") {
@@ -335,40 +348,88 @@ export function AiQuestionGenerator({
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-2">
-              <div className="space-y-1.5">
-                <Label className="text-xs">{tr("ง่าย")}</Label>
+            <div className="space-y-3 rounded-md border p-3 bg-muted/20">
+              <div className="flex items-center justify-between gap-3">
+                <Label className="text-xs">{tr("จำนวนข้อรวม")}</Label>
                 <Input
                   type="number"
-                  min={0}
+                  min={1}
                   max={30}
-                  value={easyCount}
-                  onChange={(e) => setEasyCount(Math.max(0, Number(e.target.value)))}
+                  value={mixTotal}
+                  onChange={(e) =>
+                    setMixTotal(Math.max(1, Math.min(30, Number(e.target.value) || 1)))
+                  }
+                  className="w-24"
                 />
               </div>
+
               <div className="space-y-1.5">
-                <Label className="text-xs">{tr("ปานกลาง")}</Label>
-                <Input
-                  type="number"
-                  min={0}
-                  max={30}
-                  value={mediumCount}
-                  onChange={(e) => setMediumCount(Math.max(0, Number(e.target.value)))}
+                <div className="flex justify-between text-xs">
+                  <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                    {tr("ง่าย")} {easyPct}%
+                  </span>
+                  <span className="text-muted-foreground">{easyCount} {tr("ข้อ")}</span>
+                </div>
+                <Slider
+                  value={[easyPct]}
+                  onValueChange={([v]) => {
+                    const nv = Math.min(100, Math.max(0, v));
+                    setEasyPct(nv);
+                    if (nv + mediumPct > 100) setMediumPct(100 - nv);
+                  }}
+                  max={100}
+                  step={5}
                 />
               </div>
+
               <div className="space-y-1.5">
-                <Label className="text-xs">{tr("ยาก")}</Label>
-                <Input
-                  type="number"
-                  min={0}
-                  max={30}
-                  value={hardCount}
-                  onChange={(e) => setHardCount(Math.max(0, Number(e.target.value)))}
+                <div className="flex justify-between text-xs">
+                  <span className="text-amber-600 dark:text-amber-400 font-medium">
+                    {tr("ปานกลาง")} {clampedMediumPct}%
+                  </span>
+                  <span className="text-muted-foreground">{mediumCount} {tr("ข้อ")}</span>
+                </div>
+                <Slider
+                  value={[clampedMediumPct]}
+                  onValueChange={([v]) => {
+                    const max = Math.max(0, 100 - easyPct);
+                    setMediumPct(Math.min(max, Math.max(0, v)));
+                  }}
+                  max={100}
+                  step={5}
                 />
               </div>
-              <p className="col-span-3 text-xs text-muted-foreground">
-                {tr("รวมทั้งหมด")}: <b>{totalCount}</b> {tr("ข้อ")}
-              </p>
+
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs">
+                  <span className="text-rose-600 dark:text-rose-400 font-medium">
+                    {tr("ยาก")} {hardPct}%
+                  </span>
+                  <span className="text-muted-foreground">{hardCount} {tr("ข้อ")}</span>
+                </div>
+                <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full bg-rose-500/70 transition-all"
+                    style={{ width: `${hardPct}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-muted-foreground">
+                  {tr("ยาก คำนวณอัตโนมัติจากส่วนที่เหลือ")}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between rounded bg-background px-3 py-2 text-xs border">
+                <span className="text-muted-foreground">{tr("สรุป")}</span>
+                <span className="font-medium">
+                  <span className="text-emerald-600 dark:text-emerald-400">{easyCount}</span>
+                  {" / "}
+                  <span className="text-amber-600 dark:text-amber-400">{mediumCount}</span>
+                  {" / "}
+                  <span className="text-rose-600 dark:text-rose-400">{hardCount}</span>
+                  {" = "}
+                  <b>{totalCount}</b> {tr("ข้อ")}
+                </span>
+              </div>
             </div>
           )}
 
