@@ -135,7 +135,9 @@ function Podium({ players, highlightId }: { players: EnrichedProfile[]; highligh
             </div>
             <div className="text-center min-w-0 w-full">
               <p className="text-xs font-semibold truncate px-1">
-                {p.display_name ?? tr("ผู้ใช้")}
+                <ColoredName code={p.active_name_color}>
+                  {p.display_name ?? tr("ผู้ใช้")}
+                </ColoredName>
               </p>
               {p.title_name && (
                 <p className="text-[10px] text-muted-foreground truncate px-1">👑 {p.title_name}</p>
