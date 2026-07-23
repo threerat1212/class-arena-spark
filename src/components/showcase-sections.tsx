@@ -354,7 +354,7 @@ function ClassroomTop({
       const { data: profs } = await supabase
         .from("profiles")
         .select(
-          "id, display_name, avatar_url, level, xp, gold, streak_days, active_title_id",
+          "id, display_name, avatar_url, level, xp, gold, streak_days, active_title_id, active_frame_code, active_name_color",
         )
         .in("id", uids);
       const profileMap = new Map(((profs ?? []) as ProfileRow[]).map((p) => [p.id, p]));
@@ -466,7 +466,7 @@ export function GradeLeaderboard({ userId }: { userId: string }) {
       const { data } = await supabase
         .from("profiles")
         .select(
-          "id, display_name, avatar_url, level, xp, gold, streak_days, active_title_id",
+          "id, display_name, avatar_url, level, xp, gold, streak_days, active_title_id, active_frame_code, active_name_color",
         )
         .in("id", userIds);
       const rows = ((data ?? []) as ProfileRow[])
