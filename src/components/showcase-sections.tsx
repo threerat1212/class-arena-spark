@@ -32,8 +32,9 @@ type ProfileRow = {
   xp: number;
   gold: number;
   streak_days: number;
-  
   active_title_id: string | null;
+  active_frame_code: string | null;
+  active_name_color: string | null;
 };
 
 type EnrichedProfile = ProfileRow & {
