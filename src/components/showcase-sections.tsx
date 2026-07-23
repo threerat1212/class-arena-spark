@@ -197,13 +197,20 @@ function MiniRow({
       <span className="font-display text-sm font-bold text-muted-foreground w-6 text-center">
         #{rank}
       </span>
-      <Avatar className="size-8">
+      <Avatar
+        className={cn(
+          "size-8",
+          p.active_frame_code && cn("ring-2 ring-offset-1 ring-offset-background", frameRingClass(p.active_frame_code)),
+        )}
+      >
         <AvatarImage src={p.avatar_url ?? undefined} />
         <AvatarFallback className="text-xs">{p.display_name?.[0] ?? "?"}</AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="text-sm font-medium truncate">{p.display_name ?? tr("ผู้ใช้")}</span>
+          <span className="text-sm font-medium truncate">
+            <ColoredName code={p.active_name_color}>{p.display_name ?? tr("ผู้ใช้")}</ColoredName>
+          </span>
           {isMe && <Badge className="text-[9px] py-0 px-1.5 h-4">{tr("คุณ")}</Badge>}
         </div>
         {p.title_name && (
