@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Zap, Coins, Flame, Trophy, Sparkles, Pencil } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
+import { bannerStyle, frameRingClass, nameColorStyle } from "@/lib/cosmetics";
+import { cn } from "@/lib/utils";
 
 import { tr } from "@/i18n";
 export const Route = createFileRoute("/_authenticated/profile")({ component: ProfilePage });
