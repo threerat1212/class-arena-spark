@@ -102,11 +102,21 @@ export function useExamProctoring({
       lastEventRef.current[eventType] = now;
 
       // Optimistic UI bump so the student sees the count even if RPC is slow/failing
-      setViolationCount((c) => c + 1);
+      let optimisticCount = 0;
+      setViolationCount((c) => {
+        optimisticCount = c + 1;
+        return optimisticCount;
+      });
       setViolationLog((log) => [
         ...log,
         { type: eventType, reason: reasonForEvent(eventType), at: now },
       ]);
+
+      // Client-side safety net: hit threshold → auto-submit immediately, even if
+      // the server RPC is slow, blocked, or errors out.
+      if (optimisticCount >= threshold) {
+        onAutoSubmitRef.current("violation_threshold");
+      }
 
       // Fire-and-forget snapshot; attach path to the RPC payload when it lands in time.
       let snapshotPath: string | null = null;
@@ -142,7 +152,7 @@ export function useExamProctoring({
               tr(" ครั้งจะส่งอัตโนมัติ"),
           );
         }
-        if (result.auto_submitted) {
+        if (result.auto_submitted || result.violation_count >= threshold) {
           onAutoSubmitRef.current("violation_threshold");
         }
       } catch (err) {
