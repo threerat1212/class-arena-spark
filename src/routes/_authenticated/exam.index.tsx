@@ -143,8 +143,10 @@ function StudentExamsList() {
       ]);
       const maxByExam = new Map<string, number>();
       for (const q of questions ?? []) {
+        if (!q.session_id) continue;
         maxByExam.set(q.session_id, (maxByExam.get(q.session_id) ?? 0) + (q.points ?? 0));
       }
+
       const sessMap = new Map((sessions ?? []).map((s) => [s.id, s]));
       return (parts ?? []).map((p) => {
         const s = sessMap.get(p.session_id);
