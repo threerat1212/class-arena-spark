@@ -51,17 +51,9 @@ function ExamIndexPage() {
   });
 
   if (!isTeacher) {
-    return (
-      <div className="container max-w-3xl py-6">
-        <p className="text-muted-foreground">
-          {tr("หน้านี้สำหรับครูเท่านั้น — นักเรียนใช้การเข้าสอบด้วยรหัส")}
-        </p>
-        <Button asChild className="mt-4">
-          <Link to="/exam/join">{tr("เข้าสอบด้วยรหัส")}</Link>
-        </Button>
-      </div>
-    );
+    return <StudentExamsList />;
   }
+
 
   return (
     <div className="container max-w-4xl py-6 space-y-4">
