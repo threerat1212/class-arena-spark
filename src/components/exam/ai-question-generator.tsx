@@ -206,14 +206,14 @@ export function AiQuestionGenerator({
           {tr("ให้ AI ช่วยออกข้อสอบ")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-6">
+      <DialogContent className="sm:max-w-2xl w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto overflow-x-hidden">
         <DialogHeader>
           <DialogTitle className="text-xl">{tr("AI ออกแบบข้อสอบ")}</DialogTitle>
           <DialogDescription>
             {tr("เลือกบทเรียนในคลาส หรือวางเนื้อหาเอง แล้ว AI จะออกคำถาม+ตัวเลือกให้ (ครูเลือกเฉลยเอง)")}
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-3">
+        <div className="space-y-3 min-w-0">
           {classroomId && (
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
