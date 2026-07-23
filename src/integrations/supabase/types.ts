@@ -3171,17 +3171,25 @@ export type Database = {
       }
       purchase_shop_item: { Args: { _item_id: string }; Returns: Json }
       purchase_shop_item_v2: { Args: { _item_id: string }; Returns: Json }
-      record_exam_violation: {
-        Args: {
-          _event_type: Database["public"]["Enums"]["exam_violation_type"]
-          _exam_id: string
-          _payload: Json
-        }
-        Returns: {
-          auto_submitted: boolean
-          violation_count: number
-        }[]
-      }
+      record_exam_violation:
+        | {
+            Args: {
+              _event_type: Database["public"]["Enums"]["exam_violation_type"]
+              _exam_id: string
+              _payload: Json
+            }
+            Returns: {
+              auto_submitted: boolean
+              violation_count: number
+            }[]
+          }
+        | {
+            Args: { _event_type: string; _exam_id: string; _payload?: Json }
+            Returns: {
+              auto_submitted: boolean
+              violation_count: number
+            }[]
+          }
       reject_teacher_application: {
         Args: { _note?: string; _user_id: string }
         Returns: undefined
