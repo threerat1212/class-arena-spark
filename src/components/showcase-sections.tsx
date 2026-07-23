@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Crown, Trophy, Flame, Zap, Coins, Medal, Sparkles, Star, RefreshCw } from "lucide-react";
 import { useTr } from "@/lib/tr";
 import { cn } from "@/lib/utils";
+import { ColoredName, frameRingClass } from "@/lib/cosmetics";
 
 function RefreshButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
