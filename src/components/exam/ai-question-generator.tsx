@@ -84,7 +84,23 @@ export function AiQuestionGenerator({
         .eq("classroom_id", classroomId!)
         .order("lesson_date", { ascending: false });
       if (error) throw error;
-      return data ?? [];
+      const rows = data ?? [];
+      const chapterNum = (t: string): number => {
+        const m = t.match(/บทที่?\s*(\d+)|บท\s*(\d+)|chapter\s*(\d+)|ch\.?\s*(\d+)/i);
+        if (m) {
+          const n = Number(m[1] ?? m[2] ?? m[3] ?? m[4]);
+          if (Number.isFinite(n)) return n;
+        }
+        const m2 = t.match(/^\s*(\d+)[\.\)\s]/);
+        if (m2) return Number(m2[1]);
+        return Number.POSITIVE_INFINITY;
+      };
+      return [...rows].sort((a, b) => {
+        const ca = chapterNum(a.topic);
+        const cb = chapterNum(b.topic);
+        if (ca !== cb) return ca - cb;
+        return a.topic.localeCompare(b.topic, "th");
+      });
     },
   });
 
