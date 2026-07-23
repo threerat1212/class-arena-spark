@@ -700,7 +700,13 @@ function MaterialsTab({
 
   const lessonMap = new Map((lessons ?? []).map((l) => [l.id, l]));
   const allMaterials = data ?? [];
-  const filtered = allMaterials.filter((m) => {
+  // Auto-sort documents by title using natural/numeric order (บทที่ 1, 2, 10 → 1, 2, 10)
+  const naturalCompare = (a: string, b: string) =>
+    a.localeCompare(b, "th", { numeric: true, sensitivity: "base" });
+  const sortedMaterials = [...allMaterials].sort((a, b) =>
+    naturalCompare(a.title ?? "", b.title ?? ""),
+  );
+  const filtered = sortedMaterials.filter((m) => {
     if (filter === "_all") return true;
     if (filter === "none") return !m.lesson_id;
     return m.lesson_id === filter;
