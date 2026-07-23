@@ -213,7 +213,7 @@ function ProfilePage() {
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <h1 className="font-display text-3xl">{profile.display_name}</h1>
+                  <h1 className="font-display text-3xl" style={nameColorStyle(profile.active_name_color)}>{profile.display_name}</h1>
                   <Button
                     size="icon"
                     variant="ghost"
