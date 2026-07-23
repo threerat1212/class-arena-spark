@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Zap, Coins, Flame, Trophy, Sparkles, Pencil } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
+import { bannerStyle, frameRingClass, nameColorStyle } from "@/lib/cosmetics";
+import { cn } from "@/lib/utils";
 
 import { tr } from "@/i18n";
 export const Route = createFileRoute("/_authenticated/profile")({ component: ProfilePage });
@@ -155,10 +157,23 @@ function ProfilePage() {
   return (
     <div className="mx-auto max-w-5xl p-6 lg:p-10 space-y-6">
       <Card className="overflow-hidden">
-        <div className="h-32 bg-gradient-to-r from-primary/40 via-primary/20 to-accent/40" />
+        <div
+          className="h-32"
+          style={
+            bannerStyle(profile.active_banner_code) ?? {
+              backgroundImage:
+                "linear-gradient(90deg, color-mix(in oklch, var(--primary) 40%, transparent), color-mix(in oklch, var(--primary) 20%, transparent), color-mix(in oklch, var(--accent) 40%, transparent))",
+            }
+          }
+        />
         <CardContent className="pt-0 -mt-12">
           <div className="flex items-end gap-4">
-            <Avatar className="size-24 border-4 border-background">
+            <Avatar
+              className={cn(
+                "size-24 border-4 border-background",
+                profile.active_frame_code && cn("ring-4 ring-offset-2 ring-offset-background", frameRingClass(profile.active_frame_code)),
+              )}
+            >
               <AvatarImage src={profile.avatar_url ?? undefined} />
               <AvatarFallback className="text-3xl">
                 {profile.display_name?.[0] ?? "?"}
@@ -198,7 +213,7 @@ function ProfilePage() {
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <h1 className="font-display text-3xl">{profile.display_name}</h1>
+                  <h1 className="font-display text-3xl" style={nameColorStyle(profile.active_name_color)}>{profile.display_name}</h1>
                   <Button
                     size="icon"
                     variant="ghost"

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Crown, Trophy, Flame, Zap, Coins, Medal, Sparkles, Star, RefreshCw } from "lucide-react";
 import { useTr } from "@/lib/tr";
 import { cn } from "@/lib/utils";
+import { ColoredName, frameRingClass } from "@/lib/cosmetics";
 
 function RefreshButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
@@ -31,8 +32,9 @@ type ProfileRow = {
   xp: number;
   gold: number;
   streak_days: number;
-  
   active_title_id: string | null;
+  active_frame_code: string | null;
+  active_name_color: string | null;
 };
 
 type EnrichedProfile = ProfileRow & {
@@ -116,7 +118,7 @@ function Podium({ players, highlightId }: { players: EnrichedProfile[]; highligh
               <Avatar
                 className={cn(
                   "size-14 ring-4 ring-offset-2 ring-offset-background",
-                  ringColors[idx],
+                  p.active_frame_code ? frameRingClass(p.active_frame_code) : ringColors[idx],
                   realRank === 1 && "size-16",
                 )}
               >
@@ -133,7 +135,9 @@ function Podium({ players, highlightId }: { players: EnrichedProfile[]; highligh
             </div>
             <div className="text-center min-w-0 w-full">
               <p className="text-xs font-semibold truncate px-1">
-                {p.display_name ?? tr("ผู้ใช้")}
+                <ColoredName code={p.active_name_color}>
+                  {p.display_name ?? tr("ผู้ใช้")}
+                </ColoredName>
               </p>
               {p.title_name && (
                 <p className="text-[10px] text-muted-foreground truncate px-1">👑 {p.title_name}</p>
@@ -193,13 +197,20 @@ function MiniRow({
       <span className="font-display text-sm font-bold text-muted-foreground w-6 text-center">
         #{rank}
       </span>
-      <Avatar className="size-8">
+      <Avatar
+        className={cn(
+          "size-8",
+          p.active_frame_code && cn("ring-2 ring-offset-1 ring-offset-background", frameRingClass(p.active_frame_code)),
+        )}
+      >
         <AvatarImage src={p.avatar_url ?? undefined} />
         <AvatarFallback className="text-xs">{p.display_name?.[0] ?? "?"}</AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="text-sm font-medium truncate">{p.display_name ?? tr("ผู้ใช้")}</span>
+          <span className="text-sm font-medium truncate">
+            <ColoredName code={p.active_name_color}>{p.display_name ?? tr("ผู้ใช้")}</ColoredName>
+          </span>
           {isMe && <Badge className="text-[9px] py-0 px-1.5 h-4">{tr("คุณ")}</Badge>}
         </div>
         {p.title_name && (
@@ -352,7 +363,7 @@ function ClassroomTop({
       const { data: profs } = await supabase
         .from("profiles")
         .select(
-          "id, display_name, avatar_url, level, xp, gold, streak_days, active_title_id",
+          "id, display_name, avatar_url, level, xp, gold, streak_days, active_title_id, active_frame_code, active_name_color",
         )
         .in("id", uids);
       const profileMap = new Map(((profs ?? []) as ProfileRow[]).map((p) => [p.id, p]));
@@ -464,7 +475,7 @@ export function GradeLeaderboard({ userId }: { userId: string }) {
       const { data } = await supabase
         .from("profiles")
         .select(
-          "id, display_name, avatar_url, level, xp, gold, streak_days, active_title_id",
+          "id, display_name, avatar_url, level, xp, gold, streak_days, active_title_id, active_frame_code, active_name_color",
         )
         .in("id", userIds);
       const rows = ((data ?? []) as ProfileRow[])
