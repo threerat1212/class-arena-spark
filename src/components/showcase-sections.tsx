@@ -118,7 +118,7 @@ function Podium({ players, highlightId }: { players: EnrichedProfile[]; highligh
               <Avatar
                 className={cn(
                   "size-14 ring-4 ring-offset-2 ring-offset-background",
-                  ringColors[idx],
+                  p.active_frame_code ? frameRingClass(p.active_frame_code) : ringColors[idx],
                   realRank === 1 && "size-16",
                 )}
               >
