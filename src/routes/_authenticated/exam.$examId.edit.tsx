@@ -306,11 +306,22 @@ function EditExamPage() {
             {tr("รวมคะแนน")}: {questions.reduce((s, q) => s + (q.points || 0), 0)}
           </p>
         </div>
-        <AiQuestionGenerator
-          onGenerated={applyAi}
-          hasExisting={questions.some((q) => q.question.trim().length > 0)}
-          classroomId={exam.classroom_id}
-        />
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setQuestions((qs) => qs.map((q) => ({ ...q, points: 1 })))}
+          >
+            {tr("ตั้งทุกข้อ = 1 คะแนน")}
+          </Button>
+          <AiQuestionGenerator
+            onGenerated={applyAi}
+            hasExisting={questions.some((q) => q.question.trim().length > 0)}
+            classroomId={exam.classroom_id}
+          />
+        </div>
+
       </div>
 
       <div className="space-y-3">
