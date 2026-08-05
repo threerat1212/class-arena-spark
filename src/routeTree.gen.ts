@@ -9,64 +9,58 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as McpRouteImport } from './routes/mcp'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as CheckinRouteImport } from './routes/checkin'
-import { Route as BookRouteImport } from './routes/book'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedWeeklyMissionsRouteImport } from './routes/_authenticated/weekly-missions'
-import { Route as AuthenticatedRewardsRouteImport } from './routes/_authenticated/rewards'
-import { Route as AuthenticatedQuestsRouteImport } from './routes/_authenticated/quests'
-import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
-import { Route as AuthenticatedHallOfFameRouteImport } from './routes/_authenticated/hall-of-fame'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedClassroomsRouteImport } from './routes/_authenticated/classrooms'
-import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
-import { Route as AuthenticatedBonusCenterRouteImport } from './routes/_authenticated/bonus-center'
-import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
-import { Route as AuthenticatedAiChatRouteImport } from './routes/_authenticated/ai-chat'
-import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticated/activity'
-import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as BookRouteImport } from './routes/book'
+import { Route as CheckinRouteImport } from './routes/checkin'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
-import { Route as AuthenticatedFlashcardsIndexRouteImport } from './routes/_authenticated/flashcards.index'
-import { Route as AuthenticatedExamIndexRouteImport } from './routes/_authenticated/exam.index'
-import { Route as AuthenticatedClassroomsIndexRouteImport } from './routes/_authenticated/classrooms.index'
-import { Route as AuthenticatedQuizNewRouteImport } from './routes/_authenticated/quiz.new'
-import { Route as AuthenticatedQuizJoinRouteImport } from './routes/_authenticated/quiz.join'
-import { Route as AuthenticatedQuizSessionIdRouteImport } from './routes/_authenticated/quiz.$sessionId'
-import { Route as AuthenticatedFlashcardsDeckIdRouteImport } from './routes/_authenticated/flashcards.$deckId'
-import { Route as AuthenticatedExamNewRouteImport } from './routes/_authenticated/exam.new'
-import { Route as AuthenticatedExamJoinRouteImport } from './routes/_authenticated/exam.join'
-import { Route as AuthenticatedExamDemoRouteImport } from './routes/_authenticated/exam.demo'
-import { Route as AuthenticatedExamExamIdRouteImport } from './routes/_authenticated/exam.$examId'
-import { Route as AuthenticatedClassroomsIdRouteImport } from './routes/_authenticated/classrooms.$id'
-import { Route as AuthenticatedAdminXpLedgerRouteImport } from './routes/_authenticated/admin/xp-ledger'
-import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
-import { Route as AuthenticatedAdminTeachersRouteImport } from './routes/_authenticated/admin/teachers'
-import { Route as AuthenticatedAdminStudentsRouteImport } from './routes/_authenticated/admin/students'
-import { Route as AuthenticatedAdminRoomsRouteImport } from './routes/_authenticated/admin/rooms'
-import { Route as AuthenticatedAdminRewardsCatalogRouteImport } from './routes/_authenticated/admin/rewards-catalog'
-import { Route as AuthenticatedAdminMultiplierEventsRouteImport } from './routes/_authenticated/admin/multiplier-events'
-import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticated/activity'
+import { Route as AuthenticatedAiChatRouteImport } from './routes/_authenticated/ai-chat'
+import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
+import { Route as AuthenticatedBonusCenterRouteImport } from './routes/_authenticated/bonus-center'
+import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
+import { Route as AuthenticatedClassroomsRouteImport } from './routes/_authenticated/classrooms'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedHallOfFameRouteImport } from './routes/_authenticated/hall-of-fame'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedQuestsRouteImport } from './routes/_authenticated/quests'
+import { Route as AuthenticatedRewardsRouteImport } from './routes/_authenticated/rewards'
+import { Route as AuthenticatedWeeklyMissionsRouteImport } from './routes/_authenticated/weekly-missions'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as AuthenticatedAdminMultiplierEventsRouteImport } from './routes/_authenticated/admin/multiplier-events'
+import { Route as AuthenticatedAdminRewardsCatalogRouteImport } from './routes/_authenticated/admin/rewards-catalog'
+import { Route as AuthenticatedAdminRoomsRouteImport } from './routes/_authenticated/admin/rooms'
+import { Route as AuthenticatedAdminStudentsRouteImport } from './routes/_authenticated/admin/students'
+import { Route as AuthenticatedAdminTeachersRouteImport } from './routes/_authenticated/admin/teachers'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
+import { Route as AuthenticatedAdminXpLedgerRouteImport } from './routes/_authenticated/admin/xp-ledger'
+import { Route as AuthenticatedClassroomsIndexRouteImport } from './routes/_authenticated/classrooms.index'
+import { Route as AuthenticatedClassroomsIdRouteImport } from './routes/_authenticated/classrooms.$id'
+import { Route as AuthenticatedExamIndexRouteImport } from './routes/_authenticated/exam.index'
+import { Route as AuthenticatedExamExamIdRouteImport } from './routes/_authenticated/exam.$examId'
+import { Route as AuthenticatedExamDemoRouteImport } from './routes/_authenticated/exam.demo'
+import { Route as AuthenticatedExamJoinRouteImport } from './routes/_authenticated/exam.join'
+import { Route as AuthenticatedExamNewRouteImport } from './routes/_authenticated/exam.new'
+import { Route as AuthenticatedFlashcardsIndexRouteImport } from './routes/_authenticated/flashcards.index'
+import { Route as AuthenticatedFlashcardsDeckIdRouteImport } from './routes/_authenticated/flashcards.$deckId'
+import { Route as AuthenticatedQuizSessionIdRouteImport } from './routes/_authenticated/quiz.$sessionId'
+import { Route as AuthenticatedQuizJoinRouteImport } from './routes/_authenticated/quiz.join'
+import { Route as AuthenticatedQuizNewRouteImport } from './routes/_authenticated/quiz.new'
 import { Route as AuthenticatedExamExamIdIndexRouteImport } from './routes/_authenticated/exam.$examId.index'
-import { Route as AuthenticatedExamExamIdReportRouteImport } from './routes/_authenticated/exam.$examId.report'
 import { Route as AuthenticatedExamExamIdEditRouteImport } from './routes/_authenticated/exam.$examId.edit'
+import { Route as AuthenticatedExamExamIdReportRouteImport } from './routes/_authenticated/exam.$examId.report'
 
-const McpRoute = McpRouteImport.update({
-  id: '/mcp',
-  path: '/mcp',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckinRoute = CheckinRouteImport.update({
-  id: '/checkin',
-  path: '/checkin',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BookRoute = BookRouteImport.update({
@@ -74,54 +68,46 @@ const BookRoute = BookRouteImport.update({
   path: '/book',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRoute = AuthenticatedRouteImport.update({
-  id: '/_authenticated',
+const CheckinRoute = CheckinRouteImport.update({
+  id: '/checkin',
+  path: '/checkin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedWeeklyMissionsRoute =
-  AuthenticatedWeeklyMissionsRouteImport.update({
-    id: '/weekly-missions',
-    path: '/weekly-missions',
-    getParentRoute: () => AuthenticatedRoute,
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
   } as any)
-const AuthenticatedRewardsRoute = AuthenticatedRewardsRouteImport.update({
-  id: '/rewards',
-  path: '/rewards',
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedActivityRoute = AuthenticatedActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedQuestsRoute = AuthenticatedQuestsRouteImport.update({
-  id: '/quests',
-  path: '/quests',
+const AuthenticatedAiChatRoute = AuthenticatedAiChatRouteImport.update({
+  id: '/ai-chat',
+  path: '/ai-chat',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedHallOfFameRoute = AuthenticatedHallOfFameRouteImport.update({
-  id: '/hall-of-fame',
-  path: '/hall-of-fame',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedClassroomsRoute = AuthenticatedClassroomsRouteImport.update({
-  id: '/classrooms',
-  path: '/classrooms',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedBookingsRoute = AuthenticatedBookingsRouteImport.update({
-  id: '/bookings',
-  path: '/bookings',
+const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedBonusCenterRoute =
@@ -130,64 +116,139 @@ const AuthenticatedBonusCenterRoute =
     path: '/bonus-center',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
+const AuthenticatedBookingsRoute = AuthenticatedBookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedAiChatRoute = AuthenticatedAiChatRouteImport.update({
-  id: '/ai-chat',
-  path: '/ai-chat',
+const AuthenticatedClassroomsRoute = AuthenticatedClassroomsRouteImport.update({
+  id: '/classrooms',
+  path: '/classrooms',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedActivityRoute = AuthenticatedActivityRouteImport.update({
-  id: '/activity',
-  path: '/activity',
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const Char91DotwellKnownChar93OauthProtectedResourceRoute =
-  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
-    id: '/.well-known/oauth-protected-resource',
-    path: '/.well-known/oauth-protected-resource',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const Char91DotmcpChar93ListToolsRoute =
-  Char91DotmcpChar93ListToolsRouteImport.update({
-    id: '/.mcp/list-tools',
-    path: '/.mcp/list-tools',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AuthenticatedFlashcardsIndexRoute =
-  AuthenticatedFlashcardsIndexRouteImport.update({
-    id: '/flashcards/',
-    path: '/flashcards/',
+const AuthenticatedHallOfFameRoute = AuthenticatedHallOfFameRouteImport.update({
+  id: '/hall-of-fame',
+  path: '/hall-of-fame',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedQuestsRoute = AuthenticatedQuestsRouteImport.update({
+  id: '/quests',
+  path: '/quests',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedRewardsRoute = AuthenticatedRewardsRouteImport.update({
+  id: '/rewards',
+  path: '/rewards',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedWeeklyMissionsRoute =
+  AuthenticatedWeeklyMissionsRouteImport.update({
+    id: '/weekly-missions',
+    path: '/weekly-missions',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedExamIndexRoute = AuthenticatedExamIndexRouteImport.update({
-  id: '/exam/',
-  path: '/exam/',
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedAdminMultiplierEventsRoute =
+  AuthenticatedAdminMultiplierEventsRouteImport.update({
+    id: '/admin/multiplier-events',
+    path: '/admin/multiplier-events',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminRewardsCatalogRoute =
+  AuthenticatedAdminRewardsCatalogRouteImport.update({
+    id: '/admin/rewards-catalog',
+    path: '/admin/rewards-catalog',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminRoomsRoute = AuthenticatedAdminRoomsRouteImport.update({
+  id: '/admin/rooms',
+  path: '/admin/rooms',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminStudentsRoute =
+  AuthenticatedAdminStudentsRouteImport.update({
+    id: '/admin/students',
+    path: '/admin/students',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminTeachersRoute =
+  AuthenticatedAdminTeachersRouteImport.update({
+    id: '/admin/teachers',
+    path: '/admin/teachers',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminXpLedgerRoute =
+  AuthenticatedAdminXpLedgerRouteImport.update({
+    id: '/admin/xp-ledger',
+    path: '/admin/xp-ledger',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedClassroomsIndexRoute =
   AuthenticatedClassroomsIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedClassroomsRoute,
   } as any)
-const AuthenticatedQuizNewRoute = AuthenticatedQuizNewRouteImport.update({
-  id: '/quiz/new',
-  path: '/quiz/new',
+const AuthenticatedClassroomsIdRoute =
+  AuthenticatedClassroomsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedClassroomsRoute,
+  } as any)
+const AuthenticatedExamIndexRoute = AuthenticatedExamIndexRouteImport.update({
+  id: '/exam/',
+  path: '/exam/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedQuizJoinRoute = AuthenticatedQuizJoinRouteImport.update({
-  id: '/quiz/join',
-  path: '/quiz/join',
+const AuthenticatedExamExamIdRoute = AuthenticatedExamExamIdRouteImport.update({
+  id: '/exam/$examId',
+  path: '/exam/$examId',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedQuizSessionIdRoute =
-  AuthenticatedQuizSessionIdRouteImport.update({
-    id: '/quiz/$sessionId',
-    path: '/quiz/$sessionId',
+const AuthenticatedExamDemoRoute = AuthenticatedExamDemoRouteImport.update({
+  id: '/exam/demo',
+  path: '/exam/demo',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedExamJoinRoute = AuthenticatedExamJoinRouteImport.update({
+  id: '/exam/join',
+  path: '/exam/join',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedExamNewRoute = AuthenticatedExamNewRouteImport.update({
+  id: '/exam/new',
+  path: '/exam/new',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedFlashcardsIndexRoute =
+  AuthenticatedFlashcardsIndexRouteImport.update({
+    id: '/flashcards/',
+    path: '/flashcards/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedFlashcardsDeckIdRoute =
@@ -196,82 +257,21 @@ const AuthenticatedFlashcardsDeckIdRoute =
     path: '/flashcards/$deckId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedExamNewRoute = AuthenticatedExamNewRouteImport.update({
-  id: '/exam/new',
-  path: '/exam/new',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedExamJoinRoute = AuthenticatedExamJoinRouteImport.update({
-  id: '/exam/join',
-  path: '/exam/join',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedExamDemoRoute = AuthenticatedExamDemoRouteImport.update({
-  id: '/exam/demo',
-  path: '/exam/demo',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedExamExamIdRoute = AuthenticatedExamExamIdRouteImport.update({
-  id: '/exam/$examId',
-  path: '/exam/$examId',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedClassroomsIdRoute =
-  AuthenticatedClassroomsIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => AuthenticatedClassroomsRoute,
-  } as any)
-const AuthenticatedAdminXpLedgerRoute =
-  AuthenticatedAdminXpLedgerRouteImport.update({
-    id: '/admin/xp-ledger',
-    path: '/admin/xp-ledger',
+const AuthenticatedQuizSessionIdRoute =
+  AuthenticatedQuizSessionIdRouteImport.update({
+    id: '/quiz/$sessionId',
+    path: '/quiz/$sessionId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
-  id: '/admin/users',
-  path: '/admin/users',
+const AuthenticatedQuizJoinRoute = AuthenticatedQuizJoinRouteImport.update({
+  id: '/quiz/join',
+  path: '/quiz/join',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedAdminTeachersRoute =
-  AuthenticatedAdminTeachersRouteImport.update({
-    id: '/admin/teachers',
-    path: '/admin/teachers',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedAdminStudentsRoute =
-  AuthenticatedAdminStudentsRouteImport.update({
-    id: '/admin/students',
-    path: '/admin/students',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedAdminRoomsRoute = AuthenticatedAdminRoomsRouteImport.update({
-  id: '/admin/rooms',
-  path: '/admin/rooms',
+const AuthenticatedQuizNewRoute = AuthenticatedQuizNewRouteImport.update({
+  id: '/quiz/new',
+  path: '/quiz/new',
   getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedAdminRewardsCatalogRoute =
-  AuthenticatedAdminRewardsCatalogRouteImport.update({
-    id: '/admin/rewards-catalog',
-    path: '/admin/rewards-catalog',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedAdminMultiplierEventsRoute =
-  AuthenticatedAdminMultiplierEventsRouteImport.update({
-    id: '/admin/multiplier-events',
-    path: '/admin/multiplier-events',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const Char91DotmcpChar93InvokeToolToolRoute =
-  Char91DotmcpChar93InvokeToolToolRouteImport.update({
-    id: '/.mcp/invoke-tool/$tool',
-    path: '/.mcp/invoke-tool/$tool',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
-  id: '/.lovable/oauth/consent',
-  path: '/.lovable/oauth/consent',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedExamExamIdIndexRoute =
   AuthenticatedExamExamIdIndexRouteImport.update({
@@ -279,16 +279,16 @@ const AuthenticatedExamExamIdIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedExamExamIdRoute,
   } as any)
-const AuthenticatedExamExamIdReportRoute =
-  AuthenticatedExamExamIdReportRouteImport.update({
-    id: '/report',
-    path: '/report',
-    getParentRoute: () => AuthenticatedExamExamIdRoute,
-  } as any)
 const AuthenticatedExamExamIdEditRoute =
   AuthenticatedExamExamIdEditRouteImport.update({
     id: '/edit',
     path: '/edit',
+    getParentRoute: () => AuthenticatedExamExamIdRoute,
+  } as any)
+const AuthenticatedExamExamIdReportRoute =
+  AuthenticatedExamExamIdReportRouteImport.update({
+    id: '/report',
+    path: '/report',
     getParentRoute: () => AuthenticatedExamExamIdRoute,
   } as any)
 
@@ -579,32 +579,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/mcp': {
-      id: '/mcp'
-      path: '/mcp'
-      fullPath: '/mcp'
-      preLoaderRoute: typeof McpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkin': {
-      id: '/checkin'
-      path: '/checkin'
-      fullPath: '/checkin'
-      preLoaderRoute: typeof CheckinRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/book': {
-      id: '/book'
-      path: '/book'
-      fullPath: '/book'
-      preLoaderRoute: typeof BookRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -614,102 +593,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/book': {
+      id: '/book'
+      path: '/book'
+      fullPath: '/book'
+      preLoaderRoute: typeof BookRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/weekly-missions': {
-      id: '/_authenticated/weekly-missions'
-      path: '/weekly-missions'
-      fullPath: '/weekly-missions'
-      preLoaderRoute: typeof AuthenticatedWeeklyMissionsRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/checkin': {
+      id: '/checkin'
+      path: '/checkin'
+      fullPath: '/checkin'
+      preLoaderRoute: typeof CheckinRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/rewards': {
-      id: '/_authenticated/rewards'
-      path: '/rewards'
-      fullPath: '/rewards'
-      preLoaderRoute: typeof AuthenticatedRewardsRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/quests': {
-      id: '/_authenticated/quests'
-      path: '/quests'
-      fullPath: '/quests'
-      preLoaderRoute: typeof AuthenticatedQuestsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/profile': {
-      id: '/_authenticated/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AuthenticatedProfileRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/hall-of-fame': {
-      id: '/_authenticated/hall-of-fame'
-      path: '/hall-of-fame'
-      fullPath: '/hall-of-fame'
-      preLoaderRoute: typeof AuthenticatedHallOfFameRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/classrooms': {
-      id: '/_authenticated/classrooms'
-      path: '/classrooms'
-      fullPath: '/classrooms'
-      preLoaderRoute: typeof AuthenticatedClassroomsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/bookings': {
-      id: '/_authenticated/bookings'
-      path: '/bookings'
-      fullPath: '/bookings'
-      preLoaderRoute: typeof AuthenticatedBookingsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/bonus-center': {
-      id: '/_authenticated/bonus-center'
-      path: '/bonus-center'
-      fullPath: '/bonus-center'
-      preLoaderRoute: typeof AuthenticatedBonusCenterRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/analytics': {
-      id: '/_authenticated/analytics'
-      path: '/analytics'
-      fullPath: '/analytics'
-      preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/ai-chat': {
-      id: '/_authenticated/ai-chat'
-      path: '/ai-chat'
-      fullPath: '/ai-chat'
-      preLoaderRoute: typeof AuthenticatedAiChatRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/activity': {
-      id: '/_authenticated/activity'
-      path: '/activity'
-      fullPath: '/activity'
-      preLoaderRoute: typeof AuthenticatedActivityRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/.well-known/oauth-protected-resource': {
-      id: '/.well-known/oauth-protected-resource'
-      path: '/.well-known/oauth-protected-resource'
-      fullPath: '/.well-known/oauth-protected-resource'
-      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/list-tools': {
@@ -719,123 +628,116 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/flashcards/': {
-      id: '/_authenticated/flashcards/'
-      path: '/flashcards'
-      fullPath: '/flashcards/'
-      preLoaderRoute: typeof AuthenticatedFlashcardsIndexRouteImport
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/activity': {
+      id: '/_authenticated/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof AuthenticatedActivityRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/exam/': {
-      id: '/_authenticated/exam/'
-      path: '/exam'
-      fullPath: '/exam/'
-      preLoaderRoute: typeof AuthenticatedExamIndexRouteImport
+    '/_authenticated/ai-chat': {
+      id: '/_authenticated/ai-chat'
+      path: '/ai-chat'
+      fullPath: '/ai-chat'
+      preLoaderRoute: typeof AuthenticatedAiChatRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/classrooms/': {
-      id: '/_authenticated/classrooms/'
-      path: '/'
-      fullPath: '/classrooms/'
-      preLoaderRoute: typeof AuthenticatedClassroomsIndexRouteImport
-      parentRoute: typeof AuthenticatedClassroomsRoute
-    }
-    '/_authenticated/quiz/new': {
-      id: '/_authenticated/quiz/new'
-      path: '/quiz/new'
-      fullPath: '/quiz/new'
-      preLoaderRoute: typeof AuthenticatedQuizNewRouteImport
+    '/_authenticated/analytics': {
+      id: '/_authenticated/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/quiz/join': {
-      id: '/_authenticated/quiz/join'
-      path: '/quiz/join'
-      fullPath: '/quiz/join'
-      preLoaderRoute: typeof AuthenticatedQuizJoinRouteImport
+    '/_authenticated/bonus-center': {
+      id: '/_authenticated/bonus-center'
+      path: '/bonus-center'
+      fullPath: '/bonus-center'
+      preLoaderRoute: typeof AuthenticatedBonusCenterRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/quiz/$sessionId': {
-      id: '/_authenticated/quiz/$sessionId'
-      path: '/quiz/$sessionId'
-      fullPath: '/quiz/$sessionId'
-      preLoaderRoute: typeof AuthenticatedQuizSessionIdRouteImport
+    '/_authenticated/bookings': {
+      id: '/_authenticated/bookings'
+      path: '/bookings'
+      fullPath: '/bookings'
+      preLoaderRoute: typeof AuthenticatedBookingsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/flashcards/$deckId': {
-      id: '/_authenticated/flashcards/$deckId'
-      path: '/flashcards/$deckId'
-      fullPath: '/flashcards/$deckId'
-      preLoaderRoute: typeof AuthenticatedFlashcardsDeckIdRouteImport
+    '/_authenticated/classrooms': {
+      id: '/_authenticated/classrooms'
+      path: '/classrooms'
+      fullPath: '/classrooms'
+      preLoaderRoute: typeof AuthenticatedClassroomsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/exam/new': {
-      id: '/_authenticated/exam/new'
-      path: '/exam/new'
-      fullPath: '/exam/new'
-      preLoaderRoute: typeof AuthenticatedExamNewRouteImport
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/exam/join': {
-      id: '/_authenticated/exam/join'
-      path: '/exam/join'
-      fullPath: '/exam/join'
-      preLoaderRoute: typeof AuthenticatedExamJoinRouteImport
+    '/_authenticated/hall-of-fame': {
+      id: '/_authenticated/hall-of-fame'
+      path: '/hall-of-fame'
+      fullPath: '/hall-of-fame'
+      preLoaderRoute: typeof AuthenticatedHallOfFameRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/exam/demo': {
-      id: '/_authenticated/exam/demo'
-      path: '/exam/demo'
-      fullPath: '/exam/demo'
-      preLoaderRoute: typeof AuthenticatedExamDemoRouteImport
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/exam/$examId': {
-      id: '/_authenticated/exam/$examId'
-      path: '/exam/$examId'
-      fullPath: '/exam/$examId'
-      preLoaderRoute: typeof AuthenticatedExamExamIdRouteImport
+    '/_authenticated/quests': {
+      id: '/_authenticated/quests'
+      path: '/quests'
+      fullPath: '/quests'
+      preLoaderRoute: typeof AuthenticatedQuestsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/classrooms/$id': {
-      id: '/_authenticated/classrooms/$id'
-      path: '/$id'
-      fullPath: '/classrooms/$id'
-      preLoaderRoute: typeof AuthenticatedClassroomsIdRouteImport
-      parentRoute: typeof AuthenticatedClassroomsRoute
-    }
-    '/_authenticated/admin/xp-ledger': {
-      id: '/_authenticated/admin/xp-ledger'
-      path: '/admin/xp-ledger'
-      fullPath: '/admin/xp-ledger'
-      preLoaderRoute: typeof AuthenticatedAdminXpLedgerRouteImport
+    '/_authenticated/rewards': {
+      id: '/_authenticated/rewards'
+      path: '/rewards'
+      fullPath: '/rewards'
+      preLoaderRoute: typeof AuthenticatedRewardsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/admin/users': {
-      id: '/_authenticated/admin/users'
-      path: '/admin/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+    '/_authenticated/weekly-missions': {
+      id: '/_authenticated/weekly-missions'
+      path: '/weekly-missions'
+      fullPath: '/weekly-missions'
+      preLoaderRoute: typeof AuthenticatedWeeklyMissionsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/admin/teachers': {
-      id: '/_authenticated/admin/teachers'
-      path: '/admin/teachers'
-      fullPath: '/admin/teachers'
-      preLoaderRoute: typeof AuthenticatedAdminTeachersRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/students': {
-      id: '/_authenticated/admin/students'
-      path: '/admin/students'
-      fullPath: '/admin/students'
-      preLoaderRoute: typeof AuthenticatedAdminStudentsRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/rooms': {
-      id: '/_authenticated/admin/rooms'
-      path: '/admin/rooms'
-      fullPath: '/admin/rooms'
-      preLoaderRoute: typeof AuthenticatedAdminRoomsRouteImport
+    '/_authenticated/admin/multiplier-events': {
+      id: '/_authenticated/admin/multiplier-events'
+      path: '/admin/multiplier-events'
+      fullPath: '/admin/multiplier-events'
+      preLoaderRoute: typeof AuthenticatedAdminMultiplierEventsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin/rewards-catalog': {
@@ -845,26 +747,124 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRewardsCatalogRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/admin/multiplier-events': {
-      id: '/_authenticated/admin/multiplier-events'
-      path: '/admin/multiplier-events'
-      fullPath: '/admin/multiplier-events'
-      preLoaderRoute: typeof AuthenticatedAdminMultiplierEventsRouteImport
+    '/_authenticated/admin/rooms': {
+      id: '/_authenticated/admin/rooms'
+      path: '/admin/rooms'
+      fullPath: '/admin/rooms'
+      preLoaderRoute: typeof AuthenticatedAdminRoomsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/.mcp/invoke-tool/$tool': {
-      id: '/.mcp/invoke-tool/$tool'
-      path: '/.mcp/invoke-tool/$tool'
-      fullPath: '/.mcp/invoke-tool/$tool'
-      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/admin/students': {
+      id: '/_authenticated/admin/students'
+      path: '/admin/students'
+      fullPath: '/admin/students'
+      preLoaderRoute: typeof AuthenticatedAdminStudentsRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/.lovable/oauth/consent': {
-      id: '/.lovable/oauth/consent'
-      path: '/.lovable/oauth/consent'
-      fullPath: '/.lovable/oauth/consent'
-      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/admin/teachers': {
+      id: '/_authenticated/admin/teachers'
+      path: '/admin/teachers'
+      fullPath: '/admin/teachers'
+      preLoaderRoute: typeof AuthenticatedAdminTeachersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/xp-ledger': {
+      id: '/_authenticated/admin/xp-ledger'
+      path: '/admin/xp-ledger'
+      fullPath: '/admin/xp-ledger'
+      preLoaderRoute: typeof AuthenticatedAdminXpLedgerRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/classrooms/': {
+      id: '/_authenticated/classrooms/'
+      path: '/'
+      fullPath: '/classrooms/'
+      preLoaderRoute: typeof AuthenticatedClassroomsIndexRouteImport
+      parentRoute: typeof AuthenticatedClassroomsRoute
+    }
+    '/_authenticated/classrooms/$id': {
+      id: '/_authenticated/classrooms/$id'
+      path: '/$id'
+      fullPath: '/classrooms/$id'
+      preLoaderRoute: typeof AuthenticatedClassroomsIdRouteImport
+      parentRoute: typeof AuthenticatedClassroomsRoute
+    }
+    '/_authenticated/exam/': {
+      id: '/_authenticated/exam/'
+      path: '/exam'
+      fullPath: '/exam/'
+      preLoaderRoute: typeof AuthenticatedExamIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/exam/$examId': {
+      id: '/_authenticated/exam/$examId'
+      path: '/exam/$examId'
+      fullPath: '/exam/$examId'
+      preLoaderRoute: typeof AuthenticatedExamExamIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/exam/demo': {
+      id: '/_authenticated/exam/demo'
+      path: '/exam/demo'
+      fullPath: '/exam/demo'
+      preLoaderRoute: typeof AuthenticatedExamDemoRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/exam/join': {
+      id: '/_authenticated/exam/join'
+      path: '/exam/join'
+      fullPath: '/exam/join'
+      preLoaderRoute: typeof AuthenticatedExamJoinRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/exam/new': {
+      id: '/_authenticated/exam/new'
+      path: '/exam/new'
+      fullPath: '/exam/new'
+      preLoaderRoute: typeof AuthenticatedExamNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/flashcards/': {
+      id: '/_authenticated/flashcards/'
+      path: '/flashcards'
+      fullPath: '/flashcards/'
+      preLoaderRoute: typeof AuthenticatedFlashcardsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/flashcards/$deckId': {
+      id: '/_authenticated/flashcards/$deckId'
+      path: '/flashcards/$deckId'
+      fullPath: '/flashcards/$deckId'
+      preLoaderRoute: typeof AuthenticatedFlashcardsDeckIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/quiz/$sessionId': {
+      id: '/_authenticated/quiz/$sessionId'
+      path: '/quiz/$sessionId'
+      fullPath: '/quiz/$sessionId'
+      preLoaderRoute: typeof AuthenticatedQuizSessionIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/quiz/join': {
+      id: '/_authenticated/quiz/join'
+      path: '/quiz/join'
+      fullPath: '/quiz/join'
+      preLoaderRoute: typeof AuthenticatedQuizJoinRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/quiz/new': {
+      id: '/_authenticated/quiz/new'
+      path: '/quiz/new'
+      fullPath: '/quiz/new'
+      preLoaderRoute: typeof AuthenticatedQuizNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/exam/$examId/': {
       id: '/_authenticated/exam/$examId/'
@@ -873,18 +873,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedExamExamIdIndexRouteImport
       parentRoute: typeof AuthenticatedExamExamIdRoute
     }
-    '/_authenticated/exam/$examId/report': {
-      id: '/_authenticated/exam/$examId/report'
-      path: '/report'
-      fullPath: '/exam/$examId/report'
-      preLoaderRoute: typeof AuthenticatedExamExamIdReportRouteImport
-      parentRoute: typeof AuthenticatedExamExamIdRoute
-    }
     '/_authenticated/exam/$examId/edit': {
       id: '/_authenticated/exam/$examId/edit'
       path: '/edit'
       fullPath: '/exam/$examId/edit'
       preLoaderRoute: typeof AuthenticatedExamExamIdEditRouteImport
+      parentRoute: typeof AuthenticatedExamExamIdRoute
+    }
+    '/_authenticated/exam/$examId/report': {
+      id: '/_authenticated/exam/$examId/report'
+      path: '/report'
+      fullPath: '/exam/$examId/report'
+      preLoaderRoute: typeof AuthenticatedExamExamIdReportRouteImport
       parentRoute: typeof AuthenticatedExamExamIdRoute
     }
   }
